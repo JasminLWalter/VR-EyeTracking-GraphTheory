@@ -21,9 +21,6 @@ Number = length(PartList);
 noFilePartList = [];
 countMissingPart = 0;
 
- %load house list
-housedata= load('E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\HouseList.mat');
-houseList= housedata.houseList;
 
 overviewGraph= cell2table(houseList,'VariableNames',{'House'});
 
