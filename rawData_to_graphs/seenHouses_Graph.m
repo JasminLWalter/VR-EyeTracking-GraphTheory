@@ -8,7 +8,7 @@
 clear all;
 
 
-savepath= 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\graphs\';
+savepath= 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\';
 
 saveID_overview='10.08';
 
@@ -22,7 +22,7 @@ noFilePartList = [];
 countMissingPart = 0;
 
 
-overviewGraph= cell2table(houseList,'VariableNames',{'House'});
+%overviewGraph= cell2table(houseList,'VariableNames',{'House'});
 
 
 for ii = 1:Number
@@ -77,18 +77,29 @@ for ii = 1:Number
 
         % 2nd round using for loop
         
-     for n=1:height(uniqueTable)
-         % in first round create edgetable
-         if n==1
+        %check if first entry is a self-reference
+        %create edgetable
+        
+        if (strcmp(uniqueTable{1,1},uniqueTable{1,2}))
+            % if self-reference start noRepsTable with second entry
+             noRepsTable= uniqueTable(2,:);
+             noRepsTable.Properties.VariableNames = {'Column1','Column2'};
+             
+             repetitions={};
+             selfReferences={};
+             start = 3;
+        else
+
              noRepsTable= uniqueTable(1,:);
              noRepsTable.Properties.VariableNames = {'Column1','Column2'};
              
              repetitions={};
              selfReferences={};
-             
+             start = 2;
+        end
         
-         else
-            % then continue
+     for n=start:height(uniqueTable)
+
             node1=uniqueTable{n,1};
             node2=uniqueTable{n,2};
             combi2= cell2table([node2,node1],'VariableNames',{'Column1','Column2'});
@@ -115,7 +126,7 @@ for ii = 1:Number
             else
                 disp('something went wrong with unique');
             end
-         end
+        
                
             
      end
