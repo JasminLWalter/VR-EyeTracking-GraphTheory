@@ -1,8 +1,8 @@
-%------------Overall Viewed Houses Analysis (2nd Level)--------------------
-% gives average statistics
-% uses numView files
+%------------Analysis Viewed Houses-JasminsVersion--------------------
 % written by Vivianne Kakerbeck
 % adjusted by Jasmin Walter
+
+% creates overview of individual participants numView files
 
 clear all;
 

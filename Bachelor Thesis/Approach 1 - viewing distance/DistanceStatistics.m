@@ -1,5 +1,9 @@
 %------------------------DistanceStatistics--------------------------------
+% written by Jasmin Walter
+
 % plots distance statistics for each individual subject listed in Participant List
+% plots average viewing distance of every house - bar plot
+% plots variance in viewing distances of every houses- bar plot
 % uses NumViews files 
     
 clear all;

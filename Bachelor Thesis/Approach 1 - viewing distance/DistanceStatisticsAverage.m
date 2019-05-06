@@ -1,4 +1,6 @@
-%------------------------DistanceStatistics--------------------------------
+%------------------------DistanceStatisticsAverage--------------------------------
+% written by Jasmin walter
+
 % plots distance statistics on average across all participants
 % uses totalNum.mat file 
 % can only run after running analysis_ViewedHouses_JasminsVersion

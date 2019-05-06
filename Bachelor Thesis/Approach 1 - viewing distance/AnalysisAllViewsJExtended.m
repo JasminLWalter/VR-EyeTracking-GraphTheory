@@ -1,11 +1,14 @@
-%% ----------------Analyze Raw ViewedHouses Files (1st Level)----------------
+%% ----------------AnalyzeAllViewsJExtended.m----------------
 % written by Vivianne Kakerbeck
 % adjusted by Jasmin Walter
+% uses raw ViewedHouses_VP.txt files
+% creates NumView files for every listed participant
 % Adjustments: 
 % has error management if files listed in Participant list are missing
 % lists amount of Participants analysed and amount of missing files
 % prevents matlab from crashing because of too many open files
 % saves NumViews with all distances for each house
+
 clear all;
 
 %savepath = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\AnalysisAllViews\';
