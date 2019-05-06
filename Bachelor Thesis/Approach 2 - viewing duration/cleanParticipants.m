@@ -1,4 +1,6 @@
 %%------------------------------clean_Participants----------
+% written by Jasmin Walter
+
 % creates a new list of participants, 
 % lists only participants in new list who had only less than 30% of their
 % eye tracking data removed during cleaning

@@ -1,10 +1,11 @@
 %% ------------------ viewingDistanceBigger160_raw--------------
+% written by Jasmin Walter
+
 % uses raw viewed houses files
 % returns overview of distances bigger than 160 m with percentage, min, max
 % 
-% lists all houses, that were viewed from a distance of more than 160 units
-% and were seen from further of the far clipping plane (participants didn't
-% perceive them)
+% lists all houses, that were sampled from a distance of more than 160 units
+% and hence exceeding the far clipping plane (participants didn't perceive them)
 % creates overview for each participant
 % collects all houses and distances in table
 % plots this overview of houses and distances in bar an pie plot
