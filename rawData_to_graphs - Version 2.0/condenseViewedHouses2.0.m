@@ -1,4 +1,4 @@
-%% ------------------ condense Viewed Houses--------------------------------
+%% ------------------ condense Viewed Houses Version 2.0--------------------------------
 % script written by Jasmin Walter
 
 % takes raw viewed houses file and condenses them, so that several
