@@ -40,8 +40,10 @@ for ii = 1:Number
         rawSave = AllSeen;
         
         cleanAllSeen = AllSeen;
+      
         
-        firstSum = sum(AllSeen{:,3});
+        firstSum = sum(AllSeen.Looks);
+        firstSumCHeck = sum(cleanAllSeen.Looks);
         removeRows = false(height(AllSeen),1);
         testi = zeros(height(AllSeen),1);
         
@@ -63,25 +65,46 @@ for ii = 1:Number
                 % samples are identical
                 if strcmp(AllSeen{index-1,1},AllSeen{index+1,1})
                     
-                    % combine all samples falling on the same house into
-                    % one row
-                    
-                    cleanAllSeen{index-1,3} = AllSeen{index-1,3}+ cNrSample + AllSeen{index+1,3};
-                    % mark the lines for removal.
-                    removeRows(index,1) = 1;
-                    removeRows(index+1,1) = 1;
-                else
-                    % divide the missing data onto both houses
-                    switch cNrSample
-                        case 1
-                            cleanAllSeen{index-1,3} = cleanAllSeen{index-1,3}+ cNrSample;
+                    % and if the line before was not already marked for removal
+                    if (removeRows(index-1) == false)
+                        % combine all samples falling on the same house into
+                        % one row
+                        cleanAllSeen{index-1,3} = AllSeen{index-1,3}+ cNrSample + AllSeen{index+1,3};
+                    else
+                        % if row before was already marked for removal
+                        % backtracking to find last unmarked house
+                        rowTest = index;
+                        while (removeRows(rowTest) == false)
+                            disp('while loop'+rowTest);
+                            rowTest = rowTest -1;
+                            
+                            if rowTest > 1
+                                break
+                            end
+                            
+                            cleanAllSeen{rowTest,3} = AllSeen{rowTest,3}+ cNrSample + AllSeen{index+1,3};
+                            end
                         
-                        case 2
-                            cleanAllSeen{index-1,3} = cleanAllSeen{index-1,3}+ (cNrSample/2);
-                            cleanAllSeen{index+1,3} = cleanAllSeen{index+1,3}+ (cNrSample/2);
+                        
                     end
                     
-                    removeRows(index,1) = 1;
+                    
+                    % mark the lines for removal.
+                    
+                    removeRows(index) = 1;
+                    removeRows(index+1) = 1;
+                else
+                    % divide the missing data onto both houses
+%                     switch cNrSample
+%                         case 1
+%                             cleanAllSeen{index-1,3} = cleanAllSeen{index-1,3}+ cNrSample;
+%                         
+%                         case 2
+%                             cleanAllSeen{index-1,3} = AllSeen{index-1,3}+ (cNrSample/2);
+%                             cleanAllSeen{index+1,3} = AllSeen{index+1,3}+ (cNrSample/2);
+%                     end
+%                     
+%                     removeRows(index,1) = 1;
                     
                 end   
                 
