@@ -1,4 +1,12 @@
-%---------------------------Interpolate Lost Data-----------------------------
+%%---------------------------Interpolate Lost Data----------------------------
+% written by Jasmin Walter
+
+% interpolates all lost data sample clusters that are <= 7 samples big and
+% are between the same house
+
+
+
+
 clear all;
 
 savepath = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\interpolatedData\';
@@ -10,7 +18,7 @@ cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\V
 
 % participant list only with participants who have lost less than 30% of
 % their data
-PartList = {1809};%,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
+PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
 
 
 Number = length(PartList);
@@ -46,55 +54,75 @@ for ii = 1:Number
         firstSumCHeck = sum(cleanAllSeen.Looks);
         removeRows = false(height(AllSeen),1);
         testi = zeros(height(AllSeen),1);
-        
+        problem = 0;
+        rowTest = 0;
+        exceptions = 0;
+
         % go through all rows
         for index = 1:height(AllSeen)
-            
+
             % if the row is a noData row
             if strcmp(AllSeen{index,1},'noData')
-                testi(index,1) = AllSeen{index-1,3};
-                
+  
                 cNrSample = AllSeen{index,3};
             % number of missing samples if small enough, they get
             % interpolated
-            if (cNrSample < 3)
+            
+            
+            if (cNrSample < 8)
+                
                 ibefore = index -1;
                 iafter = index+1;
-               
-                % differentiating if seen houses before and after missing
+                % catch exceptions
+                if index ==1
+                    exceptions = exceptions +1;
+                    
+                elseif index == height(AllSeen)
+                    exceptions = exceptions +1;
+                    
+              
+                %% differentiating if seen houses before and after missing
                 % samples are identical
-                if strcmp(AllSeen{index-1,1},AllSeen{index+1,1})
+                elseif strcmp(AllSeen{index-1,1},AllSeen{index+1,1})
                     
                     % and if the line before was not already marked for removal
                     if (removeRows(index-1) == false)
                         % combine all samples falling on the same house into
                         % one row
                         cleanAllSeen{index-1,3} = AllSeen{index-1,3}+ cNrSample + AllSeen{index+1,3};
-                    else
+                        
+                    elseif (removeRows(index-1) == true)
                         % if row before was already marked for removal
                         % backtracking to find last unmarked house
-                        rowTest = index;
-                        while (removeRows(rowTest) == false)
-                            disp('while loop'+rowTest);
-                            rowTest = rowTest -1;
+                        rowTest = index-1;
+
+                        while removeRows(rowTest)
+
                             
-                            if rowTest > 1
+                            rowTest = rowTest -1;
+
+                            if rowTest < 1
                                 break
                             end
-                            
-                            cleanAllSeen{rowTest,3} = AllSeen{rowTest,3}+ cNrSample + AllSeen{index+1,3};
-                            end
-                        
-                        
+
+                        end
+                        cleanAllSeen{rowTest,3} = cleanAllSeen{rowTest,3}+ cNrSample + AllSeen{index+1,3};
+
+                    else
+                        problem = problem +1;
                     end
-                    
+
                     
                     % mark the lines for removal.
                     
-                    removeRows(index) = 1;
+                    removeRows(index) = 1; 
                     removeRows(index+1) = 1;
+
+                %% if houses are different 
                 else
+
                     % divide the missing data onto both houses
+                    
 %                     switch cNrSample
 %                         case 1
 %                             cleanAllSeen{index-1,3} = cleanAllSeen{index-1,3}+ cNrSample;
@@ -103,27 +131,28 @@ for ii = 1:Number
 %                             cleanAllSeen{index-1,3} = AllSeen{index-1,3}+ (cNrSample/2);
 %                             cleanAllSeen{index+1,3} = AllSeen{index+1,3}+ (cNrSample/2);
 %                     end
-%                     
-%                     removeRows(index,1) = 1;
+% %                     
+% %                     removeRows(index,1) = 1;
                     
                 end   
-                
+
             end
-            end    
+          
+            end
+          
             
         end
         
-        % remove all marked rows from All Seen and save them into
+        %% remove all marked rows from All Seen and save them into
         % cleanAllSeen
         
-        
-        
+
         cleanAllSeen(removeRows,:) = [];
         
         save([savepath num2str(currentPart) '_cleanViewedHouses.mat'],'cleanAllSeen');
-        
-        % doublecheck cleaning:
-        
+           
+        % doublecheck cleaning: 
+         
         secondSum = sum(cleanAllSeen{:,3});
         checkCleaning = [checkCleaning; currentPart, firstSum, secondSum ];
         
