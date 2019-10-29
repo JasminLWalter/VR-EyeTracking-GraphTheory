@@ -64,7 +64,7 @@ for ii = 1:Number
         
         
         % save both tables
-        save([savepath 'gazes_' num2str(currentPart) '.mat'],'gazedObjects');
+        save([savepath 'gazes_data_' num2str(currentPart) '.mat'],'gazedObjects');
         save([savepath 'noisy_data_' num2str(currentPart) '.mat'],'noisyObjects');
         
         % update overview with values
