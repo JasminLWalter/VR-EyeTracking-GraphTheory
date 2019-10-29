@@ -1,17 +1,18 @@
-%% ------------------ create_Graphs-------------------------------------
+%% ------------------ create_Graphs Version 2.0-------------------------------------
 % script written by Jasmin Walter
 
 % removes all repetition and self references
-% creates graph objects using seenHouses files
+% creates graph objects using gazes files
+% removes noData node after creation of graph
 % output: graph objects for every participant
 
 clear all;
 
 
-savepath= 'D:\BA Backup\Data_after_Script\approach3-graphs\graphs\';
+savepath= 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\graphs\';
 
 
-cd 'D:\BA Backup\Data_after_Script\fixated_vs_noise\'
+cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\gazes_vs_noise\'
 
 % old list PartList = {1882,1809,5699,1003,3961,6525,2907,5324,3430,4302,7561,6348,4060,6503,7535,1944,8457,3854,2637,7018,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,5625,1181,9430,2151,3251,6468,8665,4502,5823,2653,7666,8466,3093,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,1529,9364,5583};
 PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
@@ -27,7 +28,7 @@ for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
     
     
-    file = strcat('fixated_objects_',num2str(currentPart),'.mat');
+    file = strcat('gazes_',num2str(currentPart),'.mat');
  
     % check for missing files
     if exist(file)==0
@@ -39,14 +40,14 @@ for ii = 1:Number
     elseif exist(file)==2
         
         % load data
-        fixatedObjects = load(file);
-        fixatedObjects = fixatedObjects.fixatedObjects;
+        gazedObjects = load(file);
+        gazedObjects = gazedObjects.gazedObjects;
         
         currentPartName= strcat('Participant_',num2str(currentPart));
         
         % remove all NH and sky elements
-        nohouse=strcmp(fixatedObjects.House(:),cellstr('NH')) | strcmp(fixatedObjects.House(:),cellstr('sky'));
-        housesTable = fixatedObjects;
+        nohouse=strcmp(gazedObjects.House(:),cellstr('NH')) | strcmp(gazedObjects.House(:),cellstr('sky'));
+        housesTable = gazedObjects;
         housesTable(nohouse,:)=[];
         
         % create nodetable
@@ -136,14 +137,17 @@ for ii = 1:Number
   %% create graph
         
         
-        graphy = graph(EdgeTable,NodeTable);
+        graphyNoData = graph(EdgeTable,NodeTable);
         
+        
+        
+%% remove node noData from graph
+
+    
+        graphy = rmnode(graphyNoData, 'noData');
+        
+%% save graph
         save([savepath num2str(currentPart) '_Graph.mat'],'graphy');
-        
-
-
-        
-
         
     else
         disp('something went really wrong with participant list');
