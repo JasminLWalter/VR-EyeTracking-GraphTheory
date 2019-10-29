@@ -12,18 +12,24 @@
 % process
 clear all;
 % adjust savepath, current folder and participant list!
-savepath = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\condenseViewedHouses\';
+savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\condenseViewedHouses\';
 
-cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data2019Feb\ViewedHouses\'
+cd 'E:\SeahavenResults\ViewedHouses\'
 
-PartList = {1882,1809,5699,1003,3961,6525,2907,5324,3430,4302,7561,6348,4060,6503,7535,1944,8457,3854,2637,7018,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,5625,1181,9430,2151,3251,6468,8665,4502,5823,2653,7666,8466,3093,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,1529,9364,5583};
+
+% Participant list of all participants that participated at least 3
+% sessions in the experiment in Seahaven - 90min (no belt participants)
+PartList = {1909 3668 8466 3430 6348 2151 4502 7670 8258 3377 1529 9364 6387 2179 4470 6971 5507 8834 5978 1002 7399 9202 8551 1540 8041 3693 5696 3299 1582 6430 9176 5602 2011 2098 3856 7942 6594 4510 3949 9748 3686 6543 7205 5582 9437 1155 8547 8261 3023 7021 5239 8936 9961 9017 1089 2044 8195 4272 5346 8072 6398 3743 5253 9475 8954 8699 3593 9848};
+
+
 
 Number = length(PartList);
 noFilePartList = [Number];
 countMissingPart = 0;
 missingData = array2table([]);
 
-overviewAnalysis = array2table(zeros(Number,2),'VariableNames',{'Participant','removed_Rows'});
+overviewAnalysis = array2table(zeros(Number,4));
+overviewAnalysis.Properties.VariableNames = {'Participant','noData_Rows','total_Rows','percentage'};
 
 
 for ii = 1:Number
@@ -68,18 +74,19 @@ for ii = 1:Number
         
         noD = strcmp(houses(:),'NH') & eq(distances(:),0);
             
-%         % store the removed rows
-%         removedRows= data(noD,:);
         
         %rename rows
          data.House(noD)= cellstr('noData');
+         
+        % calculate amount of noData rows
+        NRnoDataRows = sum(noD);
         
 %% create the condensed viewed houses list  
-        % create AllSeen Table
+        % create AllData Table
         NumArray = array2table(zeros(height(data),3));
         SeenHouses = cell(height(data),1);
-        AllSeen= [SeenHouses NumArray];
-        AllSeen.Properties.VariableNames = {'House','Time','Looks','Distances'};
+        AllData= [SeenHouses NumArray];
+        AllData.Properties.VariableNames = {'House','Time','Samples','Distances'};
 
         % additional variables
         previous = {'empty'};
@@ -95,11 +102,11 @@ for ii = 1:Number
             % check if same or another house was seen
             % if the same house was seen
             if strcmp(data.House{e},previous)
-                if strcmp(AllSeen.House{index}, previous)
+                if strcmp(AllData.House{index}, previous)
                 % update values
-                AllSeen.Time(index)= AllSeen.Time(index)+time;
-                AllSeen.Looks(index)= AllSeen.Looks(index) +1;
-                AllSeen.Distances(index) = AllSeen.Distances(index) + data.Distance(e);
+                AllData.Time(index)= AllData.Time(index)+time;
+                AllData.Samples(index)= AllData.Samples(index) +1;
+                AllData.Distances(index) = AllData.Distances(index) + data.Distance(e);
                 else
                     disp('sth went wrong with the indexessssss');
                 end
@@ -109,11 +116,11 @@ for ii = 1:Number
                 % adjust index
                 index = index +1;
                 
-                % fill AllSeen table
-                AllSeen.House(index)= data.House(e);
-                AllSeen.Time(index)= AllSeen.Time(index) + time;
-                AllSeen.Looks(index)= AllSeen.Looks(index) +1;
-                AllSeen.Distances(index) = AllSeen.Distances(index)+ data.Distance(e);
+                % fill AllData table
+                AllData.House(index)= data.House(e);
+                AllData.Time(index)= AllData.Time(index) + time;
+                AllData.Samples(index)= AllData.Samples(index) +1;
+                AllData.Distances(index) = AllData.Distances(index)+ data.Distance(e);
                 
                 % update previous element
                 previous = data.House{e};
@@ -124,27 +131,27 @@ for ii = 1:Number
         end
         
         % adjust distances (so far they are only sums, now average them)
-        AllSeen.Distances= AllSeen.Distances ./ AllSeen.Looks;
+        AllData.Distances= AllData.Distances ./ AllData.Samples;
         
-            % remove all empty lines of AllSeen
-            uncutAllSeen = AllSeen;
-            AllSeen = head(AllSeen, index);
+            % remove all empty lines of AllData
+            uncutAllData = AllData;
+            AllData = head(AllData, index);
             
             
             
             % save condensed viewed houses
             
-            save([savepath num2str(currentPart) '_condensedViewedHouses.mat'],'AllSeen');
+            save([savepath num2str(currentPart) '_condensedViewedHouses.mat'],'AllData');
             
-%             % update overview
-%             
-%             overviewAnalysis.Participant(ii)= currentPart;
-%             overviewAnalysis.removed_Rows(ii)= height(removedRows);
-%             overviewAnalysis.total_Rows(ii)= totalRows;
-%             
-%             percent = (height(removedRows)*100)/totalRows;
-%             
-%             overviewAnalysis.percentage(ii) = percent;
+            % update overview
+            
+            overviewAnalysis.Participant(ii)= currentPart;
+            overviewAnalysis.noData_Rows(ii)= NRnoDataRows;
+            overviewAnalysis.total_Rows(ii)= totalRows;
+            
+            percent = (NRnoDataRows*100)/totalRows;
+            
+            overviewAnalysis.percentage(ii) = percent;
 
            
                 
