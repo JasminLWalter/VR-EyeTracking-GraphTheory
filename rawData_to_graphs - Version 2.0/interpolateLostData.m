@@ -9,23 +9,20 @@
 
 clear all;
 
-savepath = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\interpolatedData\';
+savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\interpolateLostData\';
 
-cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\condenseViewedHouses\'
+cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\condenseViewedHouses\'
 
-% participant list including all participants
-%PartList = {1882,1809,5699,1003,3961,6525,2907,5324,3430,4302,7561,6348,4060,6503,7535,1944,8457,3854,2637,7018,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,5625,1181,9430,2151,3251,6468,8665,4502,5823,2653,7666,8466,3093,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,1529,9364,5583};
 
-% participant list only with participants who have lost less than 30% of
-% their data
-PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
-
+% participant list of 90 min VR - only with participants who have lost less than 30% of
+% their data (after running script cleanParticipants_V2)
+PartList = {1909 3668 8466 2151 4502 7670 8258 3377 9364 6387 2179 4470 6971 5507 8834 5978 7399 9202 8551 1540 8041 3693 5696 3299 1582 6430 9176 5602 3856 7942 6594 4510 3949 3686 6543 7205 5582 9437 1155 8547 8261 3023 7021 9961 9017 2044 8195 4272 5346 8072 6398 3743 5253 9475 8954 8699 3593};
 
 Number = length(PartList);
 noFilePartList = [];
 countMissingPart = 0;
 
-checkCleaning = [];
+checkInterpolation = [];
 
 
 for ii = 1:Number
@@ -43,28 +40,28 @@ for ii = 1:Number
     elseif exist(file)==2
         
         % load data
-        AllSeen = load(file);
-        AllSeen = AllSeen.AllSeen;
-        rawSave = AllSeen;
+        AllData = load(file);
+        AllData = AllData.AllData;
+        rawSave = AllData;
         
-        cleanAllSeen = AllSeen;
+        interpolatedData = AllData;
       
         
-        firstSum = sum(AllSeen.Looks);
-        firstSumCHeck = sum(cleanAllSeen.Looks);
-        removeRows = false(height(AllSeen),1);
-        testi = zeros(height(AllSeen),1);
+        firstSum = sum(AllData.Samples);
+        firstSumCHeck = sum(interpolatedData.Samples);
+        removeRows = false(height(AllData),1);
+        testi = zeros(height(AllData),1);
         problem = 0;
         rowTest = 0;
         exceptions = 0;
 
         % go through all rows
-        for index = 1:height(AllSeen)
+        for index = 1:height(AllData)
 
             % if the row is a noData row
-            if strcmp(AllSeen{index,1},'noData')
+            if strcmp(AllData{index,1},'noData')
   
-                cNrSample = AllSeen{index,3};
+                cNrSample = AllData{index,3};
             % number of missing samples if small enough, they get
             % interpolated
             
@@ -77,19 +74,19 @@ for ii = 1:Number
                 if index ==1
                     exceptions = exceptions +1;
                     
-                elseif index == height(AllSeen)
+                elseif index == height(AllData)
                     exceptions = exceptions +1;
                     
               
                 %% differentiating if seen houses before and after missing
                 % samples are identical
-                elseif strcmp(AllSeen{index-1,1},AllSeen{index+1,1})
+                elseif strcmp(AllData{index-1,1},AllData{index+1,1})
                     
                     % and if the line before was not already marked for removal
                     if (removeRows(index-1) == false)
                         % combine all samples falling on the same house into
                         % one row
-                        cleanAllSeen{index-1,3} = AllSeen{index-1,3}+ cNrSample + AllSeen{index+1,3};
+                        interpolatedData{index-1,3} = AllData{index-1,3}+ cNrSample + AllData{index+1,3};
                         
                     elseif (removeRows(index-1) == true)
                         % if row before was already marked for removal
@@ -106,7 +103,7 @@ for ii = 1:Number
                             end
 
                         end
-                        cleanAllSeen{rowTest,3} = cleanAllSeen{rowTest,3}+ cNrSample + AllSeen{index+1,3};
+                        interpolatedData{rowTest,3} = interpolatedData{rowTest,3}+ cNrSample + AllData{index+1,3};
 
                     else
                         problem = problem +1;
@@ -121,15 +118,15 @@ for ii = 1:Number
                 %% if houses are different 
                 else
 
-                    % divide the missing data onto both houses
-                    
+%                     divide the missing data onto both houses
+%                     
 %                     switch cNrSample
 %                         case 1
-%                             cleanAllSeen{index-1,3} = cleanAllSeen{index-1,3}+ cNrSample;
+%                             interpolatedData{index-1,3} = interpolatedData{index-1,3}+ cNrSample;
 %                         
 %                         case 2
-%                             cleanAllSeen{index-1,3} = AllSeen{index-1,3}+ (cNrSample/2);
-%                             cleanAllSeen{index+1,3} = AllSeen{index+1,3}+ (cNrSample/2);
+%                             interpolatedData{index-1,3} = AllData{index-1,3}+ (cNrSample/2);
+%                             interpolatedData{index+1,3} = AllData{index+1,3}+ (cNrSample/2);
 %                     end
 % %                     
 % %                     removeRows(index,1) = 1;
@@ -143,18 +140,18 @@ for ii = 1:Number
             
         end
         
-        %% remove all marked rows from All Seen and save them into
-        % cleanAllSeen
+        %% remove all marked rows from interpolatedData and save them into
+        % interpolatedViewedHouses
         
 
-        cleanAllSeen(removeRows,:) = [];
+        interpolatedData(removeRows,:) = [];
         
-        save([savepath num2str(currentPart) '_cleanViewedHouses.mat'],'cleanAllSeen');
+        save([savepath num2str(currentPart) '_interpolatedViewedHouses.mat'],'interpolatedData');
            
         % doublecheck cleaning: 
          
-        secondSum = sum(cleanAllSeen{:,3});
-        checkCleaning = [checkCleaning; currentPart, firstSum, secondSum ];
+        secondSum = sum(interpolatedData{:,3});
+        checkInterpolation = [checkInterpolation; currentPart, firstSum, secondSum ];
         
         
         
@@ -164,7 +161,7 @@ for ii = 1:Number
 
 end
 
-checkCleaning = [checkCleaning; 0, sum(checkCleaning(:,2)), sum(checkCleaning(:,3))];
+checkInterpolation = [checkInterpolation; 0, sum(checkInterpolation(:,2)), sum(checkInterpolation(:,3))];
 
 disp(strcat(num2str(Number), ' Participants analysed'));
 disp(strcat(num2str(countMissingPart),' files were missing'));
