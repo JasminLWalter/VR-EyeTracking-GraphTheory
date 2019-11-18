@@ -1,4 +1,4 @@
-%%---------------------create_gazesCSV--------------------------------------
+%%---------------------create_noisyCSV--------------------------------------
 % script written by Jasmin Walter
 
 % uses gazes_vs_noise files to create csv files for all gazes
@@ -6,7 +6,7 @@
 
 clear all;
 
-savepath = 'E:\SeahavenEyeTrackingData\csv_preprocessedData\';
+savepath = 'E:\SeahavenEyeTrackingData\csv_preprocessedData\(excluded)noisy_data\';
 
 cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\gazes_vs_noise\'
 
@@ -25,7 +25,7 @@ countAnalysedPart= 0;
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
     
-    file = strcat('gazes_data_',num2str(currentPart),'.mat');
+    file = strcat('noisy_data_',num2str(currentPart),'.mat');
  
     % check for missing files
     if exist(file)==0
@@ -38,15 +38,15 @@ for ii = 1:Number
         countAnalysedPart = countAnalysedPart +1;
 
         % load data
-        gazedObjects = load(file);
-        gazedObjects = gazedObjects.gazedObjects;
+        noisyObjects = load(file);
+        noisyObjects = noisyObjects.noisyObjects;
         
 %         % remove noData rows
 %         noData = strcmp(gazedObjects.House,'noData');
 %         gazes = gazedObjects;
 %         gazes(noData,:) = [];
         
-        writetable(gazedObjects,strcat(savepath,'gazes_',num2str(currentPart),'.csv'));
+        writetable(noisyObjects,strcat(savepath,'noise_',num2str(currentPart),'.csv'));
         
     else
         disp('something went really wrong with participant list');
