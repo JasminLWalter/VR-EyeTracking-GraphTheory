@@ -8,12 +8,15 @@
 
 clear all;
 
-savepath = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\analyzingViewingDurations\';
+savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\analysis_viewingDurations\';
 
-cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\interpolatedData\'
+cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\interpolateLostData\'
 
 % old PartList = {7535,5324,2907,4302,7561,6348,4060,6503,1944,8457,3854,2637,7018,8580,1961,6844,8804,7350,3116,7666,8466,3093,9327,3668,1909,1171,9471,5625,2151,4502,2653,7670,7953,1882,1809,5699,1003,3961,6525,3430,1119,5287,3983,7395,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,1181,9430,3251,6468,8665,5823,8222,2006,8258};
-PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
+%PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
+
+% 20 participants with 90 min VR trainging less than 30% data loss
+PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
 
 Number = length(PartList);
 noFilePartList = [Number];
@@ -28,8 +31,8 @@ allHouses= [];
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
     
-    file = strcat(num2str(currentPart),'_cleanViewedHouses.mat');
- 
+    file = strcat(num2str(currentPart),'_interpolatedViewedHouses.mat');
+    
     % check for missing files
     if exist(file)==0
         countMissingPart = countMissingPart+1;
@@ -39,20 +42,20 @@ for ii = 1:Number
     %% main code   
     elseif exist(file)==2
         % load data
-        cleanAllSeen = load(file);
-        cleanAllSeen = cleanAllSeen.cleanAllSeen;
+        interpolatedData = load(file);
+        interpolatedData = interpolatedData.interpolatedData;
         
         % remove all sky and NH elements
-        houses = strcmp(cleanAllSeen.House(:),'sky') | strcmp(cleanAllSeen.House(:),'NH');             
+        houses = strcmp(interpolatedData.House(:),'sky') | strcmp(interpolatedData.House(:),'NH');             
        
-        housesTable=cleanAllSeen;
+        housesTable=interpolatedData;
         housesTable(houses,:)=[];
               
         
         % add samples durations and houses to lists
         
         %allDurations=[allDurations;array2table(housesTable.Time)];
-        allSamples=[allSamples;housesTable.Looks];
+        allSamples=[allSamples;housesTable.Samples];
         allHouses= [allHouses;length(housesTable.House)];  
         
         %% plot histogram
@@ -61,7 +64,7 @@ for ii = 1:Number
         
         figure(1)
         
-        hist1 = histogram(housesTable.Looks,'BinWidth',binsize,'DisplayStyle','stairs');
+        hist1 = histogram(housesTable.Samples,'BinWidth',binsize,'DisplayStyle','stairs');
         title('All Durations over Participants');
         %line([250,250],[0,100],'Color','red');
 
@@ -74,7 +77,7 @@ for ii = 1:Number
         
           
         figure(2)  
-        hist2 = histogram(housesTable.Looks,'BinWidth',binsize,'DisplayStyle','stairs');
+        hist2 = histogram(housesTable.Samples,'BinWidth',binsize,'DisplayStyle','stairs');
         title('All Durations over Participants - zoomed in (1 sec)');
         ax= gca;
         xlim([0 30]);
@@ -89,7 +92,7 @@ for ii = 1:Number
         combineDursT.Time(big30)= 31;
           
           figure(3);
-          hist3= histogram(combineDursT.Looks, 'BinWidth',binsize,'DisplayStyle','stairs');
+          hist3= histogram(combineDursT.Samples, 'BinWidth',binsize,'DisplayStyle','stairs');
           title('All Durations over Participants -in bins 0-1s and <1s');
           %line([250,250],[0,9000],'Color','red');          
           hold on

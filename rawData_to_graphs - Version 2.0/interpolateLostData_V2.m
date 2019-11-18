@@ -11,12 +11,16 @@ clear all;
 
 savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\interpolateLostData\';
 
-cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\condenseViewedHouses\'
+cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\combined3Sessions\'
 
 
 % participant list of 90 min VR - only with participants who have lost less than 30% of
 % their data (after running script cleanParticipants_V2)
-PartList = {1909 3668 8466 2151 4502 7670 8258 3377 9364 6387 2179 4470 6971 5507 8834 5978 7399 9202 8551 1540 8041 3693 5696 3299 1582 6430 9176 5602 3856 7942 6594 4510 3949 3686 6543 7205 5582 9437 1155 8547 8261 3023 7021 9961 9017 2044 8195 4272 5346 8072 6398 3743 5253 9475 8954 8699 3593};
+%PartList = {1909 3668 8466 2151 4502 7670 8258 3377 9364 6387 2179 4470 6971 5507 8834 5978 7399 9202 8551 1540 8041 3693 5696 3299 1582 6430 9176 5602 3856 7942 6594 4510 3949 3686 6543 7205 5582 9437 1155 8547 8261 3023 7021 9961 9017 2044 8195 4272 5346 8072 6398 3743 5253 9475 8954 8699 3593};
+
+% 20 participants with 90 min VR trainging less than 30% data loss
+PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
+
 
 Number = length(PartList);
 noFilePartList = [];
@@ -28,7 +32,7 @@ checkInterpolation = [];
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
     
-    file = strcat(num2str(currentPart),'_condensedViewedHouses.mat');
+    file = strcat('condensedViewedHouses3_Part',num2str(currentPart),'.mat');
  
     % check for missing files
     if exist(file)==0
@@ -41,7 +45,7 @@ for ii = 1:Number
         
         % load data
         AllData = load(file);
-        AllData = AllData.AllData;
+        AllData = AllData.viewedHouses3;
         rawSave = AllData;
         
         interpolatedData = AllData;
@@ -87,6 +91,7 @@ for ii = 1:Number
                         % combine all samples falling on the same house into
                         % one row
                         interpolatedData{index-1,3} = AllData{index-1,3}+ cNrSample + AllData{index+1,3};
+                        interpolatedData{index-1,2} = AllData{index-1,2}+ AllData{index,2} + AllData{index+1,2};
                         
                     elseif (removeRows(index-1) == true)
                         % if row before was already marked for removal
@@ -104,6 +109,7 @@ for ii = 1:Number
 
                         end
                         interpolatedData{rowTest,3} = interpolatedData{rowTest,3}+ cNrSample + AllData{index+1,3};
+                        interpolatedData{rowTest,2} = interpolatedData{rowTest,2}+ AllData{index,2} + AllData{index+1,2};
 
                     else
                         problem = problem +1;
@@ -115,21 +121,10 @@ for ii = 1:Number
                     removeRows(index) = 1; 
                     removeRows(index+1) = 1;
 
-                %% if houses are different 
-                else
+                %% if houses are different - do nothing
+                
+                
 
-%                     divide the missing data onto both houses
-%                     
-%                     switch cNrSample
-%                         case 1
-%                             interpolatedData{index-1,3} = interpolatedData{index-1,3}+ cNrSample;
-%                         
-%                         case 2
-%                             interpolatedData{index-1,3} = AllData{index-1,3}+ (cNrSample/2);
-%                             interpolatedData{index+1,3} = AllData{index+1,3}+ (cNrSample/2);
-%                     end
-% %                     
-% %                     removeRows(index,1) = 1;
                     
                 end   
 

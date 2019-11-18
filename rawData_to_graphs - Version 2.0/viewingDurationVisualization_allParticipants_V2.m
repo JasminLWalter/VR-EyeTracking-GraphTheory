@@ -10,12 +10,16 @@
 
 clear all;
 
-savepath = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\analyzingViewingDurations\';
+savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\analysis_viewingDurations\';
 
-cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\interpolatedData\'
+cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\interpolateLostData\'
 
 % old PartList = {7535,5324,2907,4302,7561,6348,4060,6503,1944,8457,3854,2637,7018,8580,1961,6844,8804,7350,3116,7666,8466,3093,9327,3668,1909,1171,9471,5625,2151,4502,2653,7670,7953,1882,1809,5699,1003,3961,6525,3430,1119,5287,3983,7395,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,1181,9430,3251,6468,8665,5823,8222,2006,8258};
-PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
+%PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
+
+% 20 participants with 90 min VR trainging less than 30% data loss
+PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
+
 
 Number = length(PartList);
 noFilePartList = [Number];
@@ -34,7 +38,7 @@ overviewAll = table;
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
     
-    file = strcat(num2str(currentPart),'_cleanViewedHouses.mat');
+    file = strcat(num2str(currentPart),'_interpolatedViewedHouses.mat');
  
     % check for missing files
     if exist(file)==0
@@ -45,32 +49,32 @@ for ii = 1:Number
     %% main code   
     elseif exist(file)==2
         % load data
-        cleanAllSeen = load(file);
-        cleanAllSeen = cleanAllSeen.cleanAllSeen; 
+        interpolatedData = load(file);
+        interpolatedData = interpolatedData.interpolatedData; 
         
-        noData = strcmp(cleanAllSeen.House(:),'noData');
-        cleanAllSeen(noData,:) = [];
+        noData = strcmp(interpolatedData.House(:),'noData');
+        interpolatedData(noData,:) = [];
         
         
         % remove all sky and NH elements
-        nothouses = strcmp(cleanAllSeen.House(:),'sky') | strcmp(cleanAllSeen.House(:),'NH');             
+        nothouses = strcmp(interpolatedData.House(:),'sky') | strcmp(interpolatedData.House(:),'NH');             
        
-        housesTable=cleanAllSeen;
+        housesTable=interpolatedData;
         housesTable(nothouses,:)=[];
         
-        otherObjectsTable = cleanAllSeen(nothouses,:);
+        otherObjectsTable = interpolatedData(nothouses,:);
         
         % add samples durations and houses to lists
         
         %allDurations=[allDurations;array2table(housesTable.Time)];
-        allSamples=[allSamples;housesTable.Looks];
+        allSamples=[allSamples;housesTable.Samples];
         allHouses= [allHouses;length(housesTable.House)];  
         
 %% add data of participant to overviews:
 
         overviewAllHouses = [overviewAllHouses;housesTable];
         overviewAllOther = [overviewAllOther;otherObjectsTable];
-        overviewAll = [overviewAll;cleanAllSeen];
+        overviewAll = [overviewAll;interpolatedData];
 
 
         
@@ -90,7 +94,7 @@ binsize = 1;
 
 figure(5)
 
-hist5= histogram(overviewAll.Looks,'Normalization','probability','BinWidth',binsize);
+hist5= histogram(overviewAll.Samples,'Normalization','probability','BinWidth',binsize);
 title('all viewing durations of all Participants (all objects)');
           %line([250,250],[0,9000],'Color','red');
 ylim([0 0.25]);
@@ -108,11 +112,11 @@ saveas(gcf,strcat(savepath,'all viewing durations of all Participants (all objec
 % combine those durations bigger than
 
 %big1000= allSamples > 1000;
-big30_6= overviewAll.Looks > 30;
+big30_6= overviewAll.Samples > 30;
 
-combAllDurs6 = overviewAll.Looks;
+combAllDurs6 = overviewAll.Samples;
 combAllDurs6(big30_6) = 31;
-totalAmount6 = length(overviewAllHouses.Looks);
+totalAmount6 = length(overviewAllHouses.Samples);
 
 figure(6)
 
@@ -134,7 +138,7 @@ saveas(gcf,strcat(savepath,'all viewing durations of all Participants (all objec
 % viewing durations on house objects
 figure(1)
 
-hist1= histogram(overviewAllHouses.Looks,'Normalization','probability','BinWidth',binsize);
+hist1= histogram(overviewAllHouses.Samples,'Normalization','probability','BinWidth',binsize);
 title('all viewing durations on houses of all Participants');
 ylim([0 0.25]);
 yt = get(gca, 'YTick');                    
@@ -149,11 +153,11 @@ saveas(gcf,strcat(savepath,'all viewing durations on houses of all Participants.
 % combine those durations bigger than 1 sec to one bin - > 30 samples
 
 %big1000= allSamples > 1000;
-big30= overviewAllHouses.Looks > 30;
+big30= overviewAllHouses.Samples > 30;
 
-combAllDurs = overviewAllHouses.Looks;
+combAllDurs = overviewAllHouses.Samples;
 combAllDurs(big30) = 31;
-totalAmount = length(overviewAllHouses.Looks);
+totalAmount = length(overviewAllHouses.Samples);
 
 figure(2)
 
@@ -175,7 +179,7 @@ saveas(gcf,strcat(savepath,'all viewing durations on houses of all Participants 
 
 figure(3)
 
-hist3= histogram(overviewAllOther.Looks,'Normalization','probability','BinWidth',binsize);
+hist3= histogram(overviewAllOther.Samples,'Normalization','probability','BinWidth',binsize);
 title('all viewing durations on sky and NH of all Participants');
 ylim([0 0.25]);
 yt = get(gca, 'YTick');                    
@@ -192,11 +196,11 @@ saveas(gcf,strcat(savepath,'all viewing durations on sky and NH of all Participa
 % combine those durations bigger than
 
 %big1000= allSamples > 1000;
-big30_4= overviewAllOther.Looks > 30;
+big30_4= overviewAllOther.Samples > 30;
 
-combAllDurs4 = overviewAllOther.Looks;
+combAllDurs4 = overviewAllOther.Samples;
 combAllDurs4(big30_4) = 31;
-totalAmount4 = length(overviewAllHouses.Looks);
+totalAmount4 = length(overviewAllHouses.Samples);
 
 figure(4)
 
@@ -219,9 +223,9 @@ saveas(gcf,strcat(savepath,'all viewing durations on sky and NH of all Participa
 
 %% separate samples like script will later do (samples 8 and more)
 
-more7houses = overviewAllHouses.Looks >7;
+more7houses = overviewAllHouses.Samples >7;
 
-housesTableSep7 = overviewAllHouses.Looks;
+housesTableSep7 = overviewAllHouses.Samples;
 housesTableSep7(more7houses) = 8;
 housesTableSep7(not(more7houses)) = 7;
 cHousesSep7 = categorical(housesTableSep7,[7 8],{'up to 7 samples' 'more than 7 samples'});
@@ -246,9 +250,9 @@ saveas(gcf,strcat(savepath,'distribution fixations on houses.jpg'),'jpg');
                   
 % now with nh and sky
 
-more7other = overviewAllOther.Looks >7;
+more7other = overviewAllOther.Samples >7;
 
-otherTableSep7 = overviewAllOther.Looks;
+otherTableSep7 = overviewAllOther.Samples;
 otherTableSep7(more7other) = 8;
 otherTableSep7(not(more7other)) = 7;
 cOtherSep7 = categorical(otherTableSep7,[7 8],{'up to 7 samples' 'more than 7 samples'});
@@ -271,9 +275,9 @@ ax.YLabel.FontSize = 12;
 saveas(gcf,strcat(savepath,'distribution fixations on sky and NH objects.jpg'),'jpg');
 
 % now with all objects
-more7all = overviewAll.Looks >7;
+more7all = overviewAll.Samples >7;
 
-allTableSep7 = overviewAll.Looks;
+allTableSep7 = overviewAll.Samples;
 allTableSep7(more7all) = 8;
 allTableSep7(not(more7all)) = 7;
 cAllSep7 = categorical(allTableSep7,[7 8],{'up to 7 samples' 'more than 7 samples'});
