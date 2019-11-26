@@ -9,13 +9,13 @@
 clear all;
 
 
-savepath= 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\graphs\';
+savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\duringProcessOfCleaning\graphs\';
 
 
-cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Version2.0\gazes_vs_noise\'
+cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\duringProcessOfCleaning\gazes_vs_noise\'
 
-% old list PartList = {1882,1809,5699,1003,3961,6525,2907,5324,3430,4302,7561,6348,4060,6503,7535,1944,8457,3854,2637,7018,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,5625,1181,9430,2151,3251,6468,8665,4502,5823,2653,7666,8466,3093,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,1529,9364,5583};
-PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
+% 20 participants with 90 min VR trainging less than 30% data loss
+PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
 
 
 Number = length(PartList);
@@ -28,7 +28,7 @@ for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
     
     
-    file = strcat('gazes_',num2str(currentPart),'.mat');
+    file = strcat('gazes_data_',num2str(currentPart),'.mat');
  
     % check for missing files
     if exist(file)==0
