@@ -1,9 +1,7 @@
 %----------------------- descriptiveInformation_visualisation-------------
 % written by Jasmin Walter
 
-% visualizes the summaryFixations.mat created with descriptiveInformation_Analysis.m
-
-
+% visualizes the distribution of houses with the maximum gazes count of every participant
 
 clear all;
 
