@@ -1,4 +1,4 @@
-%% --------------------------avg_nodeDegree_development-------------------
+%% --------------------------avg_nodeDegree_development_edge_strength-------------------
 
 % script written by Jasmin Walter
 

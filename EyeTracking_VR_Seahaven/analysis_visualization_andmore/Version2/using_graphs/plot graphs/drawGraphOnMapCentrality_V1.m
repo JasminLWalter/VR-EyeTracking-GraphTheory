@@ -7,13 +7,19 @@
 
 clear all;
 
-savepath = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\MapVisualizations\';
+%-----------adjustable variables---------
 
-cd 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\graphs\'
+savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree\visualization_graph,map\';
+
+cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\duringProcessOfCleaning\graphs\'
+
+% 20 participants with 90 min VR trainging less than 30% data loss
+PartList = {35};%21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
 
 
-%PartList = {1882,1809,5699,1003,3961,6525,2907,5324,3430,4302,7561,6348,4060,6503,7535,1944,8457,3854,2637,7018,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,5625,1181,9430,2151,3251,6468,8665,4502,5823,2653,7666,8466,3093,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,1529,9364,5583};
-PartList = {9471};
+nodecolor = parula;
+
+%------------------------------------
 
 Number = length(PartList);
 noFilePartList = [];
@@ -22,19 +28,19 @@ countMissingPart = 0;
 
 % load map
 
-map = imread ('E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Map, CoordinateList\Map_Houses_green_edges_New.jpg');
+map = imread ('C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\Map_Houses_SW2.png');
 
 % load house list with coordinates
 
-listname = 'E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\Map, CoordinateList\CoordinateListNew.txt';
+listname = 'C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\CoordinateListNew.txt';
 coordinateList = readtable(listname,'delimiter',{':',';'},'Format','%s%f%f','ReadVariableNames',false);
 coordinateList.Properties.VariableNames = {'House','X','Y'};
 
 
 
-% load node degree centrality overview
-overviewDegree= load('E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\graphs\analysis\Overview_NodeDegree.mat');
-overviewDegree = overviewDegree.overviewNodeDegree;
+% % load node degree centrality overview
+% overviewDegree= load('E:\Data_SeaHaven_Backup_sortiert\Jasmin Eyetracking data\Data_after_Script\graphs\analysis\Overview_NodeDegree.mat');
+% overviewDegree = overviewDegree.overviewNodeDegree;
 
 
 
@@ -63,6 +69,7 @@ for ii = 1:Number
         % display map
         figure(1)
         imshow(map);
+        alpha(0.1)
         hold on;
         
         % mark node houses
@@ -71,22 +78,27 @@ for ii = 1:Number
         y = coordinateList{node,3};
 
         
+         markerND = centrality(graphy,'degree')';
+         plotty = scatter(x,y,60,markerND,'filled');
+         colormap(nodecolor);
+         colorbar
+        
         % markerC defines color vector for colormap
         %NOTE do not forget to transpose vector such that it is oriented
         %horizontally
+%         
+%         varname = strcat('Part_',num2str(currentPart));
+%         markerC = overviewDegree{:,varname}';
+%         
+%         % remove zeros
+%         zeroos = markerC == 0;
+%         markerC(zeroos) = [];
+%         
+%         plotty = scatter(x,y,60,markerC,'filled');
+%         colormap jet
+%         colorbar
         
-        varname = strcat('Part_',num2str(currentPart));
-        markerC = overviewDegree{:,varname}';
-        
-        % remove zeros
-        zeroos = markerC == 0;
-        markerC(zeroos) = [];
-        
-        plotty = scatter(x,y,60,markerC,'filled');
-        colormap jet
-        colorbar
-        
-        title(strcat('Graph with colorcoded degree centrality values projected on Map: Participant- ',num2str(currentPart)));
+        title(strcat('Graph & degree centrality values - projection on Map - participant: ',num2str(currentPart)));
     
         % add edges into map-----------------------------------------------
         
@@ -101,12 +113,12 @@ for ii = 1:Number
             x2 = coordinateList{Yindex,2};
             y2 = coordinateList{Yindex,3};
             
-            line([x1,x2],[y1,y2],'Color','red');             
+            line([x1,x2],[y1,y2],'Color','k','LineWidth',0.05,'LineStyle',':');             
             
         end
  %---------comment code until here to only show nodes without edges--------
         
-      saveas(gcf,strcat(savepath,'Graph_with_colorcoded_degree_centrality_values_projected_on_Map_Participant_',num2str(currentPart),'.png'),'png');
+      saveas(gcf,strcat(savepath,'Graph_node_degree_map_participant_',num2str(currentPart),'.png'),'png');
   
     
     else

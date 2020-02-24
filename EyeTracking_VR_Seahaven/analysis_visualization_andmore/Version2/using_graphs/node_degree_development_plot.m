@@ -8,10 +8,10 @@ clear all;
 savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree_development\Plots\';
 
 
-cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree_development\individual\'
+cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree_development\edge_strength\'
 
 % 20 participants with 90 min VR trainging less than 30% data loss
-PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
+PartList = {21 22 23 24};% 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
 
 
 Number = length(PartList);
@@ -58,24 +58,27 @@ for ii = 1:Number
         above2 = meanRow + stdRow*2;
         below2 = meanRow - stdRow*2;
 
-        figure(1)
-        plotty1 = plot(meanRow);
 
-
-        % for index = 1:height(degreeDevelopment)
-        %    
-        %    figure(2)
-        %    plotty = plot(degreeDevelopment{index,2:end});
-        %    hold on; 
-        %     
-        % end
-        % 
-        % plotty1 = plot(meanRow,'r','LineWidth',2);
-        % plotty2 = plot(above,'b','LineWidth',2);
-        % plotty3 = plot(below,'b','LineWidth',2);
-        % 
-        % plotty4 = plot(above2,'g','LineWidth',2);
-        % %plotty5 = plot(below2,'g','LineWidth',2);
+        for index = 1:height(degreeDevelopment)
+           
+           figure(1)
+           plotty = plot(degreeDevelopment{index,2:end});
+           hold on; 
+            
+        end
+        
+        plotty1 = plot(meanRow,'r','LineWidth',2);
+        plotty2 = plot(above,'b','LineWidth',2);
+        plotty3 = plot(below,'b','LineWidth',2);
+        
+        plotty4 = plot(above2,'g','LineWidth',2);
+        %plotty5 = plot(below2,'g','LineWidth',2);
+        xlabel('time')
+        ylabel('node degree')
+        title(strcat('Participant: ',num2str(currentPart), ' degree development all houses'))
+        % saveas(gcf,strcat(savepath, num2str(currentPart) ,'_degreeDevelopment_plot_all.png'),'png');
+       
+        hold off
 
         border = above2(end);
         outlier = degreeDevelopment;
@@ -84,23 +87,32 @@ for ii = 1:Number
         outlier(biggerBorder,:) = [];
 
         for index = 1:height(outlier)
-            figure(4)
-            plotty30 = plot(outlier{index,2:end},'--','LineWidth',1);
+            figure(2)
+            plotty30 = plot(outlier{index,2:end},'LineWidth',1,'DisplayName',char(degreeDevelopment{index,1}));
             hold on
 
         end
 
 
 
-        plotty1 = plot(meanRow,'r','LineWidth',2);
-        plotty2 = plot(above,'b','LineWidth',2);
-        plotty3 = plot(below,'b','LineWidth',2);
+        plotty1 = plot(meanRow,'r','LineWidth',2,'DisplayName', 'mean');
+        plotty2 = plot(above,'b','LineWidth',2,'DisplayName', 'standard deviation');
+        plotty3 = plot(below,'g','LineWidth',2,'DisplayName', '2x standard deviation');
 
-        plotty4 = plot(above2,'g','LineWidth',2);
+
+        xlabel('time')
+        ylabel('node degree')
+        title(strcat('Participant: ',num2str(currentPart), '  degree development outlier houses'))
+        legend
+       % saveas(gcf,strcat(savepath, num2str(currentPart) ,'_degreeDevelopment_plot_outlier.png'),'png');
+       
 
 %        save degreeDevelopment Overview
-         %save([savepath num2str(currentPart) '_degreeDevelopment.mat'],'degreeDevelopment');
-      % saveas(gcf,strcat(savepath,'Time.png'),'png');
+        % save([savepath num2str(currentPart) '_degreeDevelopment.mat'],'degreeDevelopment');
+       %saveas(gcf,strcat(savepath, num2str(currentPart) ,'_degreeDevelopment_plot.png'),'png');
+       
+       hold off
+      
     else
         disp('something went really wrong with participant list');
     end
