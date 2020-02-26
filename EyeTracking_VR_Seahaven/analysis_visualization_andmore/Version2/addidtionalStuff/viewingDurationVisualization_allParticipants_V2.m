@@ -10,9 +10,9 @@
 
 clear all;
 
-savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\analysis_viewingDurations\';
+savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\duringProcessOfCleaning\analysis_viewingDurations\';
 
-cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\interpolateLostData\'
+cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\duringProcessOfCleaning\interpolateLostData\'
 
 % old PartList = {7535,5324,2907,4302,7561,6348,4060,6503,1944,8457,3854,2637,7018,8580,1961,6844,8804,7350,3116,7666,8466,3093,9327,3668,1909,1171,9471,5625,2151,4502,2653,7670,7953,1882,1809,5699,1003,3961,6525,3430,1119,5287,3983,7395,1359,8556,9057,4376,8864,8517,9434,2051,4444,5311,1181,9430,3251,6468,8665,5823,8222,2006,8258};
 %PartList = {1809,5699,6525,2907,5324,4302,7561,4060,6503,7535,1944,2637,8580,1961,6844,1119,5287,3983,8804,7350,7395,3116,1359,8556,9057,8864,8517,2051,4444,5311,5625,9430,2151,3251,6468,4502,5823,8466,9327,7670,3668,7953,1909,1171,8222,9471,2006,8258,3377,9364,5583};
@@ -92,7 +92,8 @@ binsize = 1;
 
 % all
 
-figure(5)
+figgy5 = figure('Position', get(0, 'Screensize'));
+F = getframe(figgy5);
 
 hist5= histogram(overviewAll.Samples,'Normalization','probability','BinWidth',binsize);
 title('all viewing durations of all Participants (all objects)');
@@ -106,8 +107,13 @@ ax.XLabel.FontSize = 12;
 ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 
+figgy5.WindowState = 'fullscreen';
 saveas(gcf,strcat(savepath,'all viewing durations of all Participants (all objects).jpg'),'jpg');
 
+print(gcf,strcat(savepath,'all viewing durations of all Participants (all objects).png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'all viewing durations of all Participants (all objects).fig'));
+
+close(figgy5)
 
 % combine those durations bigger than
 
@@ -118,7 +124,8 @@ combAllDurs6 = overviewAll.Samples;
 combAllDurs6(big30_6) = 31;
 totalAmount6 = length(overviewAllHouses.Samples);
 
-figure(6)
+figgy6 = figure('Position', get(0, 'Screensize'));
+F = getframe(figgy6);
 
 hist6= histogram(combAllDurs6,'Normalization','probability','BinWidth',binsize);
 title('all viewing durations of all Participants (all objects), <1sec combined');
@@ -132,11 +139,19 @@ ax.XLabel.FontSize = 12;
 ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 sameylimit = ylim;
+
+figgy6.WindowState = 'fullscreen';
 saveas(gcf,strcat(savepath,'all viewing durations of all Participants (all objects)(long durations combined).jpg'),'jpg');
 
+print(gcf,strcat(savepath,'all viewing durations of all Participants (all objects)(long durations combined).png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'all viewing durations of all Participants (all objects)(long durations combined).fig'));
+
+
+close(figgy6)
 
 % viewing durations on house objects
-figure(1)
+figgy1 = figure('Position', get(0, 'Screensize'));
+F = getframe(figgy1);
 
 hist1= histogram(overviewAllHouses.Samples,'Normalization','probability','BinWidth',binsize);
 title('all viewing durations on houses of all Participants');
@@ -149,8 +164,16 @@ ax.XLabel.FontSize = 12;
 ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 
+figgy1.WindowState = 'fullscreen';
 saveas(gcf,strcat(savepath,'all viewing durations on houses of all Participants.jpg'),'jpg');
+
+print(gcf,strcat(savepath,'all viewing durations on houses of all Participants.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'all viewing durations on houses of all Participants.fig'));
+
 % combine those durations bigger than 1 sec to one bin - > 30 samples
+
+close(figgy1)
+
 
 %big1000= allSamples > 1000;
 big30= overviewAllHouses.Samples > 30;
@@ -175,6 +198,9 @@ ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 saveas(gcf,strcat(savepath,'all viewing durations on houses of all Participants (long durations combined).jpg'),'jpg');
 
+print(gcf,strcat(savepath,'all viewing durations on houses of all Participants (long durations combined).png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'all viewing durations on houses of all Participants (long durations combined).fig'));
+
 % viewing durations on all sky and NH objects
 
 figure(3)
@@ -190,7 +216,10 @@ ax.XLabel.FontSize = 12;
 ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 
-saveas(gcf,strcat(savepath,'all viewing durations on sky and NH of all Participants(long durations combined).jpg'),'jpg');
+saveas(gcf,strcat(savepath,'all viewing durations on sky and NH of all Participants.jpg'),'jpg');
+
+print(gcf,strcat(savepath,'all viewing durations on sky and NH of all Participants.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'all viewing durations on sky and NH of all Participants.fig'));
 
 
 % combine those durations bigger than
@@ -218,6 +247,9 @@ ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 
 saveas(gcf,strcat(savepath,'all viewing durations on sky and NH of all Participants(long durations combined).jpg'),'jpg');
+
+print(gcf,strcat(savepath,'all viewing durations on sky and NH of all Participants(long durations combined).png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'all viewing durations on sky and NH of all Participants(long durations combined).fig'));
 
 
 
@@ -247,6 +279,9 @@ ax.YLabel.FontSize = 12;
 
 saveas(gcf,strcat(savepath,'distribution fixations on houses.jpg'),'jpg');
 
+print(gcf,strcat(savepath,'distribution fixations on houses.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'distribution fixations on houses.fig'));
+
                   
 % now with nh and sky
 
@@ -274,6 +309,11 @@ ax.YLabel.FontSize = 12;
 
 saveas(gcf,strcat(savepath,'distribution fixations on sky and NH objects.jpg'),'jpg');
 
+print(gcf,strcat(savepath,'distribution fixations on sky and NH objects.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'distribution fixations on sky and NH objects.fig'));
+
+
+
 % now with all objects
 more7all = overviewAll.Samples >7;
 
@@ -296,6 +336,9 @@ ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 
 saveas(gcf,strcat(savepath,'viewing durations on all objects.jpg'),'jpg');
+
+print(gcf,strcat(savepath,'viewing durations on all objects.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'viewing durations on all objects.fig'));
 
 % %% same as subplots        
 % 
@@ -335,9 +378,13 @@ saveas(gcf,strcat(savepath,'viewing durations on all objects.jpg'),'jpg');
 
 %% pie plots instead
 figure(20)
- pieHouses = pie(cHousesSep7);
- title({'distribution of fixations and non-fixations - only data of houses ','  '});
- saveas(gcf,strcat(savepath,'Pie-fixation distribution of houses.jpg'),'jpg');
+pieHouses = pie(cHousesSep7);
+title({'distribution of fixations and non-fixations - only data of houses ','  '});
+saveas(gcf,strcat(savepath,'Pie-fixation distribution of houses.jpg'),'jpg');
+
+
+print(gcf,strcat(savepath,'Pie-fixation distribution of houses.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'Pie-fixation distribution of houses.fig'));
 
  
  figure(21)
@@ -345,11 +392,17 @@ figure(20)
  title({'distribution of fixations and non-fixations - only data of sky and NH objects','  '});
  saveas(gcf,strcat(savepath,'Pie-fixation distribution of skyNH.jpg'),'jpg');
  
+ print(gcf,strcat(savepath,'Pie-fixation distribution of skyNH.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'Pie-fixation distribution of skyNH.fig'));
+ 
  figure(22)
  
  pieAll = pie(cAllSep7);
  title({'distribution of fixations and non-fixations - all data','  '});
  saveas(gcf,strcat(savepath,'Pie-fixation distribution of all.jpg'),'jpg');
+ 
+print(gcf,strcat(savepath,'Pie-fixation distribution of all.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'Pie-fixation distribution of all.fig'));
 
 %% end part
 
