@@ -76,15 +76,15 @@ for ii = 1:Number
         overviewSums(ii,2) = sumN;
         overviewSums(ii,3) = sum(interpolatedData.Samples);
         
-        figgy1 = figure('Position', get(0, 'Screensize'));
-        F = getframe(figgy1);
-        
+        figure(1)
         pieplot= pie([sumG,sumN]);
         legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location','northeastoutside')
         title(strcat('gazes noise distribution - participant: ', num2str(currentPart)))
+        savefig(gcf, strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.fig'));
         
         %saveas(gcf,strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.png'),'png');
-       
+        print(gcf,strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.png'),'-dpng','-r300'); 
+        
 
      
   
@@ -105,6 +105,8 @@ legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location'
 title('mean gazes noise distribution')
 
 saveas(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'png');
+print(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'mean_gazes_noise_distr.fig'));
 
 percentage = NaN(Number,2);
 
@@ -119,6 +121,10 @@ ylabel('percentage')
 
 saveas(gcf,strcat(savepath,'perc_noisy_data_distr_allParts.png'),'png');
 
+print(gcf,strcat(savepath,'perc_noisy_data_distr_allParts.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'perc_noisy_data_distr_allParts.fig'));
+
+
 %% duration statistics
 figure(4)
 
@@ -132,6 +138,9 @@ ax.XLabel.FontSize = 12;
 ax.YLabel.String = 'percentage';
 ax.YLabel.FontSize = 12;
 saveas(gcf,strcat(savepath,'viewing_duration_all.png'),'png');
+
+print(gcf,strcat(savepath,'viewing_duration_all.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'viewing_duration_all.fig'));
 
 % big durations combined
 
@@ -155,6 +164,9 @@ ax.YLabel.String = 'frequency';
 ax.YLabel.FontSize = 12;
 
 saveas(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'png');
+
+print(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'viewing_duration_bigCombined.fig'));
 
 
 
