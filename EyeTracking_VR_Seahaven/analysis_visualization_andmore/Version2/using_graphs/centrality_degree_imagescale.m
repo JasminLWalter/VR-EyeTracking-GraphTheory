@@ -54,7 +54,7 @@ sortedbyHP = [sortedbyParts; table('meanOfPart','VariableNames',columnN2(1)), ar
 %transposeOverv = sortedbyHP'
 transpose2plot= sortedbyHP{1:end-1,2:end-1}';
 
-figure(1);
+fig = figure(1);
 imagescaly = imagesc(transpose2plot);
 colorbar
 title({'Image Scale Node Degree Centrality - all Participants','     '});
@@ -65,6 +65,13 @@ ax.XMinorTick = 'on';
 ax.XAxis.MinorTickValues = 1:1:213;
 ax.XLabel.String = 'Houses';
 ax.YLabel.String = 'Participants';
+
+print(gcf,strcat(savepath,'nodeDegree_imageScale.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'nodeDegree_imageScale.fig'));
+
+fig.PaperPositionMode = 'manual';
+orient(fig,'landscape')
+print(fig,strcat(savepath,'nodeDegree_imageScale_test.pdf'),'-dpdf','-fillpage')
 
 %% create plots with error bars
 
@@ -84,10 +91,20 @@ sortedbyHP = [sortedbyHP;table('stdOfParts','VariableNames',columnN3(1)),array2t
 
 % mean and std for each house
 figure(2)
-
-plotty2 = errorbar(sortedbyHP.meanOfHouses(1:end-2), sortedbyHP.stdOfHouses(1:end-2));
+x = [1:213];
+plotty2 = errorbar(sortedbyHP.meanOfHouses(1:end-2), sortedbyHP.stdOfHouses(1:end-2),'b','Linewidth',1);
 xlabel('houses')
 ylabel('node degree')
+xlim([-1 215])
+hold on
+
+plotty2a = plot(sortedbyHP.meanOfHouses(1:end-2)','b','Linewidth',3);
+
+
+hold off
+
+print(gcf,strcat(savepath,'nodeDegree_mean_std_allHouses.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'nodeDegree_mean_std_allHouses.fig'));
 
 % mean and std for each participant
 
@@ -96,15 +113,18 @@ forPlottingS = sortrows(forPlotting);
 
 figure(3)
 y = [1:20];
-plotty3 = errorbar(forPlottingS{:,1},y, forPlotting{:,2},'horizontal');
+plotty3 = errorbar(forPlottingS{:,1},y, forPlotting{:,2},'horizontal','b','Linewidth',1);
 
 xlabel('node degree')
 ylabel('participants')
+hold on
+plotty3a = plot(forPlottingS{:,1},y,'b','Linewidth',3);
 
+hold off
 
-figure(4)
-y= [1:213];
-plotty4 = bar(y, sortedbyHP.meanOfHouses(1:end-2));
+print(gcf,strcat(savepath,'nodeDegree_mean_std_allParticipants.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'nodeDegree_mean_std_allParticipants.fig'));
+
 
 
  %saveas(gcf,strcat(savepath,'ImageScale_DegreeCentrality_allParticipants.png'),'png');
@@ -112,11 +132,5 @@ plotty4 = bar(y, sortedbyHP.meanOfHouses(1:end-2));
  %orient(fig,'landscape')
  %print(gcf,'ImageScale_DegreeCentrality_allParticipants.pdf','-dpdf','-fillpage')
  
-% %% prepare data for anova
-% 
-% dataMat = overviewDegree{:,2:end};
-% datest = log(dataMat +1);
-% dataLnAnd1= overviewDegree;
-% dataLnAnd1{:,2:end} = log(dataLnAnd1{:,2:end}+1);
-% %writetable(dataLnAnd1, [savepath 'prepDataNodeDegreeLn+1.csv'],'Delimiter',',');
+
 
