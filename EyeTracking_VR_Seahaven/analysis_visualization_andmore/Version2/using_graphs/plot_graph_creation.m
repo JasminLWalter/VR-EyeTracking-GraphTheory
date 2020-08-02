@@ -24,7 +24,7 @@ scope = 40;
 
 % load map
 
-map = imread ('C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\Map_Houses_transparent.png');
+map = imread ('C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\Map_Houses_New.png');
 
 
 
@@ -33,6 +33,9 @@ map = imread ('C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTrack
 listname = 'C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\CoordinateListNew.txt';
 coordinateList = readtable(listname,'delimiter',{':',';'},'Format','%s%f%f','ReadVariableNames',false);
 coordinateList.Properties.VariableNames = {'House','X','Y'};
+
+% coordinateList.X = coordinateList.X.*0.215555;  %factor of newmap vs oldmap resolution to fit the points
+% coordinateList.Y = coordinateList.Y.*0.215666;
 
 
 for ii = 1:Number
@@ -69,11 +72,14 @@ for ii = 1:Number
         appearedHouses = table;
         
         
+      %% timeline and colors  
         
-        
-        color = colormap(jet(scope*4));
-        colR = color(randperm(size(color, 1)), :);
-        col = colR(1:2:end,:);
+        color = colormap(jet);%(scope*4)
+        sz = size(color); 
+        scolor = sz(1,1) /11;
+        %colR = color(randperm(size(color, 1)), :);
+        %col = colR(1:2:end,:);
+        col = color(1:scolor:end,:);
         
         xNan = [];
         yNan = [];
@@ -82,7 +88,7 @@ for ii = 1:Number
         
 %         [uniqueHouses, iGazed, iunique] = unique(gazedObjects(:, 1), 'stable');
 %         ypatches = max(ylabels) + 1 - [ylabels, ylabels, ylabels-1, ylabels-1]'; 
-        
+        colorindex = 1;
         for index = 1: scope
             
             % x values
@@ -134,7 +140,7 @@ for ii = 1:Number
                     if strcmp(gazedObjects{index,1},'sky')
                         currentColour = [0 1 1];
                     else
-                        currentColour = [0 1 0];
+                        currentColour = [0.85 0.85 0.85];
 
                     end
                         % if it is the first house
@@ -166,7 +172,9 @@ for ii = 1:Number
 
                             appearedHouses.Name(rowsAHouses) = gazedObjects{index,1};
                             appearedHouses.Number(rowsAHouses) = housesYaxis;
-                            appearedHouses.Color(rowsAHouses) =  {col(index,:)};
+                            appearedHouses.Color(rowsAHouses) =  {col(colorindex,:)};
+                            
+                            colorindex = colorindex +1;
 
                             currentColour = appearedHouses.Color{rowsAHouses};
 
@@ -193,7 +201,9 @@ for ii = 1:Number
                         
                                 appearedHouses.Name(rowsAHouses) = gazedObjects{index,1};
                                 appearedHouses.Number(rowsAHouses) = housesYaxis;
-                                appearedHouses.Color(rowsAHouses) =  {col(index,:)};
+                                appearedHouses.Color(rowsAHouses) =  {col(colorindex,:)};
+                                
+                                colorindex = colorindex+1;
 
                                 currentColour = appearedHouses.Color{rowsAHouses};
 
@@ -227,9 +237,9 @@ for ii = 1:Number
         ax = gca;
         ax.YTick = 0:1:housesYaxis;
         
-        xlabel('samples')
+        xlabel('hit points')
         ylabel('houses')
-        grid on
+    
         
         title({strcat('time line of gazed objects - first 30 sec - participant: ',num2str(currentPart)),''});
         
@@ -246,30 +256,10 @@ for ii = 1:Number
             figure(3)
 
             imshow(map);
+            alpha(0.1)
             hold on;
            
-            for index2 =1:height(appearedHouses)
-
-                object = appearedHouses{index2,1};
-
-                % draw node if current house is not a noData object
-                if not(strcmp(object, 'noData'))
-                    
-                    
-                    found = strcmp(object, coordinateList{:,1});
-
-                    xC = coordinateList{found,2};
-                    yC = coordinateList{found,3};
-                    plotty = scatter(xC,yC,80,cell2mat(appearedHouses{index2,3}),'filled');
-                    title(strcat('time line of graph creation - first 30 sec - participant: ',num2str(currentPart)));
-                    hold on
-                    
-                    
-                end
-
-                %pause               
-
-            end
+           
         %% draw edges
         
         edgerange = gazedObjects(1:scope,:);
@@ -382,20 +372,49 @@ for ii = 1:Number
                         x2 = coordinateList{foundO2,2};
                         y2 = coordinateList{foundO2,3};
 
-                       line([x1,x2],[y1,y2],'Color','k','LineWidth',0.5);
+                       line([x1,x2],[y1,y2],'Color','k','LineWidth',2);
                        
                        p2 = [x2, y2];
                        p1 = [x1, y1];
                        
                        spot = (p2(:) + p1(:)).'/2;
                        
-                       text((spot(1)+1), (spot(2)+1),num2str(nredge),'FontSize',11)
+                       text((spot(1)+1), (spot(2)+1),num2str(nredge),'FontSize',20, 'FontWeight','bold')
                        
                    end
 
                end
            end
         %y = [index-1 index index index-1];
+        
+        %% draw nodes
+        
+         for index2 =1:height(appearedHouses)
+
+                object = appearedHouses{index2,1};
+
+                % draw node if current house is not a noData object
+                if not(strcmp(object, 'noData'))
+                    
+                    
+                    found = strcmp(object, coordinateList{:,1});
+
+                    xC = coordinateList{found,2};
+                    yC = coordinateList{found,3};
+                    plotty = scatter(xC,yC,400,cell2mat(appearedHouses{index2,3}),'filled');
+                    title(strcat('time line of graph creation - first 30 sec - participant: ',num2str(currentPart)));
+                    hold on
+                    
+                    
+                end
+
+                %pause               
+
+            end
+        
+        
+        
+        
         
     else
         disp('something went really wrong with participant list');
@@ -407,7 +426,7 @@ end
 disp(strcat(num2str(Number), ' Participants analysed'));
 disp(strcat(num2str(countMissingPart),' files were missing'));
 
- csvwrite(strcat(savepath,'Missing_Participant_Files'),noFilePartList);
- disp('saved missing participant file list');
+%csvwrite(strcat(savepath,'Missing_Participant_Files'),noFilePartList);
+disp('saved missing participant file list');
 
 disp('done');
