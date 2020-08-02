@@ -4,12 +4,10 @@
 % takes raw viewed houses file and condenses them, so that several
 % instances of houses are only listed once together with the amount of time
 % looked at them before moving on to sth else
-% cleanses data (removes data points in which eyetracker did not track
-% pupil
+
 
 % uses raw ViewedHouses.txt file
-% output: condenseHouse.mat file + overview of removed rows in cleaning
-% process
+% output: condenseHouse.mat file 
 clear all;
 % adjust savepath, current folder and participant list!
 savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\condenseViewedHouses\';
