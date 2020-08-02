@@ -39,6 +39,8 @@ overviewGazes.Properties.VariableNames = {'Participant','totalAmount','gazes','n
 overviewSums= NaN(Number,3);
 allSamples = [];
 
+allInterpData = table;
+
 
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
@@ -59,6 +61,8 @@ for ii = 1:Number
         interpolatedData = load(file);
         interpolatedData = interpolatedData.interpolatedData;
         
+        allInterpData = [allInterpData; interpolatedData];
+        
         % something was fixated when having more than 7 samples
         allSamples = [allSamples; interpolatedData.Samples];
 
@@ -76,15 +80,15 @@ for ii = 1:Number
         overviewSums(ii,2) = sumN;
         overviewSums(ii,3) = sum(interpolatedData.Samples);
         
-        figure(1)
-        pieplot= pie([sumG,sumN]);
-        legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location','northeastoutside')
-        title(strcat('gazes noise distribution - participant: ', num2str(currentPart)))
-        savefig(gcf, strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.fig'));
-        
-        %saveas(gcf,strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.png'),'png');
-        print(gcf,strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.png'),'-dpng','-r300'); 
-        
+%         figure(1)
+%         pieplot= pie([sumG,sumN]);
+%         legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location','northeastoutside')
+%         title(strcat('gazes noise distribution - participant: ', num2str(currentPart)))
+%         savefig(gcf, strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.fig'));
+%         
+%         %saveas(gcf,strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.png'),'png');
+%         print(gcf,strcat(savepath, num2str(currentPart) ,'_gazes_noise_distr.png'),'-dpng','-r300'); 
+%         
 
      
   
@@ -99,48 +103,48 @@ end
 avgG = mean(overviewSums(:,1));
 avgN = mean(overviewSums(:,2));
 
-figure(2)
-pieplot2 = pie([avgG, avgN]);
-legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location','northeastoutside')
-title('mean gazes noise distribution')
-
-saveas(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'png');
-print(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'-dpng','-r300'); 
-savefig(gcf, strcat(savepath,'mean_gazes_noise_distr.fig'));
+% figure(2)
+% pieplot2 = pie([avgG, avgN]);
+% legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location','northeastoutside')
+% title('mean gazes noise distribution')
+% 
+% saveas(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'png');
+% print(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'-dpng','-r300'); 
+% savefig(gcf, strcat(savepath,'mean_gazes_noise_distr.fig'));
 
 percentage = NaN(Number,2);
 
 percentage(:,1) = (overviewSums(:,1)*100) ./ overviewSums(:,3);
 percentage(:,2) = (overviewSums(:,2)*100) ./ overviewSums(:,3);
 
-figure(3)
-
-plotty3 = boxplot(percentage(:,2));
-title('percentage of noisy data distribution over all participants')
-ylabel('percentage')
-
-saveas(gcf,strcat(savepath,'perc_noisy_data_distr_allParts.png'),'png');
-
-print(gcf,strcat(savepath,'perc_noisy_data_distr_allParts.png'),'-dpng','-r300'); 
-savefig(gcf, strcat(savepath,'perc_noisy_data_distr_allParts.fig'));
+% figure(3)
+% 
+% plotty3 = boxplot(percentage(:,2));
+% title('percentage of noisy data distribution over all participants')
+% ylabel('percentage')
+% 
+% saveas(gcf,strcat(savepath,'perc_noisy_data_distr_allParts.png'),'png');
+% 
+% print(gcf,strcat(savepath,'perc_noisy_data_distr_allParts.png'),'-dpng','-r300'); 
+% savefig(gcf, strcat(savepath,'perc_noisy_data_distr_allParts.fig'));
 
 
 %% duration statistics
-figure(4)
-
-histy= histogram(allSamples,'Normalization','probability');
-yt = get(gca, 'YTick');                    
-set(gca, 'YTick',yt, 'YTickLabel',yt*100);
-
-ax = gca;
-ax.XLabel.String = 'amount of consecutive samples';
-ax.XLabel.FontSize = 12;
-ax.YLabel.String = 'percentage';
-ax.YLabel.FontSize = 12;
-saveas(gcf,strcat(savepath,'viewing_duration_all.png'),'png');
-
-print(gcf,strcat(savepath,'viewing_duration_all.png'),'-dpng','-r300'); 
-savefig(gcf, strcat(savepath,'viewing_duration_all.fig'));
+% figure(4)
+% 
+% histy= histogram(allSamples,'Normalization','probability');
+% yt = get(gca, 'YTick');                    
+% set(gca, 'YTick',yt, 'YTickLabel',yt*100);
+% 
+% ax = gca;
+% ax.XLabel.String = 'amount of consecutive samples';
+% ax.XLabel.FontSize = 12;
+% ax.YLabel.String = 'percentage';
+% ax.YLabel.FontSize = 12;
+% saveas(gcf,strcat(savepath,'viewing_duration_all.png'),'png');
+% 
+% print(gcf,strcat(savepath,'viewing_duration_all.png'),'-dpng','-r300'); 
+% savefig(gcf, strcat(savepath,'viewing_duration_all.fig'));
 
 % big durations combined
 
@@ -149,24 +153,32 @@ big30= allSamples > 30;
 combSamples = allSamples;
 combSamples(big30) = 31;
 
-figure(5)
+% figure(5)
+% 
+% histy2 = histogram(combSamples,'Normalization','probability');
+% yt = get(gca, 'YTick');                    
+% set(gca, 'YTick',yt, 'YTickLabel',yt*100);
+% xt= [1:3:31];
+% set(gca, 'XTick',xt, 'XTickLabel',xt*33.33);
+% 
+% ax = gca;
+% ax.XLabel.String = 'amount of consecutive samples (all samples > 30 combined in bin 31)';
+% ax.XLabel.FontSize = 12;
+% ax.YLabel.String = 'frequency';
+% ax.YLabel.FontSize = 12;
+% 
+% saveas(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'png');
+% 
+% print(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'-dpng','-r300'); 
+% savefig(gcf, strcat(savepath,'viewing_duration_bigCombined.fig'));
 
-histy2 = histogram(combSamples,'Normalization','probability');
-yt = get(gca, 'YTick');                    
-set(gca, 'YTick',yt, 'YTickLabel',yt*100);
-xt= [1:3:31];
-set(gca, 'XTick',xt, 'XTickLabel',xt*33.33);
 
-ax = gca;
-ax.XLabel.String = 'amount of consecutive samples (all samples > 30 combined in bin 31)';
-ax.XLabel.FontSize = 12;
-ax.YLabel.String = 'frequency';
-ax.YLabel.FontSize = 12;
+save([savepath 'allInterpolatedData.mat'],'allInterpData');
+save([savepath 'allSamples_int.mat'],'allSamples');
 
-saveas(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'png');
+save([savepath 'combSamples_int.mat'],'combSamples');
 
-print(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'-dpng','-r300'); 
-savefig(gcf, strcat(savepath,'viewing_duration_bigCombined.fig'));
+
 
 
 
