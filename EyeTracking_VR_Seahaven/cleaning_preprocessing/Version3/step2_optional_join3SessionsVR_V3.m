@@ -102,10 +102,32 @@ for part = 1: height(combinedSessions)
     data3 = load(strcat(num2str(combinedSessions.Session3(part)),'_condensedColliders_V3.mat'));
     data3 = data3.condensedData;
     
+    % add variable session to each data
+    % for data1
+    s1 = cell(length(data1),1);
+    s1(:) = {'Session1'};
+    [data1.Session] = s1{:};
+    order = [21,1:20];
+    data1 = orderfields(data1,order);
+    
+    % for data2
+    s2 = cell(length(data2),1);
+    s2(:) = {'Session2'};
+    [data2.Session] = s2{:};
+    data2 = orderfields(data2,order);
+            
+    % for data3
+    s3 = cell(length(data3),1);
+    s3(:) = {'Session3'};
+    [data3.Session] = s3{:};
+    data3 = orderfields(data3,order);
+    
+    
     % add a row to seperate sessions, in case they need to be identified
     % again at a later point
     data1(end+1).Collider = 'newSession';  
     
+    data1(end).Session= NaN; 
     data1(end).TimeStamp= NaN; 
     data1(end).Samples= NaN; 
     data1(end).Distance= NaN; 
@@ -130,6 +152,7 @@ for part = 1: height(combinedSessions)
     
     data2(end+1).Collider = 'newSession';
     
+    data2(end).Session= NaN; 
     data2(end).TimeStamp= NaN; 
     data2(end).Samples= NaN; 
     data2(end).Distance= NaN; 
