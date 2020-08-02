@@ -88,8 +88,10 @@ for ii = 1:Number
                     if (removeRows(index-1) == false)
                         % combine all samples falling on the same house into
                         % one row
-%                         interpolatedData{index-1,3} = condensedColliders{index-1,3}+ cNrSample + condensedColliders{index+1,3};
-%                         interpolatedData{index-1,2} = condensedColliders{index-1,2}+ condensedColliders{index,2} + condensedColliders{index+1,2};
+                        % note that clusters between sessions cant be
+                        % interpolated, therefore the session variable does
+                        % not need to be updated in case of interpolation
+
 %                         
                         
                         
@@ -134,8 +136,11 @@ for ii = 1:Number
                         end
                         % then update the row that combines all of the
                         % interpolated data
-%                         interpolatedData{rowTest,3} = interpolatedData{rowTest,3}+ cNrSample + condensedColliders{index+1,3};
-%                         interpolatedData{rowTest,2} = interpolatedData{rowTest,2}+ condensedColliders{index,2} + condensedColliders{index+1,2};
+                        
+                        % note that clusters between sessions cant be
+                        % interpolated, therefore the session variable does
+                        % not need to be updated in case of interpolation
+
 % 
 %                         
                         interpolatedData(rowTest).TimeStamp= [interpolatedData(rowTest).TimeStamp,interpolatedData(index).TimeStamp, interpolatedData(index+1).TimeStamp];
@@ -187,7 +192,7 @@ for ii = 1:Number
         end
         
         %% remove all marked rows from interpolatedData and save them into
-        % interpolatedViewedHouses
+        % interpolatedCollider files
         
 
         interpolatedData(removeRows) = [];
