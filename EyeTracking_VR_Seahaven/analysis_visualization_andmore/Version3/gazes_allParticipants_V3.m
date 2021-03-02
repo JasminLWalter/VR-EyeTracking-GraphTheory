@@ -51,8 +51,8 @@ for ii = 1:Number
        clear gazedObjects
 
        
-       %% interpolated data
-       
+%        %% interpolated data
+%        
               % load data
         file2 = strcat('E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\interpolatedColliders\',num2str(currentPart),'_interpolatedColliders_3Sessions_V3.mat');
         interpolatedData = load(file2);

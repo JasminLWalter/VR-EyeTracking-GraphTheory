@@ -73,29 +73,30 @@ edgesRows = linspace(1,rows,125);
 edgesCol = linspace(1,columns,112);
 
 [countMatrix,colEdges,rowEdges] = histcounts2(positions10.Z, positions10.X, edgesCol,edgesRows);
-% 
-% % plot countMatrix
-% figure(3);
-% imshow(map);
-% %alpha(0.1)
-% 
-% hold on
-% plottyT = imagesc(colEdges,rowEdges,countMatrix', 'AlphaData', 0.7);
-% colorbar
-% 
-% figure(4)
-% imshow(map)
-% figure(5)
-% plottyT = imagesc(colEdges,rowEdges,countMatrix', 'AlphaData', 0.7);
-% 
-% figure(6)
-% imshow(map);
-% alpha(0.1)
-% hold on
-% scatty = scatter(positions10.Z, positions10.X, 4, 'filled');
-% 
 
-%% now the real thing
+%% which are was visited by participants in the first place?
+positionsAll = table;
+positionsAll.X = [gazes_allParts.PosX]'*xT+xA;
+positionsAll.Z = [gazes_allParts.PosZ]'*zT+zA;
+
+
+[countMatrixAll,colEdgesAll,rowEdgesAll] = histcounts2(positionsAll.Z, positionsAll.X, edgesCol,edgesRows);
+
+% % apply kernal smoothing / convolution
+% kernel  = [1,1,1;1,1,1;1,1,1];
+% convCountAll = countMatrixAll;
+% convCountAll = conv2(convCountAll,kernel,'same');
+convCountAll = countMatrixAll; % comment line if kernel smoothing is applied)
+
+% get alpha data so that all areas that were not visited in the first place
+% can be set to 0 transparency in the plot
+alphaD = convCountAll';
+zeros = alphaD(:,:)==0;
+alphaD(~zeros) = 0.6;
+
+%% now the real triangulation plot
+% first get logical array of grid and how many top 10 houses were seen at
+% that location
 fullCount = struct;
 
 for index = 1:length(housesTop10RC)
@@ -112,6 +113,7 @@ for index = 1:length(housesTop10RC)
     fullCount(index).countMatrix = countMatrix;
  
 end
+
 % apply kernal smoothing / convolution
 kernel  = [1,1,1;1,1,1;1,1,1];
 convCount = fullCount;
@@ -142,16 +144,18 @@ end
 
 sumAll = sum(logical3D,3);
 
-% plot the summed matrix
+% plot the summed matrix - use alpha for alphadata to only colour space
+% that was actually visited
 colours = [ 0.24,0.15,0.66;0.01,0.72,0.80;0.96,0.73,0.23];
 
-figure(10)
+figure(1)
 imshow(map);
+alpha(0.1)
 hold on
-plotty10 = imagesc(colEdges,rowEdges,sumAll', 'AlphaData', 0.7);
+plotty1 = imagesc(colEdges,rowEdges,sumAll', 'AlphaData', alphaD);
 colorbar
 title('visibility of top 10 houses - rich club and node degree');
-% saveas(gcf, strcat(savepath, 'visibility of top 10 houses.png'));
+saveas(gcf, strcat(savepath, 'visibility of top 10 houses.png'));
 hold off
 
 %% final aspect - only display 0,1,2 or more
@@ -166,16 +170,17 @@ colormap3 = [
     0.18,0.77,0.64
     0.97,0.85,0.17];
 
-figure(11)
+figure(2)
 imshow(map);
+alpha(0.2)
 hold on
-plotty11 = imagesc(colEdges,rowEdges,sumAll3cut', 'AlphaData', 0.7);
+plotty2 = imagesc(colEdges,rowEdges,sumAll3cut', 'AlphaData', alphaD);
 colormap(colormap3);
 colorbar('Ticks',[0.35,1,1.65], 'TickLabels',{'0 houses','1 house','2 or more houses'})
 title('Visibility of top 10 houses - rich club & node degree');
 
-% saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.png'));
-% saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.fig'));
+saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.png'));
+saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.fig'));
 
 hold off
 
@@ -184,8 +189,9 @@ h1(:,2) = 0;
 
 h2(:,1)= rowEdges';
 h2(:,1)= rowEdges';
-% bin plot
-figure(12)
+
+% plot applied grid over map
+figure(3)
 imshow(map);
 % xticks(colEdges)
 % yticks(rowEdges)
@@ -206,14 +212,7 @@ end
 
 %% percentage of triangulation are vs walked area
 
-positionsAll = table;
-positionsAll.X = [gazes_allParts.PosX]'*xT+xA;
-positionsAll.Z = [gazes_allParts.PosZ]'*zT+zA;
-
-
-[countMatrixAll,colEdgesAll,rowEdgesAll] = histcounts2(positionsAll.Z, positionsAll.X, edgesCol,edgesRows);
-
-walkedGridAll = countMatrixAll ~= 0;
+walkedGridAll = convCountAll ~= 0;
 sumGridAll = sum(walkedGridAll,'all');
 
 saw1 = sumAll3cut == 1;
@@ -222,5 +221,16 @@ saw2 = sumAll3cut == 2;
 sumGrid1 = sum(saw1, 'all');
 sumGrid2 = sum(saw2, 'all');
 
+percTable = table;
+percTable.percentage_0Houses = ((sumGridAll-(sumGrid1+sumGrid2))/sumGridAll)*100;
+percTable.percentage_1House = (sumGrid1/sumGridAll)*100;
+percTable.percentage_2Houses = (sumGrid2/sumGridAll)*100;
+save([savepath,'table_percentage_triangulation.mat'],'percTable');
+
+
 figure(20)
+labelsData = {'0 houses','1 house','2 or more houses'};
 figgy20 = pie([sumGridAll-sumGrid1-sumGrid2, sumGrid1, sumGrid2]);
+legend(labelsData)
+title('Percentage of possibility to triangulate in walked area');
+saveas(gcf, strcat(savepath, 'piePlot_triangualationPercentage.png'));

@@ -15,8 +15,8 @@ cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\all_participants\'
 disp('load data')
 % load data
 % 
-% gazes_allParts = load('gazes_allParticipants.mat');
-% gazes_allParts = gazes_allParts.gazes_allParticipants;
+gazes_allParts = load('gazes_allParticipants.mat');
+gazes_allParts = gazes_allParts.gazes_allParticipants;
 
 disp('data loaded')
 
@@ -152,7 +152,7 @@ hold on
 plotty11 = imagesc(colEdges,rowEdges,sumAll3cut', 'AlphaData', 0.7);
 colormap(parula(4));
 colorbar('Ticks',[0.4,1.1,1.9,2.6], 'TickLabels',{'0 houses','1 house','2 houses','3 or more houses'})
-title('visibility of top 10 houses rich clu
+title('visibility of top 10 houses rich club');
 hold off
 
 % figure(12)
