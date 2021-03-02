@@ -10,9 +10,9 @@
 % output: condensedColliders_V3.mat file 
 clear all;
 % adjust savepath, current folder and participant list!
-savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\condensedColliders\';
+savepath = 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\CondensedColliders\';
 
-cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\Raycast3.0\'
+cd 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\newRaycast3.0\'
 
 
 % Participant list of all participants that participated at least 3
@@ -33,7 +33,7 @@ overviewAnalysis.Properties.VariableNames = {'Participant','noData_Rows','total_
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
     
-    file = strcat('Raycast3.0_VP',num2str(currentPart),'.txt');
+    file = strcat('newRaycast3.0_VP',num2str(currentPart),'.txt');
     
     % check for missing files
     if exist(file)==0
@@ -47,51 +47,20 @@ for ii = 1:Number
     elseif exist(file)==2
         
         %load data
-        rawData = readtable(file,'Delimiter',',', 'Format','%f %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f');
-
-
+        rawData = readtable(file, 'Delimiter',',', 'Format','%f %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f');
         data = rawData;
         
         totalRows = height(data);
         
         %% clean data
-        
-        % rename NH to sky if they looked into the sky
-        
+              
         colliders= data.Collider;
-        distances= data.Distance;
-%         skyHouse = strcmp(colliders(:),'NH') & (distances(:)==200);
-%          
-%         store the renamed rows for checking
-%         skyRows= data(skyHouse,:);
-%         
-%         rename rows to sky
-%         data.Collider(skyHouse)= cellstr('sky');
-        
-     
-        % rename rows when pupils were detected with probability lower than 0,5
-        noD = strcmp(colliders(:),'noData');  
-%         % old code renaming NH + distance 0 to noData
-%         noD = strcmp(colliders(:),'NH') & eq(distances(:),0);     
-%         %rename rows
-%          data.Collider(noD)= cellstr('noData');
-%          data.Distance(noD) = NaN;
-%          data.VectorX(noD) = NaN;
-%          data.VectorY(noD) = NaN;
-%          data.VectorZ(noD) = NaN;
-%          data.eye2Dx(noD) = NaN;
-%          data.eye2Dy(noD) = NaN;
-         
-        % calculate amount of noData rows
-        NRnoDataRows = sum(noD);
+        distances= data.Distance;         
+        % calculate amount of noData rows     
+        NRnoDataRows = sum(strcmp(colliders(:),'noData'));
         
 %% create the condensed viewed houses list  
-%         % create AllData Table
-%         NumArray = array2table(zeros(height(data),3));
-%         SeenHouses = cell(height(data),1);
-%         AllData= [SeenHouses NumArray];
-%         AllData.Properties.VariableNames = {'House','Time','Samples','Distances'};
-        
+    
         % create struct for all data with only one row (the others will be
         % added according to the condensation process
         helperT = table;
@@ -182,15 +151,7 @@ for ii = 1:Number
             
             
         end
-        
-%         % adjust distances (so far they are only sums, now average them)
-%         AllData.Distances= AllData.Distances ./ AllData.Samples;
-%         
-%             % remove all empty lines of AllData
-%             uncutAllData = AllData;
-%             AllData = head(AllData, index);
-%             
-%             
+                
             
             % save condensed viewed houses
             
@@ -206,15 +167,7 @@ for ii = 1:Number
             
             overviewAnalysis.percentage(ii) = percent;
 
-       
-                
-            
-        
-      
-        
-        
-
-        
+   
     else
         disp('something went really wrong with participant list');
     end
