@@ -15,9 +15,9 @@
 
 clear all;
 
-savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\gazes_vs_noise\';
+savepath = 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\gazes_vs_noise\';
 
-cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\interpolatedColliders\';
+cd 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\interpolatedColliders\';
 
 % participant list of 90 min VR - only with participants who have lost less than 30% of
 % their data (after running script cleanParticipants_V2)
