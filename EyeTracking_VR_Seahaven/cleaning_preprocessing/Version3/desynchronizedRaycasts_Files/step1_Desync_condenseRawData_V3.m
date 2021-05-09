@@ -12,7 +12,7 @@ clear all;
 % adjust savepath, current folder and participant list!
 savepath = 'D:\Studium\NBP\Seahaven\90min_Data\Desynchronization\Desync_condensedColliders\';
 
-cd 'D:\Studium\NBP\Seahaven\90min_Data\Desynchronization\DesynchronizedRaycast3.0\'
+cd 'E:\NBP\SeahavenEyeTrackingData\Desynchronization\DesynchronizedRaycast3.0\'
 
 
 % Participant list of all participants that participated at least 3
@@ -20,7 +20,7 @@ cd 'D:\Studium\NBP\Seahaven\90min_Data\Desynchronization\DesynchronizedRaycast3.
 %PartList = {1909 // 3668 8466 3430 6348 2151 4502 7670 8258 3377 1529 9364 6387 2179 4470 6971 5507 8834 5978 1002 7399 9202 8551 1540 8041 3693 5696 3299 1582 6430 9176 5602 2011 2098 3856 7942 6594 4510 3949 9748 3686 6543 7205 5582 9437 1155 8547 8261 3023 7021 5239 8936 9961 9017 1089 2044 8195 4272 5346 8072 6398 3743 5253 9475 8954 8699 3593 9848};
 %PartList = {3668 8466 3430 6348};% 2151 4502 7670 8258 3377 1529 9364 6387 2179 4470 6971 5507 8834 5978 1002 7399 9202 8551 1540 8041 3693 5696 3299 1582 6430 9176 5602 2011 2098 3856 7942 6594 4510 3949 9748 3686 6543 7205 5582 9437 1155 8547 8261 3023 7021 5239 8936 9961 9017 1089 2044 8195 4272 5346 8072 6398 3743 5253 9475 8954 8699 3593 9848};
 % already analysed: 1909 3668 8466 3430 6348 8551 9437 1540 1155
-PartList = {};
+PartList = {1909};
 maxShiftNr = 59;
 
 
@@ -55,10 +55,14 @@ for ii = 1:Number
         elseif exist(file)==2
 
             %load data
-            rawData = readtable(file, 'Delimiter',',', 'Format','%f %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f');
-            data = rawData(:,1:end-1);
-            data.Properties.VariableNames = {'TimeStamp','Collider','Distance','hitPointX','hitPointY','hitPointZ','PosX','PosY','PosZ','PosRX','PosRY','PosRZ','PosTimeStamp','PupilLTimeStamp','VectorX','VectorY','VectorZ','eye2Dx','eye2Dy'};
-
+            % rawData = readtable(file, 'Delimiter',',', 'Format','%f %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f');
+            % data = rawData(:,1:end-1);
+            % data.Properties.VariableNames = {'TimeStamp','Collider','Distance','hitPointX','hitPointY','hitPointZ','PosX','PosY','PosZ','PosRX','PosRY','PosRZ','PosTimeStamp','PupilLTimeStamp','VectorX','VectorY','VectorZ','eye2Dx','eye2Dy'};
+            
+            rawData = readtable(file,'Delimiter',',', 'Format','%f %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f');
+            
+            data = rawData;
+            
             totalRows = height(data);
 
             %% clean data
@@ -69,7 +73,7 @@ for ii = 1:Number
             distances= data.Distance;
 
 %             % calculate amount of noData rows
-        NRnoDataRows = sum(strcmp(colliders(:),'noData'));
+            NRnoDataRows = sum(strcmp(colliders(:),'noData'));
 
     %% create the condensed viewed houses list  
 
