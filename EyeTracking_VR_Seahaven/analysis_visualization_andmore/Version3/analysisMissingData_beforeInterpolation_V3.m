@@ -46,7 +46,7 @@ for ii = 1:Number
             if strcmp(condensedColliders(index).Collider,'noData')
                 if (index == 1 || index == length(condensedColliders))
                     sampleInfo = [sampleInfo; condensedColliders(index).Samples];
-                    sameDiffInfo = [sameDiffInfo; 'startend'];
+                    sameDiffInfo = [sameDiffInfo; 'diff'];
                     
                 else
                     sampleInfo = [sampleInfo; condensedColliders(index).Samples];
