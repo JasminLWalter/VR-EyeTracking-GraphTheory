@@ -1,5 +1,8 @@
 %% ------------------ node_degree_development_V3-------------------------------------
-% script written by Jasmin Walter
+
+% --------------------script written by Jasmin L. Walter----------------------
+% -----------------------jawalter@uni-osnabrueck.de------------------------
+
 
 
 clear all;
