@@ -8,7 +8,7 @@
 
 clear all;
 
-savepath = 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\interpolatedColliders\';
+savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\interpolatedColliders\';
 
 cd 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\combine3sessions\'
 

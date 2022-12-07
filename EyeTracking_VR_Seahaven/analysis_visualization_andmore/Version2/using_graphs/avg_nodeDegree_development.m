@@ -6,7 +6,7 @@
 clear all;
 
 
-savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree_development\Plots\';
+%savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree_development\Plots\';
 
 
 cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree_development\individual\'
@@ -25,7 +25,7 @@ countMissingPart = 0;
 
 houseDataRows = NaN(Number,maxNrTimeChunks);
 
-houseList = load('D:\BA Backup\GitHub-Repository\NBP-VR-Eyetracking\additional_files\HouseList.mat');
+houseList = load('D:\Github\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\HouseList.mat');
 houseList = houseList.houseList;
 
 houseData = struct;

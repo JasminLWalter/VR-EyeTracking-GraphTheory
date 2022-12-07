@@ -1,21 +1,87 @@
-%% ------------------ triangulation-experiment time spend Version 3-------------------------------------
-% script written by Jasmin Walter
-% script analyses how much of the total experiment time participants 
-% spend in areas where triangulation was possible
+%% ------------------ triangulation_analysis_V3----------------------------
+
+% --------------------script written by Jasmin L. Walter-------------------
+% -----------------------jawalter@uni-osnabrueck.de------------------------
+
+% Description:
+% Script analyses how many gaze-graph-defined landmarks were viewed from 
+% each location participants visited in the city. In addition, it analyses
+% how much of the total experiment time participants spend in these areas 
+% where the theoretical basis for triangulation would be given. 
+% The analysis is performed with a spatial resolution of 4x4m and an 
+% additional smoothing with a 3x3 unity kernel. 
+
+
+% Input: 
+% gazes_allParticipants.mat        = data file containing all gazes from all
+%                                    participants
+%                                    - created when running script...
+
+% interpolData_allParticipants.mat = data file containing all interpolated
+%                                    data from all participants
+%                                    - created when running script
+
+% Overview_NodeDegree.mat  =  table consisting of all node degree values
+%                             for all participants (alternatively the list
+%                             of the rich club count for all houses)
+%                          
+% Map_Houses_New.png       = image of the map of Seahaven 
+% CoordinateListNew.txt    = csv list of the house names and x,y coordinates
+%                            corresponding to the map of Seahaven
+
+
+% Output: 
+% Figure 1: visibility of top 10 houses - rich club and node degree
+% = map plot color coded for all top 10 houses
+
+% Figure 2: Visibility of top 10 houses - rich club & node degree'
+% = like figure 1, but here the map is only color coded to differentiate
+% areas where 0 top 10 houses, 1 top 10 house, and 2 or more top 10 houses
+% were viewed (Fig. 9 of the paper)
+
+% Figure 3: grid size_vibility plots.png
+% = visualization of the 4x4 grid dividing the city
+
+% Figure 20: Percentage of possibility to triangulate in walked area
+% = pie plot of the percentages of the different city areas participants 
+% were located in
+
+% Figure 21: Percentage of times triangulation was possible
+% = pie plot of the percentages of experiment time participants spend in
+% triangulation areas (same visualization as Figure 20, but different data)
+
+% table_percentage_triangulation.mat
+% = table listing the percentages of the areas in the city where participants
+% viewed 0, 1, 2 or more houses
+
+% table_times_triangulation_possible.mat
+% = table listing the percentage of experiment time participants spend in
+% areas where 0, 1, 2 or more houses where visible
+
+
+
+
 
 clear all;
 
+%% adjust the following variables: 
+% savepath, imagepath, clistpath, overviewNDpath and current folder-----------------------
 
-savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\all_participants\position\top10_houses\';
+savepath= '...\Version03\analysis\triangulation\';
 
+imagepath = '...\Github\FindingLandmarks_analyzingEyeTrackingDataInVRusingGraphTheory\additional_files\'; % path to the map image location
+clistpath = '...\Github\FindingLandmarks_analyzingEyeTrackingDataInVRusingGraphTheory\additional_files\'; % path to the coordinate list location
 
-cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\all_participants\'
+%  path to the overviewNodeDegree file created when running script nodeDegree_createOverview_V3
+overviewNDpath = '...\analysis\graphs\node_degree\';
 
+% location of file containing all gaze data and all interpolated of all participants
+cd '...\analysis\all_participants\'
 
-%houses = {'008_0','007_0', '004_0'};
+%------------------------------------------------------------------------
 
-disp('load data')
-% load data
+disp('load gazes data')
+% load gazes data
 
 gazes_allParts = load('gazes_allParticipants.mat');
 gazes_allParts = gazes_allParts.gazes_allParticipants;
@@ -24,46 +90,54 @@ disp('data loaded')
 
 % load map
 
-map = imread ('D:\Github\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\Map_Houses_SW2.png');
+map = imread (strcat(imagepath,'Map_Houses_SW2.png'));
 % load house list with coordinates
 
-listname = 'D:\Github\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\CoordinateListNew.txt';
+listname = strcat(clistpath,'CoordinateListNew.txt');
 coordinateList = readtable(listname,'delimiter',{':',';'},'Format','%s%f%f','ReadVariableNames',false);
 coordinateList.Properties.VariableNames = {'House','X','Y'};
 
 
-
-overviewNodeDegree = load('E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree\Overview_NodeDegree.mat');
-overviewNodeDegree = overviewNodeDegree.overviewNodeDegree; 
-
-overviewNodeDegree.Mean = mean(overviewNodeDegree{:,2:end},2);
-overviewSorted = sortrows(overviewNodeDegree, 'Mean', 'ascend');
-
-
-%%  transformation - 2 factors (mulitply and additive factor)
+%%  transformation of position coordinates so they match the map image
+%   consists of 2 factors (mulitply and additive factor)
 xT = 6.05;
 zT = 6.1;
 xA = -1100;
 zA = -3290;
 
 
+%% load the data of the top 10 gaze graph defined houses
+% using top 10 mean node degree houses
+% alternatively, it is possible to use the top 10 houses of the mean rich
+% club count (created when running the rich club script)
+overviewNodeDegree = load(strcat(overviewNDpath,'Overview_NodeDegree.mat'));
 
-%% rich club
+overviewNodeDegree = overviewNodeDegree.overviewNodeDegree;
 
+meanNDtable = table;
+meanNDtable.houseList = overviewNodeDegree.houseList;
+meanNDtable.meanND = mean(overviewNodeDegree{:,2:end},2);
 
-RCHouseList = readtable("E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\all_participants\position\top10_houses\RC_HouseList.csv");
+meanNDtableS = sortrows(meanNDtable,2,'descend');
 
-sortedRCL = sortrows(RCHouseList,'RCCount','ascend');
+housesTop10 = meanNDtableS.houseList(1:10);
 
-housesTop10RC = sortedRCL{end-9:end,1};
+% using the rich club list here named RC_HouseList.csv
+% RCHouseList = readtable("...\RC_HouseList.csv");
+% 
+% sortedRCL = sortrows(RCHouseList,'RCCount','ascend');
+% 
+% housesTop10 = sortedRCL{end-9:end,1};
+% 
 
-houseIndex10 = ismember({gazes_allParts.Collider}, housesTop10RC);
+%% identify the locations of the top 10 houses
+houseIndex10 = ismember({gazes_allParts.Collider}, housesTop10);
 positions10 = table;
 positions10.X = [gazes_allParts(houseIndex10).PosX]'*xT+xA;
 positions10.Z = [gazes_allParts(houseIndex10).PosZ]'*zT+zA;
 
 
-% define grid and do hist count
+%% define grid and do hist count
 [rows, columns, numberOfColorChannels] = size(map);
 
 % % ca 5m x 5m
@@ -101,9 +175,9 @@ alphaD(~zeros) = 0.6;
 % that location
 fullCount = struct;
 
-for index = 1:length(housesTop10RC)
+for index = 1:length(housesTop10)
         
-    houseName = housesTop10RC{index};
+    houseName = housesTop10{index};
     houseIndex = strcmp({gazes_allParts.Collider}, houseName);
     positions = table;
     positions.X = [gazes_allParts(houseIndex).PosX]'*xT+xA;
@@ -157,7 +231,7 @@ hold on
 plotty1 = imagesc(colEdges,rowEdges,sumAll', 'AlphaData', alphaD);
 colorbar
 title('visibility of top 10 houses - rich club and node degree');
-%saveas(gcf, strcat(savepath, 'visibility of top 10 houses.png'));
+saveas(gcf, strcat(savepath, 'visibility of top 10 houses.png'));
 hold off
 
 %% final aspect - only display 0,1,2 or more
@@ -181,8 +255,8 @@ colormap(colormap3);
 colorbar('Ticks',[0.35,1,1.65], 'TickLabels',{'0 houses','1 house','2 or more houses'})
 title('Visibility of top 10 houses - rich club & node degree');
 
-%saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.png'));
-%saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.fig'));
+saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.png'));
+saveas(gcf, strcat(savepath, 'visibility of top 10 houses - Triangulation.fig'));
 
 hold off
 
@@ -209,10 +283,10 @@ end
 for col = 1 : length(colEdges)
     line([colEdges(col), colEdges(col)], [1, 3000], 'Color', 'r', 'LineWidth', 0.1);
 end
-% saveas(gcf, strcat(savepath, 'grid size_vibility plots.png'));
+saveas(gcf, strcat(savepath, 'grid size_vibility plots.png'));
 
 
-%% percentage of triangulation are vs walked area
+%% percentage of triangulation area vs walked area
 
 walkedGridAll = convCountAll ~= 0;
 sumGridAll = sum(walkedGridAll,'all');
@@ -227,7 +301,7 @@ percTable = table;
 percTable.percentage_0Houses = ((sumGridAll-(sumGrid1+sumGrid2))/sumGridAll)*100;
 percTable.percentage_1House = (sumGrid1/sumGridAll)*100;
 percTable.percentage_2Houses = (sumGrid2/sumGridAll)*100;
-%save([savepath,'table_percentage_triangulation.mat'],'percTable');
+save([savepath,'table_percentage_triangulation.mat'],'percTable');
 
 
 figure(20)
@@ -235,13 +309,22 @@ labelsData = {'0 houses','1 house','2 or more houses'};
 figgy20 = pie([sumGridAll-sumGrid1-sumGrid2, sumGrid1, sumGrid2]);
 legend(labelsData)
 title('Percentage of possibility to triangulate in walked area');
-%saveas(gcf, strcat(savepath, 'piePlot_triangualationPercentage.png'));
+saveas(gcf, strcat(savepath, 'piePlot_triangualationPercentage.png'));
 
 
 
-%% how many times was triangulation possible?
+%% how much of the experiment time did participants spend in areas where
+% triangulation is possible?
 
-% load data interpolated
+% load data interpolated - here the analysis does not depend on the eye
+% tracking data, therefore the data is used before the gaze separation.
+% Note that the position data used here is not affected by the
+% interpolation or the pre-preprocessing pipeline until the gaze - noise
+% separation. Thus, since we are interested in the whole experiment time, 
+% we want to use the position data before it gets affected by the gaze 
+% separation. Here we use the interpolated data files, instead we could 
+% also use data files earlier in the preprocessing pipeline, like 
+% the condensedCollider files once all sessions have been combined.
 
 interpol_allParts = load('interpolData_allParticipants.mat');
 interpol_allParts = interpol_allParts.interpolData_allParticipants;

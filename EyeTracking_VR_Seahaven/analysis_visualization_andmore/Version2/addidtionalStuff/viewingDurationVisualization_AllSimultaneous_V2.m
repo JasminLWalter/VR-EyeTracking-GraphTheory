@@ -8,7 +8,7 @@
 
 clear all;
 
-savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\analysis_viewingDurations\';
+%savepath = 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\analysis_viewingDurations\';
 
 cd 'E:\SeahavenEyeTrackingData\duringProcessOfCleaning\interpolateLostData\'
 

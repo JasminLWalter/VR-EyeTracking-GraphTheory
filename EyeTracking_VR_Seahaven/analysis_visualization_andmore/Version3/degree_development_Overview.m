@@ -1,4 +1,4 @@
-%% ------------------ node_degree_development_V3-------------------------------------
+%% ------------------ diameter_development_V3-------------------------------------
 
 % --------------------script written by Jasmin L. Walter----------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
@@ -8,7 +8,7 @@
 clear all;
 
 
-savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\time_development\nodeDegree_development\individual_files\';
+savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\time_development\diameter\';
 
 
 cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\gazes_vs_noise\'
@@ -90,12 +90,10 @@ for ii = 1:Number
         
         
         % build table overview
-        rows = ['TimeStampEndPoint';houseList];
-        degreeNaN = array2table(NaN(length(rows),length(stampEndPoints)));
-        degreeHouses = table(rows);
-        degreeDevelopment = [degreeHouses,degreeNaN];
         
-        degreeDevelopment{1,2:end} = stampEndPoints;
+        degreeDevelopment = array2table(NaN(length(PartList)+1,length(stampEndPoints)));
+               
+        degreeDevelopment{1,:} = stampEndPoints;
 
         % build the graph
         for indexSL1 = 1:length(structIndex)
@@ -215,14 +213,11 @@ for ii = 1:Number
             
 
             
-            
-            
+            % get diameter
+            distanceM = distances(graphy);
+            maxDist = max(max(distanceM));
 
-            % get node degree info
-            degreeG= degree(graphy);
-            nodeDegreeTable = graphy.Nodes;
-            nodeDegreeTable.Edges = degreeG;
-
+            degreeDevelopment(currentPart
             for index3= 1:height(nodeDegreeTable)            
                houseIndex = strcmp(nodeDegreeTable{index3,1},degreeDevelopment{:,1});
                degreeDevelopment(houseIndex,indexSL1+1) = nodeDegreeTable(index3,2);
@@ -267,12 +262,11 @@ for ii = 1:Number
         
         
         % build table overview
-        rows = ['TimeStampEndPoint';houseList];
-        degreeNaN = array2table(NaN(length(rows),length(stampEndPoints)));
-        degreeHouses = table(rows);
-        degreeDevelopment = [degreeHouses,degreeNaN];
+           % build table overview
         
-        degreeDevelopment{1,2:end} = stampEndPoints;
+        degreeDevelopment = array2table(NaN(length(PartList)+1,length(stampEndPoints)));
+               
+        degreeDevelopment{1,:} = stampEndPoints;
         
         % build the graph
         for indexSL1 = 1:length(structIndex)
@@ -448,12 +442,11 @@ for ii = 1:Number
 
 
         % build table overview
-        rows = ['TimeStampEndPoint';houseList];
-        degreeNaN = array2table(NaN(length(rows),length(stampEndPoints)));
-        degreeHouses = table(rows);
-        degreeDevelopment = [degreeHouses,degreeNaN];
-
-        degreeDevelopment{1,2:end} = stampEndPoints;
+       % build table overview
+        
+        degreeDevelopment = array2table(NaN(length(PartList)+1,length(stampEndPoints)));
+               
+        degreeDevelopment{1,:} = stampEndPoints;
 
         % build the graph
         for indexSL1 = 1:length(structIndex)

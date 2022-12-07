@@ -1,14 +1,14 @@
-%% ------------------baseline_gaze_comparision_allParticipants_V3----------------------------------------
+%% ------------------baseline_gaze_comparison_allParticipants_V3----------------------------------------
 % script written by Jasmin Walter
 
 
 
 clear all;
 
-savepath = 'D:\Studium\NBP\Seahaven\90min_Data\Desync_Analysis\baseline_gaze_comparision\';
+savepath = 'D:\Studium\NBP\Seahaven\90min_Data\Desync_Analysis\baseline_gaze_comparison_allParticipants\';
 
 % path desync data - baseline data
-cd 'D:\Studium\NBP\Seahaven\90min_Data\Desync_Analysis\baseline_gaze_comparision\';
+cd 'D:\Studium\NBP\Seahaven\90min_Data\Desync_Analysis\baseline_gaze_comparison\';
 
 % house list
 listname = 'D:\Github\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\CoordinateListNew.txt';
@@ -18,8 +18,8 @@ nrHouses = height(coordinateList);
         
 
 % 20 participants with 90 min VR trainging less than 30% data loss
-% PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
-PartList = {21 22};
+PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
+
 
 
 
@@ -30,13 +30,13 @@ countAnalysedFile= 0;
 
 % create overview
 houseTable = coordinateList(:,1);
-overviewComparisionAllParts = table2struct(houseTable);
+overviewComparisonAllParts = table2struct(houseTable);
 
     
 
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
-    file = strcat(num2str(currentPart),'_overview_comparision_baseline_gazes_V3.mat');
+    file = strcat(num2str(currentPart),'_overview_comparison_baseline_gazes_V3.mat');
  
     % check for missing files
     if exist(file)==0
@@ -49,15 +49,15 @@ for ii = 1:Number
         countAnalysedFile = countAnalysedFile +1;
         % load desync data - basline
         individualOverview = load(file);
-        individualOverview = individualOverview.overviewComparision;
+        individualOverview = individualOverview.overviewComparison;
 
        if(countAnalysedFile == 1)
-           overviewComparisionAllParts = individualOverview;
+           overviewComparisonAllParts = individualOverview;
        else
-           for houseIndex = 1 : height(overviewComparisionAllParts)
+           for houseIndex = 1 : height(overviewComparisonAllParts)
                
-               overviewComparisionAllParts(houseIndex).StartPoints = [[overviewComparisionAllParts(houseIndex).StartPoints], [individualOverview(houseIndex).StartPoints]];
-               overviewComparisionAllParts(houseIndex).GazeLengthSamples = [[overviewComparisionAllParts(houseIndex).GazeLengthSamples], [individualOverview(houseIndex).GazeLengthSamples]];
+               overviewComparisonAllParts(houseIndex).StartPoints = [[overviewComparisonAllParts(houseIndex).StartPoints], [individualOverview(houseIndex).StartPoints]];
+               overviewComparisonAllParts(houseIndex).GazeLengthSamples = [[overviewComparisonAllParts(houseIndex).GazeLengthSamples], [individualOverview(houseIndex).GazeLengthSamples]];
            end
        end
 
@@ -70,7 +70,7 @@ end
 
 % save overview
 
-save([savepath 'allParticipants_overview_comparision_baseline_gazes_V3.mat'],'overviewComparisionAllParts');
+save([savepath 'allParticipants_overview_comparison_baseline_gazes_V3.mat'],'overviewComparisonAllParts');
 
 
 disp(strcat(num2str(Number), ' Participants in List'));

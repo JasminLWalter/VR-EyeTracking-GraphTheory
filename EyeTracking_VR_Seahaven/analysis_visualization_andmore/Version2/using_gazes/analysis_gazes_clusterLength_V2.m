@@ -1,18 +1,17 @@
-%% ------------------analysis_gazes_vs_noise----------------------------------------
-% script written by Jasmin Walter
+%% ------------------analysis_gazes_clusterLength----------------------------------------
 
-
+% --------------------script written by Jasmin L. Walter----------------------
+% -----------------------jawalter@uni-osnabrueck.de------------------------
 
 
 clear all;
 
-savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\gazes\gazes_noise_distribution\';
+savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\gazes\gazes_noise_distribution\UsedInPaper\';
 
 cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\duringProcessOfCleaning\interpolateLostData\'
 
 % participant list of 90 min VR - only with participants who have lost less than 30% of
 % their data (after running script cleanParticipants_V2)
-%PartList = {1909 3668 8466 2151 4502 7670 8258 3377 9364 6387 2179 4470 6971 5507 8834 5978 7399 9202 8551 1540 8041 3693 5696 3299 1582 6430 9176 5602 3856 7942 6594 4510 3949 3686 6543 7205 5582 9437 1155 8547 8261 3023 7021 9961 9017 2044 8195 4272 5346 8072 6398 3743 5253 9475 8954 8699 3593};
 
 % 20 participants with 90 min VR trainging less than 30% data loss
 PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
@@ -51,11 +50,13 @@ for ii = 1:Number
         interpolatedData = load(file);
         interpolatedData = interpolatedData.interpolatedData;
         
+        % save all data into one table --> allInterpData
         allInterpData = [allInterpData; interpolatedData];
-        
-        % something was fixated when having more than 7 samples
-        allSamples = [allSamples; interpolatedData.Samples];
 
+        allSamples = [allSamples; interpolatedData.Samples];
+        
+        % save information about distribution of gazes and noise
+        % something was fixated when having more than 7 samples
         gazes = interpolatedData.Samples > 7;
 
         
@@ -90,17 +91,18 @@ for ii = 1:Number
 
 end
 
+%% plot pie plot of distribution gazes vs noise
 avgG = mean(overviewSums(:,1));
 avgN = mean(overviewSums(:,2));
 
-% figure(2)
-% pieplot2 = pie([avgG, avgN]);
-% legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location','northeastoutside')
-% title('mean gazes noise distribution')
-% 
-% saveas(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'png');
-% print(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'-dpng','-r300'); 
-% savefig(gcf, strcat(savepath,'mean_gazes_noise_distr.fig'));
+figure(2)
+pieplot2 = pie([avgG, avgN]);
+legend({'gazes / bigger 7 samples','noise / smaller/equal 7 samples'},'Location','northeastoutside')
+title('mean gazes noise distribution')
+
+saveas(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'png');
+print(gcf,strcat(savepath,'mean_gazes_noise_distr.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'mean_gazes_noise_distr.fig'));
 
 percentage = NaN(Number,2);
 
@@ -119,49 +121,52 @@ percentage(:,2) = (overviewSums(:,2)*100) ./ overviewSums(:,3);
 % savefig(gcf, strcat(savepath,'perc_noisy_data_distr_allParts.fig'));
 
 
-%% duration statistics
-% figure(4)
-% 
-% histy= histogram(allSamples,'Normalization','probability');
-% yt = get(gca, 'YTick');                    
-% set(gca, 'YTick',yt, 'YTickLabel',yt*100);
-% 
-% ax = gca;
-% ax.XLabel.String = 'amount of consecutive samples';
-% ax.XLabel.FontSize = 12;
-% ax.YLabel.String = 'percentage';
-% ax.YLabel.FontSize = 12;
-% saveas(gcf,strcat(savepath,'viewing_duration_all.png'),'png');
-% 
-% print(gcf,strcat(savepath,'viewing_duration_all.png'),'-dpng','-r300'); 
-% savefig(gcf, strcat(savepath,'viewing_duration_all.fig'));
+%% distribution of cluster sizes over all participants
+figure(4)
 
-% big durations combined
+histyAll= histogram(allSamples,'Normalization','probability');
+yt = get(gca, 'YTick');  
+xt = get(gca, 'XTick');
+% set(gca, 'YTick',yt, 'YTickLabel',yt*100);
+set(gca, 'XTick',xt, 'XTickLabel',xt*33.33);
+
+ax = gca;
+ax.XLabel.String = 'Distribution of hit point clusters (time in ms)';
+ax.XLabel.FontSize = 12;
+ax.YLabel.String = 'Probability';
+ax.YLabel.FontSize = 12;
+saveas(gcf,strcat(savepath,'viewing_duration_all.png'),'png');
+
+print(gcf,strcat(savepath,'viewing_duration_all.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'viewing_duration_all.fig'));
+
+%% big durations combined into 31st bin
 
 big30= allSamples > 30;
 
 combSamples = allSamples;
 combSamples(big30) = 31;
 
-% figure(5)
-% 
-% histy2 = histogram(combSamples,'Normalization','probability');
-% yt = get(gca, 'YTick');                    
-% set(gca, 'YTick',yt, 'YTickLabel',yt*100);
-% xt= [1:3:31];
-% set(gca, 'XTick',xt, 'XTickLabel',xt*33.33);
-% 
-% ax = gca;
-% ax.XLabel.String = 'amount of consecutive samples (all samples > 30 combined in bin 31)';
-% ax.XLabel.FontSize = 12;
-% ax.YLabel.String = 'frequency';
-% ax.YLabel.FontSize = 12;
-% 
-% saveas(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'png');
-% 
-% print(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'-dpng','-r300'); 
-% savefig(gcf, strcat(savepath,'viewing_duration_bigCombined.fig'));
+figure(5)
 
+histyCombined = histogram(combSamples,'Normalization','probability');
+yt = get(gca, 'YTick');                    
+% set(gca, 'YTick',yt, 'YTickLabel',yt*100);
+xt= [1:3:31];
+set(gca, 'XTick',xt, 'XTickLabel',xt*33.33);
+
+ax = gca;
+ax.XLabel.String = 'Distribution of hit point clusters (time in ms)';
+ax.XLabel.FontSize = 12;
+ax.YLabel.String = 'Probability';
+ax.YLabel.FontSize = 12;
+
+saveas(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'png');
+
+print(gcf,strcat(savepath,'viewing_duration_bigCombined.png'),'-dpng','-r300'); 
+savefig(gcf, strcat(savepath,'viewing_duration_bigCombined.fig'));
+
+% save overviews
 
 save([savepath 'allInterpolatedData.mat'],'allInterpData');
 save([savepath 'allSamples_int.mat'],'allSamples');

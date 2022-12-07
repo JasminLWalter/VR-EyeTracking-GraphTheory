@@ -16,8 +16,8 @@ beforeInterpolation = load('missingDataOverview_beforeInterpolation').missingDat
 afterInterpolation = load('missingDataOverview_afterInterpolation').missingDataOverview;
 
 %------------------------ before Interpolation analysis---------------
-bigger31 = beforeInterpolation.Samples > 30;
-beforeInterpolation{bigger31, 1} = 31;
+bigger31 = beforeInterpolation.Samples > 10;
+beforeInterpolation{bigger31, 1} = 11;
 
 bdiff = strcmp(beforeInterpolation.SameDiff, 'diff');
 
@@ -43,13 +43,14 @@ end
 figure(1)
 plotty1 = bar([bSameArray(2,:)',bDiffArray(2,:)'],'stacked');
 legend('cluster between same colliders', 'cluster between different colliders');
-title('Distribution of missing data clusters before interpolation')
+xlim([0, 12]);
+%title('Distribution of missing data clusters before interpolation')
 xlabel('cluster size')
 ylabel('occurrence - sum all participants')
 
 %------------------------ after Interpolation analysis---------------
-bigger31 = afterInterpolation.Samples > 30;
-afterInterpolation{bigger31, 1} = 31;
+bigger31 = afterInterpolation.Samples > 10;
+afterInterpolation{bigger31, 1} = 11;
 
 adiff = strcmp(afterInterpolation.SameDiff, 'diff');
 
@@ -76,7 +77,8 @@ figure(2)
 plotty2 = bar([aSameArray(2,:)',aDiffArray(2,:)'],'stacked');
 legend('cluster between same colliders', 'cluster between different colliders');
 ylim([0,120000]);
-title('Distribution of missing data clusters after interpolation')
+xlim([0, 12]);
+%title('Distribution of missing data clusters after interpolation')
 xlabel('cluster size')
 ylabel('occurrence - sum all participants')
 

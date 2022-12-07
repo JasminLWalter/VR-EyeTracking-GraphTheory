@@ -15,9 +15,9 @@
 
 clear all;
 
-savepath = 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\gazes_vs_noise\';
+savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing7,9thresholds\9threshold\gazes_vs_noise9\';
 
-cd 'D:\Studium\NBP\Seahaven\90min_Data\newRaycast_Data\interpolatedColliders\';
+cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing7,9thresholds\9threshold\interpolatedColliders9\';
 
 % participant list of 90 min VR - only with participants who have lost less than 30% of
 % their data (after running script cleanParticipants_V2)
@@ -58,7 +58,7 @@ for ii = 1:Number
         % something was fixated when having more than 7 samples
         
 
-        gazes = [interpolatedData.Samples] > 7 | strcmp({interpolatedData.Collider}, 'newSession');
+        gazes = [interpolatedData.Samples] > 8 | strcmp({interpolatedData.Collider}, 'newSession');
         
         
 

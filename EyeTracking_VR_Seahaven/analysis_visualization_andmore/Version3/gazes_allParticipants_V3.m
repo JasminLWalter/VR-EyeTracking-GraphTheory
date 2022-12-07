@@ -1,5 +1,25 @@
-%% ------------------ gazes_allParticipants Version 3-------------------------------------
-% script written by Jasmin Walter
+%% ------------------ gazes_allParticipants_V3.m-------------------------------------
+
+% --------------------script written by Jasmin L. Walter-------------------
+% -----------------------jawalter@uni-osnabrueck.de------------------------
+
+% Description:
+% Script combines all gazes data from all participants into one file.
+% Script also combines all interpolated data files from all participants
+% into one file. 
+
+% Input:
+% gazes_data_V3.mat = gaze data files
+% interpolatedColliders_3Sessions_V3.mat = interpolated data files
+
+% Output:
+% gazes_allParticipants = combined gaze files from all participants
+% interpolData_allParticipants = combined interpolated data files from all participants            
+
+% Missing_Participant_Files.mat    = contains all participant numbers where the
+%                                    data file could not be loaded
+%                                   NOTE: only checks the gazes files
+
 
 clear all;
 

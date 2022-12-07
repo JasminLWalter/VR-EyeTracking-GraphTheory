@@ -9,7 +9,7 @@ clear all;
 
 %-----------adjustable variables---------
 
-savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree\visualization_graph,map\';
+savepath = 'E:\NBP\SeahavenEyeTrackingData\90minVR\analysis\graphs\node_degree\participant35\';
 
 cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\duringProcessOfCleaning\graphs\'
 
@@ -28,11 +28,11 @@ countMissingPart = 0;
 
 % load map
 
-map = imread ('C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\Map_Houses_SW2.png');
+map = imread ('D:\Github\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\Map_Houses_SW2.png');
 
 % load house list with coordinates
 
-listname = 'C:\Users\Jaliminchen\Documents\GitHub\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\CoordinateListNew.txt';
+listname = 'D:\Github\NBP-VR-Eyetracking\EyeTracking_VR_Seahaven\additional_files\CoordinateListNew.txt';
 coordinateList = readtable(listname,'delimiter',{':',';'},'Format','%s%f%f','ReadVariableNames',false);
 coordinateList.Properties.VariableNames = {'House','X','Y'};
 
@@ -72,16 +72,37 @@ for ii = 1:Number
         alpha(0.1)
         hold on;
         
-        % mark node houses
+       
+        
+        %title(strcat('Graph & degree centrality values - projection on Map - participant: ',num2str(currentPart)));
+    
+        % add edges into map-----------------------------------------------
+        
+        for ee = 1:length(edgeCell)
+            [Xhouse,Xindex] = ismember(edgeCell(ee,1),coordinateList.House);
+            
+            [Yhouse,Yindex] = ismember(edgeCell(ee,2),coordinateList.House);
+            
+            x1 = (coordinateList{Xindex,2});
+            y1 = coordinateList{Xindex,3};
+            
+            x2 = coordinateList{Yindex,2};
+            y2 = coordinateList{Yindex,3};
+            
+            line([x1,x2],[y1,y2],'Color','k','LineWidth',0.02);%,'LineStyle',':');             
+            
+        end
+ %---------comment code until here to only show nodes without edges--------
+  % mark node houses
         node = ismember(coordinateList.House,nodeTable.Name);
         x = coordinateList{node,2};
         y = coordinateList{node,3};
 
         
          markerND = centrality(graphy,'degree')';
-         plotty = scatter(x,y,60,markerND,'filled');
+         plotty = scatter(x,y,40,markerND,'filled');
          colormap(nodecolor);
-         colorbar
+         %colorbar
         
         % markerC defines color vector for colormap
         %NOTE do not forget to transpose vector such that it is oriented
@@ -98,27 +119,7 @@ for ii = 1:Number
 %         colormap jet
 %         colorbar
         
-        title(strcat('Graph & degree centrality values - projection on Map - participant: ',num2str(currentPart)));
-    
-        % add edges into map-----------------------------------------------
-        
-        for ee = 1:length(edgeCell)
-            [Xhouse,Xindex] = ismember(edgeCell(ee,1),coordinateList.House);
-            
-            [Yhouse,Yindex] = ismember(edgeCell(ee,2),coordinateList.House);
-            
-            x1 = (coordinateList{Xindex,2});
-            y1 = coordinateList{Xindex,3};
-            
-            x2 = coordinateList{Yindex,2};
-            y2 = coordinateList{Yindex,3};
-            
-            line([x1,x2],[y1,y2],'Color','k','LineWidth',0.05,'LineStyle',':');             
-            
-        end
- %---------comment code until here to only show nodes without edges--------
-        
-      saveas(gcf,strcat(savepath,'Graph_node_degree_map_participant_',num2str(currentPart),'.png'),'png');
+      %saveas(gcf,strcat(savepath,'Graph_node_degree_map_participant_',num2str(currentPart),'.png'),'png');
   
     
     else
@@ -129,7 +130,7 @@ end
 disp(strcat(num2str(Number), ' Participants analysed'));
 disp(strcat(num2str(countMissingPart),' files were missing'));
 
-csvwrite(strcat(savepath,'Missing_Participant_Files'),noFilePartList);
+%csvwrite(strcat(savepath,'Missing_Participant_Files'),noFilePartList);
 disp('saved missing participant file list');
 
 disp('done');

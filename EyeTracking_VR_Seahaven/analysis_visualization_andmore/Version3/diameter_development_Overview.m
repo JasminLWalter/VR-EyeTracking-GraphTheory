@@ -1,4 +1,4 @@
-%% ------------------ node_degree_development_V3-------------------------------------
+%% ------------------ diameter_development_V3-------------------------------------
 
 % --------------------script written by Jasmin L. Walter----------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
@@ -8,7 +8,7 @@
 clear all;
 
 
-savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\time_development\nodeDegree_development\individual_files\';
+savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\analysis\time_development\diameter\';
 
 
 cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\gazes_vs_noise\'
@@ -90,12 +90,10 @@ for ii = 1:Number
         
         
         % build table overview
-        rows = ['TimeStampEndPoint';houseList];
-        degreeNaN = array2table(NaN(length(rows),length(stampEndPoints)));
-        degreeHouses = table(rows);
-        degreeDevelopment = [degreeHouses,degreeNaN];
         
-        degreeDevelopment{1,2:end} = stampEndPoints;
+        diameterDevelopment = array2table(NaN(2,length(stampEndPoints)));
+               
+        diameterDevelopment{1,:} = stampEndPoints;
 
         % build the graph
         for indexSL1 = 1:length(structIndex)
@@ -215,18 +213,14 @@ for ii = 1:Number
             
 
             
-            
-            
+            % get diameter
+            distanceM = distances(graphy);
+            checkInf = isinf(distanceM);
+            distanceM(checkInf) = 0;
+            maxDist = max(max(distanceM));
 
-            % get node degree info
-            degreeG= degree(graphy);
-            nodeDegreeTable = graphy.Nodes;
-            nodeDegreeTable.Edges = degreeG;
-
-            for index3= 1:height(nodeDegreeTable)            
-               houseIndex = strcmp(nodeDegreeTable{index3,1},degreeDevelopment{:,1});
-               degreeDevelopment(houseIndex,indexSL1+1) = nodeDegreeTable(index3,2);
-            end
+            diameterDevelopment{2,indexSL1} = maxDist;
+            
             
 
         end
@@ -234,7 +228,7 @@ for ii = 1:Number
         
 %         
 %        save degreeDevelopment Overview
-         save([savepath num2str(currentPart) '_degreeDevelopment_Session1.mat'],'degreeDevelopment');
+         save([savepath num2str(currentPart) '_diameterDevelopment_Session1.mat'],'diameterDevelopment');
       %% taking care of the second session (a bit uggly coding with the repetition)        
 
         structIndex = [];
@@ -267,12 +261,11 @@ for ii = 1:Number
         
         
         % build table overview
-        rows = ['TimeStampEndPoint';houseList];
-        degreeNaN = array2table(NaN(length(rows),length(stampEndPoints)));
-        degreeHouses = table(rows);
-        degreeDevelopment = [degreeHouses,degreeNaN];
+           % build table overview
         
-        degreeDevelopment{1,2:end} = stampEndPoints;
+        diameterDevelopment = array2table(NaN(2,length(stampEndPoints)));
+               
+        diameterDevelopment{1,:} = stampEndPoints;
         
         % build the graph
         for indexSL1 = 1:length(structIndex)
@@ -397,24 +390,21 @@ for ii = 1:Number
 
 
           
+            % get diameter
+            distanceM = distances(graphy);
+            checkInf = isinf(distanceM);
+            distanceM(checkInf) = 0;
+            maxDist = max(max(distanceM));
 
-            % get node degree info
-            degreeG= degree(graphy);
-            nodeDegreeTable = graphy.Nodes;
-            nodeDegreeTable.Edges = degreeG;
-
-            for index3= 1:height(nodeDegreeTable)            
-               houseIndex = strcmp(nodeDegreeTable{index3,1},degreeDevelopment{:,1});
-               degreeDevelopment(houseIndex,indexSL1+1) = nodeDegreeTable(index3,2);
-            end
-
+            diameterDevelopment{2,indexSL1} = maxDist;
+            
 
          end
         
 
 %         
 %        save degreeDevelopment Overview
-         save([savepath num2str(currentPart) '_degreeDevelopment_Session2.mat'],'degreeDevelopment');
+         save([savepath num2str(currentPart) '_diameterDevelopment_Session2.mat'],'diameterDevelopment');
          
          %% taking care of the third session
          
@@ -448,12 +438,11 @@ for ii = 1:Number
 
 
         % build table overview
-        rows = ['TimeStampEndPoint';houseList];
-        degreeNaN = array2table(NaN(length(rows),length(stampEndPoints)));
-        degreeHouses = table(rows);
-        degreeDevelopment = [degreeHouses,degreeNaN];
-
-        degreeDevelopment{1,2:end} = stampEndPoints;
+       % build table overview
+        
+        diameterDevelopment = array2table(NaN(2,length(stampEndPoints)));
+               
+        diameterDevelopment{1,:} = stampEndPoints;
 
         % build the graph
         for indexSL1 = 1:length(structIndex)
@@ -577,15 +566,15 @@ for ii = 1:Number
             graphy = graphyNoData;
 
 
-            % get node degree info
-            degreeG= degree(graphy);
-            nodeDegreeTable = graphy.Nodes;
-            nodeDegreeTable.Edges = degreeG;
+            % get diameter
+            distanceM = distances(graphy);
+            checkInf = isinf(distanceM);
+            distanceM(checkInf) = 0;
+            
+            maxDist = max(max(distanceM));
 
-            for index3= 1:height(nodeDegreeTable)            
-               houseIndex = strcmp(nodeDegreeTable{index3,1},degreeDevelopment{:,1});
-               degreeDevelopment(houseIndex,indexSL1+1) = nodeDegreeTable(index3,2);
-            end
+            diameterDevelopment{2,indexSL1} = maxDist;
+            
 
 
          end
@@ -593,7 +582,7 @@ for ii = 1:Number
 
 %         
 %        save degreeDevelopment Overview
-         save([savepath num2str(currentPart) '_degreeDevelopment_Session3.mat'],'degreeDevelopment');
+         save([savepath num2str(currentPart) '_diameterDevelopment_Session3.mat'],'diameterDevelopment');
 
 
       

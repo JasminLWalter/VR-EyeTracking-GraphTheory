@@ -12,10 +12,10 @@
 clear all;
 
 
-savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\graphs\';
+savepath= 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing7,9thresholds\9threshold\graphs9\';
 
 
-cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing\gazes_vs_noise\'
+cd 'E:\NBP\SeahavenEyeTrackingData\90minVR\Version03\preprocessing7,9thresholds\9threshold\gazes_vs_noise9\'
 
 % 20 participants with 90 min VR trainging less than 30% data loss
 PartList = {21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
