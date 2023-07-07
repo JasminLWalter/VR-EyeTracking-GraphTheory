@@ -3,6 +3,9 @@
 % -------------------- written by Lucas Essmann - 2020 --------------------
 % ---------------------- lessmann@uni-osnabrueck.de -----------------------
 
+%-----------------adjusted and extended by Jasmin L. Walter, 2022/23-------
+%---------------------------jawalter@uos.de--------------------------------
+
 %Hierarchy index 
 
 % Requirements:
@@ -85,12 +88,12 @@ for partIndex = 1:totalgraphs
     end
     
    %log the axis
-    UniqueDegreeMed = log(UniqueDegreeMed);
+    UniqueDegreeMed_log = log(UniqueDegreeMed);
     DegreeFrequencyMed = log(DegreeFrequencyMed);
    %Fit a curve to the log data above the median with an exponential fit
    %(ax+b)
     ft2 = fittype(@(a,b,x) a*x+b);
-    f2 = fit(UniqueDegreeMed,DegreeFrequencyMed,ft2);
+    f2 = fit(UniqueDegreeMed_log,DegreeFrequencyMed,ft2);
     HierarchyIndex.Part(partIndex,:) = currentPart;
     HierarchyIndex.Slope(partIndex,:) = f2.a;
     
@@ -113,7 +116,7 @@ for partIndex = 1:totalgraphs
             'filled');
         hold on;
         plotty = fplot(@(x) f2.a*x+f2.b,...
-            [min(UniqueDegreeMed),max(UniqueDegreeMed)],...
+            [min(UniqueDegreeMed_log),max(UniqueDegreeMed_log)],...
             'LineWidth',3,'Color',[0.96,0.73,0.23]);
         xlim([0 4]); ylim([0 4]);
         xticks([0,1,2,3,4]);
@@ -131,23 +134,23 @@ for partIndex = 1:totalgraphs
     if saving_wanted == true
          saveas(gcf,strcat(savepath,...
              'Med_Hierarchy_Fit_Part',...
-             currentPart,'.png'),'png');
+             num2str(currentPart),'.png'),'png');
     end
 
-         close(figgy);
-
-    histy = histogram(HierarchyIndex.Slope,7);
-    xlabel('Hierarchy Index'); 
-    ylabel('Frequency');
-    ylim([0 6.5]);
-    set(gca,'FontName','Helvetica','FontSize',40)
-
+         close(figgy);   
+   
     end
      
 end
 
-
-
+histy = histogram(HierarchyIndex.Slope,7);
+xlabel('Hierarchy Index'); 
+ylabel('Frequency');
+%     ylim([0 6.5]);
+set(gca,'FontName','Helvetica')%,'FontSize',40)
+saveas(gcf,strcat(savepath,...
+             'Histogram_HierarchyIndex.png'),'png');
+         
 %% --------------------------- Saving -------------------------------------
 
 if saving_wanted == true
@@ -159,5 +162,5 @@ end
 
 disp('Done');
 
-clearvars '-except' ...
-    HierarchyIndex;
+% clearvars '-except' ...
+%     HierarchyIndex;

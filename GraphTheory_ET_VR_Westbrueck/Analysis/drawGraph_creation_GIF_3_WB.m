@@ -1,18 +1,19 @@
-%% ------------------ plot_graph_creation GIF_2 _V3-------------------------------------
+%% ------------------ drawGraph_creation_GIF_3_WB-------------------------------------
 % script written by Jasmin Walter
 
 
 clear all;
 
 
-savepath= 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\GIF_graph_creation\';
+savepath = 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\visualization_graph_plots\Gif3\';
+imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
 clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
 
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\gazes_vs_noise\'
 
-% 20 participants with 90 min VR trainging less than 30% data loss
-PartList = {1004};%21 22 23 24 26 27 28 30 31 33 34 35 36 37 38 41 43 44 45 46};
+cd 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\gazes_vs_noise\'
+
+PartList = {1013};%{1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
 
 
 
@@ -20,15 +21,21 @@ Number = length(PartList);
 noFilePartList = [];
 countMissingPart = 0;
 
-scope = 1000;
+scope = 600;
 
 % load map
+% !!! Note: the map matches the default coordinate system in python only
+% Matlab uses a different coordinate system, therefore, the map needs to be
+% flipped on the vertical axis for the coordniates to be correct in Matlab
+% plots. Before saving, the image then needs to be flipped back!
+% there are more complicated transformations of the coordinates possible,
+% but this is the easiest workaround to receive a correct map visualization
+% plot!!!
 
-map = imread ('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\map_white_flipped.png');
+% map = imread (strcat(imagepath,'map_white_flipped.png'));
+map = imread (strcat(imagepath,'map_natural_white_flipped.png'));
 
 
-
-% load house list with coordinates
 
 % load house list with coordinates
 
@@ -38,7 +45,6 @@ colliderList = readtable(listname);
 [uhouses,loc1,loc2] = unique(colliderList.target_collider_name);
 
 houseList = colliderList(loc1,:);
-
 
 
 
@@ -61,22 +67,21 @@ for ii = 1:Number
         % load data
         gazesData = load(file);
         gazesData = gazesData.gazes_data;
-        % create table with necessary fields
         
-        gazedTable = table;
-        gazedTable.hitObjectColliderName = [gazesData.hitObjectColliderName]';
-        
-        % remove all NH and sky elements
-        
-        % remove all NH and sky elements
-        nohouse=strcmp(gazedTable.hitObjectColliderName(:),{'NH'});
-        housesTable = gazedTable;
-        housesTable(nohouse,:)=[];
-        
-        housesTable(1,:) = []; % watch out, personalized content, needs to be removed if other participant is used (laze way to deal with self-reference)
+%         gazedTable = table;
+%         gazedTable.hitObjectColliderName = [gazesData.hitObjectColliderName]';
+%         gazedTable.Samples = [gazedObjects.Samples]';
         
         currentPartName= strcat('Participant_',num2str(currentPart));
         
+        % remove all NH and new session elements
+        nohouse =strcmp([gazesData.hitObjectColliderName],{'NH'});
+        newSess = strcmp([gazesData.hitObjectColliderName],{'newSession'});
+        remove = nohouse | newSess;
+        
+        cleanData = gazesData;
+        cleanData(remove)=[];
+               
         lastsum = 0;
         housesYaxis = 0;
         rowsAHouses = 0;
@@ -85,44 +90,41 @@ for ii = 1:Number
         ylist = [];
         appearedHouses = table;
         appearedEdges = table;
-        
-%         %%  transformation of position coordinates so they match the map image
-%         %   consists of 2 factors (mulitply and additive factor)
-%         xT = 6.05;
-%         zT = 6.1;
-%         xA = -1100;
-%         zA = -3290;
-        
+       
         
       %% Plot map to start with
-        figure(4)
+%         figure(4)
         
         for index = 1: scope 
+            currentCollider = cleanData(index).hitObjectColliderName;
             
             imshow(map);
-            alpha(0.1)
+            alpha(0.3)
             hold on;
+            
             if(index ==1)
             
-                hlocation= strcmp(housesTable.hitObjectColliderName(index),houseList.target_collider_name);
-                scatter(houseList.transformed_collidercenter_x(hlocation),houseList.transformed_collidercenter_y(hlocation), 'filled', 'black');
+                node = strcmp(currentCollider,houseList.target_collider_name);
+                x = houseList.transformed_collidercenter_x(node);
+                y = houseList.transformed_collidercenter_y(node);
+                scatter(x,y, 'filled', 'black');
                         
                 % plot location
-%                 scatter(gazedObjects(index).PosZ'*zT+zA, gazedObjects(index).PosX'*xT+xA, 10, 'filled','red');
+%                 scatter([cleanData(index).playerBodyPosition_x]*4.2+2050, [cleanData(index).playerBodyPosition_z]*4.2+2050, 10,'filled','red');
                 
             else
                 
                 % plot location
-%                 scatter(gazedObjects(index).PosZ'*zT+zA, gazedObjects(index).PosX'*xT+xA, 10, 'filled','red');
-            
+%                 scatter([cleanData(index).playerBodyPosition_x]*4.2+2050, [cleanData(index).playerBodyPosition_z]*4.2+2050, 10,'filled','red');
+                
                 %% create graph
                 % create nodetable
-                uniqueHouses= unique(housesTable.hitObjectColliderName(1:index));
+                uniqueHouses= unique([cleanData(1:index).hitObjectColliderName])';
                 NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
 
                 % create edge table
 
-                fullEdgeT= cell2table(housesTable.hitObjectColliderName(1:index),'VariableNames',{'Column1'});
+                fullEdgeT= cell2table([cleanData(1:index).hitObjectColliderName]','VariableNames',{'Column1'});
 
                 % prepare second column to add to specify edges
                 secondColumn = fullEdgeT.Column1;
@@ -211,7 +213,6 @@ for ii = 1:Number
 
 
                 graphy = rmnode(graphyNoData, 'noData');
-                graphy = rmnode(graphy, 'newSession');
 
 
 
@@ -227,8 +228,8 @@ for ii = 1:Number
                 x = houseList.transformed_collidercenter_x(node);
                 y = houseList.transformed_collidercenter_y(node);
 
-
-                plotty = scatter(x,y,'filled','k');
+                
+                scatter(x,y, 'filled', 'black');
 
                 % add edges into map-------------------------------------------------------
 
@@ -239,18 +240,21 @@ for ii = 1:Number
 
                     x1 = houseList.transformed_collidercenter_x(Xindex);
                     y1 = houseList.transformed_collidercenter_y(Xindex);
-
+                    
                     x2 = houseList.transformed_collidercenter_x(Yindex);
-                    y2 = houseList.transformed_collidercenter_x(Yindex);
+                    y2 = houseList.transformed_collidercenter_y(Yindex);
 
                     line([x1,x2],[y1,y2],'Color','k');
 
 
                 end
-            end
-           set(gca,'xdir','normal','ydir','normal')
+           end
 
-           saveas(gcf, strcat(savepath, 'img_', num2str(index),'.png')); 
+           set(gca,'xdir','normal','ydir','normal')
+                        
+    %                         saveas(gcf, strcat(savepath, num2str(currentPart),'_gif_graph_creation_', num2str(index),'.jpg'));
+           ax = gca;
+           exportgraphics(ax,strcat(savepath, num2str(currentPart),'_gif3_graph_creation_', num2str(index),'.png'),'Resolution',140)
            hold off 
             
             

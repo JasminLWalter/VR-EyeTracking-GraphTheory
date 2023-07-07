@@ -82,8 +82,8 @@ ax.XAxis.MinorTickValues = 1:1:245;
 ax.XLabel.String = 'Houses';
 ax.YLabel.String = 'Participants';
 
-print(gcf,strcat(savepath,'nodeDegree_imageScale.png'),'-dpng','-r300'); 
-savefig(gcf, strcat(savepath,'nodeDegree_imageScale.fig'));
+% print(gcf,strcat(savepath,'nodeDegree_imageScale.png'),'-dpng','-r300'); 
+% savefig(gcf, strcat(savepath,'nodeDegree_imageScale.fig'));
 
 % fig.PaperPositionMode = 'manual';
 % orient(fig,'landscape')
@@ -105,9 +105,20 @@ sortedbyHP = [sortedbyHP;table({'stdOfParts'},'VariableNames',columnN3(1)),array
 
 % create error bar plots
 
+tbIndex = zeros([height(sortedbyHP),1]);
+
+for index =  1:8
+    
+    taskB = strcat('TaskBuilding_', num2str(index));
+    locTB = strcmp(sortedbyHP.houseNames,taskB);
+    tbIndex = tbIndex | locTB;
+end
+
+
+
 % mean and std for each house
 figure(2)
-x = [1:245];
+
 plotty2 = errorbar(sortedbyHP.meanOfHouses(1:end-2), sortedbyHP.stdOfHouses(1:end-2),'b','Linewidth',1);
 xlabel('houses')
 ylabel('node degree')
@@ -124,8 +135,8 @@ plotty2a = plot(sortedbyHP.meanOfHouses(1:end-2)','b','Linewidth',3);
 
 hold off
 
-print(gcf,strcat(savepath,'nodeDegree_mean_std_allHouses.png'),'-dpng','-r300'); 
-savefig(gcf, strcat(savepath,'nodeDegree_mean_std_allHouses.fig'));
+% print(gcf,strcat(savepath,'nodeDegree_mean_std_allHouses.png'),'-dpng','-r300'); 
+% savefig(gcf, strcat(savepath,'nodeDegree_mean_std_allHouses.fig'));
 
 % mean and std for each participant
 
@@ -143,8 +154,8 @@ plotty3a = plot(forPlottingS{:,1},y,'b','Linewidth',3);
 
 hold off
 
-print(gcf,strcat(savepath,'nodeDegree_mean_std_allParticipants.png'),'-dpng','-r300'); 
-savefig(gcf, strcat(savepath,'nodeDegree_mean_std_allParticipants.fig'));
+% print(gcf,strcat(savepath,'nodeDegree_mean_std_allParticipants.png'),'-dpng','-r300'); 
+% savefig(gcf, strcat(savepath,'nodeDegree_mean_std_allParticipants.fig'));
 
 
 
@@ -154,4 +165,102 @@ savefig(gcf, strcat(savepath,'nodeDegree_mean_std_allParticipants.fig'));
  %print(gcf,'ImageScale_DegreeCentrality_allParticipants.pdf','-dpdf','-fillpage')
  
 
+ 
+figure(4) 
 
+plotty4 = boxchart(sortedbyHP{1:end-2,2:end-2});
+
+plotty4.JitterOutliers = 'on';
+plotty4.MarkerStyle = '.';
+
+hold on
+
+plot(sortedbyHP{end-1,2:end-2}, '-*')
+
+title('Node degree centrality of each participant averaged over buildings')
+xlabel('participants');
+ylabel('node degree')
+
+% set(gca,'TickLabelInterpreter','none');
+% set(gca,'XTickLabel',landmarkNames);
+
+legend({'boxplot + median','mean'},'location','northeast')
+
+saveas(gcf,strcat(savepath,'Boxplot_NDofParticipants_averagedOverBuildings'));
+ax = gca;
+exportgraphics(ax,strcat(savepath,'Boxplot_NDofParticipants_averagedOverBuildings_600DPI.png'),'Resolution',600)
+
+
+figure(5) 
+
+plotty5 = boxchart(sortedbyHP{1:end-2,2:end-2}');
+plotty5.JitterOutliers = 'on';
+plotty5.MarkerStyle = '.';
+% plotty5.BoxMedianLineColor = 'green';
+
+hold on
+
+plot(sortedbyHP{1:end-2,end-1}, '.')
+
+title('Node degree centrality of each building averaged over participants')
+xlabel('buildings');
+ylabel('node degree')
+
+% set(gca,'TickLabelInterpreter','none');
+% set(gca,'XTickLabel',landmarkNames);
+
+legend({'boxplot + median','mean'},'location','northwest')
+
+saveas(gcf,strcat(savepath,'Boxplot_NDofBuildings_averagedOverParticipants'));
+ax = gca;
+exportgraphics(ax,strcat(savepath,'Boxplot_NDofBuildings_averagedOverParticipants_600dpi.png'),'Resolution',600)
+
+%% identify all 8 pointing to building task buildings
+
+tbIndex = zeros([height(sortedbyHP),1]);
+
+for index =  1:8
+    
+    taskB = strcat('TaskBuilding_', num2str(index));
+    locTB = strcmp(sortedbyHP.houseNames,taskB);
+    tbIndex = tbIndex | locTB;
+end
+
+sortedbyHP.IndexTaskBuildingsP2B = tbIndex;
+typeBuilding = categorical(tbIndex(1:end-2,:),logical([1 0]),{'TaskBuilding','Building'});
+
+
+figure(6)
+x = [1:244];
+for index = 1:244
+    if (tbIndex(index) == 1)
+        color = [0.4660 0.6740 0.1880];
+
+    else
+        color = [0.75 0.75 0.75];
+
+    end
+    
+    plotty2 = errorbar(x(index), sortedbyHP.meanOfHouses(index), sortedbyHP.stdOfHouses(index),'b','Linewidth',2.5, 'Color',color,'CapSize',0);
+ 
+    hold on
+end
+
+xlabel('houses')
+ylabel('node degree')
+xlim([-1 246])
+ax = gca;
+ax.XTick = 0:10:244;
+ax.TickDir = 'out';
+ax.XMinorTick = 'on';
+ax.XAxis.MinorTickValues = 1:1:244;
+% hold on
+
+plotty2a = plot(sortedbyHP.meanOfHouses(1:end-2)','b','Linewidth',2);
+
+
+hold off
+
+saveas(gcf,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings'));
+ax = gca;
+exportgraphics(ax,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings_600dpi.png'),'Resolution',600)
