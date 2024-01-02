@@ -116,8 +116,31 @@ for indexPart = 1:Number
                 empty1 = strcmp({''}, data.hitObjectColliderName_1);
                 empty2 = strcmp({''}, data.hitObjectColliderName_2);
                 
+                % collider hit 1
                 data.hitObjectColliderName_1(empty1) = {'noHit'};
+                
+                data.ordinalOfHit_1(empty1) = NaN;
+                
+                data.hitPointOnObject_x_1(empty1) = NaN;
+                data.hitPointOnObject_y_1(empty1) = NaN;
+                data.hitPointOnObject_z_1(empty1) = NaN;
+                
+                data.hitObjectColliderBoundsCenter_x_1(empty1) = NaN;
+                data.hitObjectColliderBoundsCenter_y_1(empty1) = NaN;
+                data.hitObjectColliderBoundsCenter_z_1(empty1) = NaN;
+
+                % collider hit 2
                 data.hitObjectColliderName_2(empty2) = {'noHit'};
+                
+                data.ordinalOfHit_2(empty2) = NaN;
+                
+                data.hitPointOnObject_x_2(empty2) = NaN;
+                data.hitPointOnObject_y_2(empty2) = NaN;
+                data.hitPointOnObject_z_2(empty2) = NaN;
+                
+                data.hitObjectColliderBoundsCenter_x_2(empty2) = NaN;
+                data.hitObjectColliderBoundsCenter_y_2(empty2) = NaN;
+                data.hitObjectColliderBoundsCenter_z_2(empty2) = NaN;
                 
                 %% Rename Colliders etc - everything related to Westbrook's design
                 
