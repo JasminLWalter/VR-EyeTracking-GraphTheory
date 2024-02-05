@@ -25,20 +25,22 @@
 clear all;
 
 %% adjust the following variables: savepath, current folder and participant list!-----------
-savepathNewData = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\rawData_with_renamedColliders\';
-savepathCondensedData = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\condensedColliders\';
+savepathNewData = 'D:\Jasmin\SpaRe Belt Exploration\Preprocessed\rawData_with_renamedColliders_unflattened\';
+savepathCondensedData = 'D:\Jasmin\SpaRe Belt Exploration\Preprocessed\preprocessing_pipeline_matlab\condensedColliders\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\pre-processed_csv\'
+cd 'D:\Jasmin\SpaRe Belt Exploration\Preprocessed\unflattenedCSVs\'
 
 % Participant list of all participants that participated 5 sessions x 30 min 
 % in Westbrook city
 
-PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
+% PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
+PartList = {1027 1029 1031 1034 1035 1036 1038 1041 1043 1044 1045 1047 1049 1060 1062 1082 1083 1086 1088 1089 1090 1091 1092 1093 1100 1101 1136};
+
 % PartList = {1004};
 
-colliderList = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
+colliderList = readtable('D:\Jasmin\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
 
-changedColliders = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\list_collider_changes.csv');
+changedColliders = readtable('D:\Jasmin\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\list_collider_changes.csv');
 
 
 %% --------------------------------------------------------------------------
