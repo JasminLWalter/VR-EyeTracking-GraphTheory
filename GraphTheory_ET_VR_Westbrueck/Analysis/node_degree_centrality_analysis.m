@@ -264,3 +264,36 @@ hold off
 saveas(gcf,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings'));
 ax = gca;
 exportgraphics(ax,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings_600dpi.png'),'Resolution',600)
+
+
+%% --------------------------- combine imagescale and corr. into one panel
+% 
+% % load correlation coefficient
+% 
+% corr_array = load('CorrelationArray.mat');
+% corr_array = corr_array.corr_array;
+% 
+% figure(10)
+% panel1 = tiledlayout(1,2);
+% nexttile
+% 
+% histogram(corr_array,10);
+% xlabel('Correlation Coefficients'); 
+% ylabel('Frequency');
+% ax = gca;
+% ax.XMinorTick = 'on';
+% 
+% nexttile
+% imagescaly = imagesc(transpose2plot);
+% colorbar
+% title({'Image Scale Node Degree Centrality - all Participants','     '});
+% ax = gca;
+% ax.XTick = 0:10:245;
+% ax.TickDir = 'out';
+% ax.XMinorTick = 'on';
+% ax.XAxis.MinorTickValues = 1:1:245;
+% ax.XLabel.String = 'Houses';
+% ax.YLabel.String = 'Participants';
+
+
+
