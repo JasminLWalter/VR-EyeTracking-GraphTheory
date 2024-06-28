@@ -479,7 +479,7 @@ title('Mean area over participants walked during 30 min and 150 min')
 legend({'150 min','30 min'})
 saveas(gcf,strcat(savepath,'pie_Mean area walked during 30 min and 150 min.png'));
 
-
+save(strcat(savepath, 'squaresOverview'), 'squares')
 
 
 
@@ -712,3 +712,12 @@ saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city are
 saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.fig'));
 
 hold off
+
+
+%% save overviews
+
+save([savepath 'sumCountM_duration.mat'],'sumCountM_duration');
+save([savepath 'countMatrix_timeSpend_150min.mat'],'countMatrix_timeSpend_150min');
+save([savepath 'countMatrix_allETSess.mat'],'countMatrix_allETSess');
+
+
