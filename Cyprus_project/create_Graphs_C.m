@@ -9,46 +9,51 @@ clear all;
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
 
-savepath= 'F:\Cyprus_project_overview\data\graphs\';
+savepath= 'E:\Cyprus_project_overview\data\graphs\';
 
 
-cd 'F:\Cyprus_project_overview\data\et_data_labled_buildings\';
+cd 'E:\Cyprus_project_overview\data\graphs\graphPrepETdata\';
 
-clistpath = 'F:\Cyprus_project_overview\data\buildings\';
+clistpath = 'E:\Cyprus_project_overview\data\buildings\';
 colliderList = readtable(strcat(clistpath, "building_coordinate_list.csv"));
 
-s1_et1 = 'fixation_GPS_Expl_1_ET_1 - fixation_GPS_Expl_1_ET_1.csv';
-s1_et2 = 'fixation_GPS_Expl_1_ET_2 - fixation_GPS_Expl_1_ET_2.csv';
-s1_et3 = 'fixation_GPS_Expl_1_ET_3 - fixation_GPS_Expl_1_ET_3.csv';
-s2_et1 = 'fixation_GPS_Expl_2_ET_1 - fixation_GPS_Expl_2_ET_1.csv';
 
 
-fileList = {s1_et1; s1_et2; s1_et3; s2_et1};
-% 
-% data11 = readtable(fileList{1});
-% data12 = readtable(fileList{2});
-% data13 = readtable(fileList{3});
-% data21 = readtable(fileList{4});
 gazesData = table;
-for fileIndex = 1: length(fileList)
-    if fileIndex == 1
 
-        buildingData = string(readtable(fileList{fileIndex}).HouseNr_);
-
-    else
-
-        buildingData = string(readtable(fileList{fileIndex}).house_nr);
-    end
-
-
-    gazesTable = table;
-    gazesTable.name = buildingData;
-    gazesTable.name(end+1) ={'newSession'};
     
-    gazesData = [gazesData; gazesTable];
+% loop over recording sessions (should be 5 for each participant)
+for indexSess = 1:5
+    
+    % get eye tracking sessions and loop over them (amount of ET files
+    % can vary
+    dirSess = dir(['graphPrep_Expl_' num2str(indexSess) '_ET_' '*_labelled.csv']);
 
+    % make sure, all files are sorted
+    fileNames = {dirSess.name}';
+    fileNames_sorted = sortrows(fileNames,'ascend');
+    
+
+    %% Main part - runs if files exist!        
+    % loop over ET sessions and check data            
+    for fileIndex = 1:height(fileNames_sorted)
+        disp(['Process file:', fileNames_sorted(fileIndex)]);
+        % read in the data
+        % data = readtable([num2str(1004) '_Session_1_ET_1_data_correTS_mad_wobig.csv']);
+        data = readtable(fileNames_sorted{fileIndex});
+        buildingData = string(data.house_nr);
+
+        gazesTable = table;
+        gazesTable.name = buildingData;
+        gazesTable.name(end+1) ={'newSession'};
+        
+        gazesData = [gazesData; gazesTable];
+
+    end 
 
 end
+
+
 
 gazesData.name = cellstr(gazesData.name);
 % remove missing values and remove 0s

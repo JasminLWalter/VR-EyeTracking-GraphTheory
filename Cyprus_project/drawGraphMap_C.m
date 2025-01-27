@@ -10,34 +10,41 @@ clear all;
 %% adjust the following variables: 
 % savepath, imagepath, clistpath, current folder and participant list!-----
 
-imagepath = 'F:\Cyprus_project_overview\data\maps\'; % path to the map image location
+imagepath = 'E:\Cyprus_project_overview\data\maps\'; % path to the map image location
 
-cd 'F:\Cyprus_project_overview\data\graphs\';
+cd 'E:\Cyprus_project_overview\data\graphs\';
 
 
-clistpath = 'F:\Cyprus_project_overview\data\buildings\';
+clistpath = 'E:\Cyprus_project_overview\data\buildings\';
 colliderList = readtable(strcat(clistpath, "building_coordinate_list.csv"));
 colliderList.buildingNames = cellstr(string(colliderList.buildingNames));
 
 
 nodecolor = parula;
 
-map = imread(strcat(imagepath,'Limassol_grey2.jpg'));
+map = imread(strcat(imagepath,'map2.jpg'));
 
 
 % transform coordinates to match map
 
 % pixel values map picture  8192x5051
 dimMap = size(map);
-pixel_width = dimMap(2); %8192;  % Width of the image in pixels
-pixel_height = dimMap(1); %5051;  % Height of the image in pixels
+pixel_width = dimMap(2);  % Width of the image in pixels
+pixel_height = dimMap(1);   % Height of the image in pixels
 
+% small map --> map 1
+% % latitude and longitude of the edges of the map image 
+% corner_lat_top =  34.6776114; % Latitude of the top edge of the map
+% corner_lat_bottom = 34.6718491;  % Latitude of the bottom edge of the map
+% corner_lon_left = 33.0379205;  % Longitude of the left edge of the map
+% corner_lon_right = 33.0492816; % Longitude of the right edge of the map
 
+% big map --> map 2 data
 % latitude and longitude of the edges of the map image 
-corner_lat_top =  34.67751; % Latitude of the top edge of the map
-corner_lat_bottom = 34.671293;  % Latitude of the bottom edge of the map
-corner_lon_left = 33.037658;  % Longitude of the left edge of the map
-corner_lon_right = 33.049882; % Longitude of the right edge of the map
+corner_lat_top =  34.677833; % Latitude of the top edge of the map
+corner_lat_bottom = 34.6714944;  % Latitude of the bottom edge of the map
+corner_lon_left = 33.0378529;  % Longitude of the left edge of the map
+corner_lon_right = 33.0496599; % Longitude of the right edge of the map
 
 
 % Calculate differences in latitude and longitude
@@ -76,8 +83,7 @@ hold on;
 
 for ee = 1:length(edgeCell)
 
-    if ~(strcmp(edgeCell(ee,1),'28') |strcmp(edgeCell(ee,2),'28'))
-
+   
     [Xhouse,Xindex] = ismember(edgeCell(ee,1),colliderList.buildingNames);
     
     [Yhouse,Yindex] = ismember(edgeCell(ee,2),colliderList.buildingNames);
@@ -88,8 +94,7 @@ for ee = 1:length(edgeCell)
     x2 = colliderList.Longitude(Yindex);
     y2 = colliderList.Latitude(Yindex);
     
-    line([x1,x2],[y1,y2],'Color','k','LineWidth',0.1); 
-    end
+    line([x1,x2],[y1,y2],'Color','k','LineWidth',0.05); 
     
 end
 %---------comment code until here to only show nodes without edges--------
@@ -98,8 +103,6 @@ end
 
 
 %% visualize nodes color coded according to the node degree values
-find28 = strcmp(nodeTable.Name, '28');
-nodeTable(find28,:) = [];
 
 node = ismember(colliderList.buildingNames,nodeTable.Name);
 
@@ -108,12 +111,12 @@ y = colliderList.Latitude(node);
 
  % plot visualization
 %          plotty = scatter(x,y,40,'filled','YDataMode','manual');
- plotty = scatter(x, y, 15 ,'k','filled');
+ plotty = scatter(x, y, 12 ,'k','filled');
 
 
 saveas(gcf,'graph_visualizationMap');
 ax = gca;
-exportgraphics(ax,strcat(savepath,'graph_visualizationMap.png'))
+exportgraphics(ax,'graph_visualizationMap.png')
 
 hold off
 
