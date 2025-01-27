@@ -5,7 +5,7 @@
 
 clear all;
 
-cd 'F:\Cyprus_project_overview\data\buildings\'
+cd 'E:\Cyprus_project_overview\data\buildings\'
 
 buildingCoordinates = readtable('Final Map Limassol City Center (numbered buildings)- Building Labels.csv');
 
