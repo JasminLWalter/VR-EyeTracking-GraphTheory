@@ -25,12 +25,12 @@ clear all;
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
 
-savepath= 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
+savepath= 'D:\Jasmin\SpaReControlData\pre-processing_2023\velocity_based\step4_graphs\';
 
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step3_gazeProcessing\';
+cd 'D:\Jasmin\SpaReControlData\pre-processing_2023\velocity_based\step3_gazeProcessing\';
 
-colliderList = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
+colliderList = readtable('D:\Jasmin\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
 
 % 26 participants with 5x30min VR trainging less than 30% data loss
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
@@ -71,13 +71,20 @@ for indexPart = 1:Number
             missingFiles = [missingFiles; hMF];
         
         else
+
+            % sort the list to be sure
+            fileNames = {dirSess.name}';
+            fileNames_sorted = sortrows(fileNames, 'ascend');
+
+
+
             %% Main part - runs if files exist!        
             % loop over ET sessions and check data            
-            for indexET = 1:length(dirSess)
-                disp(['Process file: ', num2str(currentPart), '_Session_', num2str(indexSess),'_ET_', num2str(indexET)]);
+            for indexET = 1:length(fileNames_sorted)
+                disp(['Process file: ', fileNames_sorted{indexET}]);
                 % read in the data
                 % data = readtable([num2str(1004) '_Session_1_ET_1_data_correTS_mad_wobig.csv']);
-                data = readtable(dirSess(indexET).name);
+                data = readtable(fileNames_sorted{indexET});
 
                 fixations = data.events == 2.0;
                 noData = data.events == 3;
