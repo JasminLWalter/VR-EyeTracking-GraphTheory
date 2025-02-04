@@ -20,15 +20,15 @@ clear all;
 % cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\pre-processed_csv\'
 
 % datapaths Living Transformation harddrive
-savepath = 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step2_resampling\';
+savepath = 'D:\Jasmin\Human_A_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step2_resampling\';
 
-cd 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step1_dupl_clean_smooth\'
+cd 'D:\Jasmin\Human_A_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step1_dupl_clean_smooth\'
 
 % Participant list of all participants that participated 5 sessions x 30 min 
 % in Westbrook city of the Human_A Variation
 
-% PartList = {365 1754 2258 2693 3310 4176 4597 4796 4917 5741 6642 7093 7264 7412 7842 8007 8469 8673 9472 9502 9586 9601};
-PartList = {4176 4597 4796 4917 5741 6642 7093 7264 7412 7842 8007 8469 8673 9472 9502 9586 9601};
+PartList = {365 1754 2258 2693 3310 4176 4597 4796 4917 5741 6642 7093 7264 7412 7842 8007 8469 8673 9472 9502 9586 9601};
+% PartList = {4176 4597 4796 4917 5741 6642 7093 7264 7412 7842 8007 8469 8673 9472 9502 9586 9601};
 
 % PartList = {365};
 
@@ -220,7 +220,6 @@ for indexPart = 1:Number
             %% Main part - runs if files exist!        
             % loop over ET sessions and check data            
             for indexET = 1:length(dirSess)
-                tic
                 disp(['Process file: ', num2str(currentPart), '_Session_', num2str(indexSess),'_ET_', num2str(indexET)]);
                 % read in the data
                 data = readtable(dirSess(indexET).name);
@@ -261,7 +260,7 @@ for indexPart = 1:Number
                 
                   
                     
-                    [resampledData, newTimestamp] = resample([paddingStart(:,1);data.(currentVar); paddingEnd(:,1)],timeStamp, desiredSamplingRate);
+                    [resampledData, newTimestamp] = resample([paddingStart(:,1);data.(currentVar); paddingEnd(:,1)],timeStamp, desiredSamplingRate,3,3);
                 
                     if (indexRS == 1)
                         dataRS.timeStampRS = newTimestamp;
@@ -410,6 +409,7 @@ for indexPart = 1:Number
             end
         end
     end
+    toc
 end
 
 
