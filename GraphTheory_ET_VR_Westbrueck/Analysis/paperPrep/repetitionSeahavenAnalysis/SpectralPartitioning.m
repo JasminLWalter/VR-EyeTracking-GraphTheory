@@ -60,6 +60,13 @@
 % SpectralDocumentation.mat = overview of Eigenvalue statistics over all
 %                             participants
 
+% Note by Jasmin L. Walter:
+% cut Edges -- contains overview of all relevant statistics (edges, density
+% etc), note that in the paper, 
+% "avg_density" is referred to with "intra-cluster density (after partitioning)"
+% "cut_denisty" is referred to with "inter-cluster density (after partitioning)"
+
+
 
 
 clear all;
@@ -242,11 +249,12 @@ eigenvalue3L = [];
         
         
       % Plotting the second smallest Eigenvector (sorted)
-        figure('Name',strcat('Part_',currentPart,'_Eig2'));
+        figure('Name',strcat('Part_',num2str(currentPart),'_Eig2'));
         plot(sort(eigenvector2L),'.-');
+        title(strcat('Part ',num2str(currentPart),' Eig2'))
         if saving_wanted == true
             saveas(gcf,strcat(savepath,'2rdSmallestEigenvector_',...
-                currentPart,'.png'),'png');
+                num2str(currentPart),'.png'),'png');
         end
         
       % Investigating the Adjacency Matrix:
@@ -284,7 +292,7 @@ eigenvalue3L = [];
             %%
 %second smallest Eigenvector
         [ignore, path] = sort(eigenvector2L);
-        figure('Name',strcat('Part_',currentPart,'_AdjacencySpy'));
+        figure('Name',strcat('Part_',num2str(currentPart),'_AdjacencySpy'));
         sortedAdj = AdjacencyMatrix(path,path);
         
         %Split into pos and neg part 
@@ -339,25 +347,26 @@ eigenvalue3L = [];
         end
         
       % Highlighting the graph partitions in the graph
-        figure('Name',strcat('Part_',currentPart,'_Clusters'));
+        figure('Name',strcat('Part_',num2str(currentPart),'_Clusters'));
         plotty = plot(graphy,'MarkerSize',4,'LineWidth',1.5);
         highlight(plotty,index(1:length(eig_neg)),'NodeColor','r');
         highlight(plotty,index(length(eig_neg)+1:end),'NodeColor','g');
+        title(strcat('Part ',num2str(currentPart),' Clusters'))
         if saving_wanted == true
             saveas(gcf,strcat(savepath,'Clusters_Part_',...
-                currentPart,'.png'),'png');
+                num2str(currentPart),'.png'),'png');
         end
         
       % Plot the Eigenvalue Histogram and save the Eigenvalue Spectrum
-        save([savepath 'Part_' currentPart '_EigenvalueSpectrumL,mat'],...
+        save([savepath 'Part_' num2str(currentPart) '_EigenvalueSpectrumL,mat'],...
             'EigenvalueL');
         figure('Name', ...
-            strcat('Part_',currentPart,'__2nd_Smallest_EigenvectorL'));
+            strcat('Part_',num2str(currentPart),'__2nd_Smallest_EigenvectorL'));
         histogram(eigenvector2L);
         xlabel('Eigenvector entry value'); ylabel('Count');
         if saving_wanted == true
             saveas(gcf,strcat(savepath,...
-                'Part_',currentPart,...
+                'Part_',num2str(currentPart),...
                 '_Histogram_2nd_Smallest_EigenvectorL.png'),'png');
         end
 
@@ -370,7 +379,7 @@ eigenvalue3L = [];
 % Graph is not fully connected, the third smalles EV will be used (if >0)
     elseif EigenvalueL(3,3) > 1e-10
         
-         disp(strcat(currentPart,' has a non-connected graph')) ;
+         disp(strcat(num2str(currentPart),' has a non-connected graph')) ;
          eigenvalue3L = EigenvalueL(3,3);
          eigenvector3L = EigenvectorL(:,3);
 
@@ -386,11 +395,11 @@ eigenvalue3L = [];
                     < 1e-10 ...
                     && sum(eigenvector3L.^2) ...
                     > 1-1e-10
-                disp(strcat('Participant_',currentPart,' is valid'));
+                disp(strcat('Participant_',num2str(currentPart),' is valid'));
             else
                 disp(strcat('Something went wrong, ',...
                     'the Eigenvector might be the wrong one - Part_',...
-                    currentPart) );
+                    num2str(currentPart)) );
             end
             
 %------------------- Step 3 - Graph Not Connected -------------------------
@@ -399,9 +408,9 @@ eigenvalue3L = [];
       % Split it into positive and negative part
         eig_pos = eigenvector3_sort(eigenvector3_sort > 0);
         eig_neg = eigenvector3_sort(eigenvector3_sort < 0);
-        save([savepath 'Part_' currentPart '_eig_pos.mat'],...
+        save([savepath 'Part_' num2str(currentPart) '_eig_pos.mat'],...
             'eig_pos');
-        save([savepath 'Part_' currentPart '_eig_neg.mat'],...
+        save([savepath 'Part_' num2str(currentPart) '_eig_neg.mat'],...
             'eig_neg');
         
   % Documentation:
@@ -409,60 +418,62 @@ eigenvalue3L = [];
     Doc.stdEigVec(partIndex,:) = std(eigenvector3L);
 %---------------------------- Plotting ------------------------------------
         if plotting_wanted == true
-            figure('Name',strcat('Part_',currentPart,'_Eig3'));
+            figure('Name',strcat('Part_',num2str(currentPart),'_Eig3'));
             plot(sort(eigenvector3L),'.-');
             
             if saving_wanted == true
                 saveas(gcf,strcat(savepath,...
                     '3rdSmallestEigenvector_',...
-                    currentPart,'.png'),'png'); 
+                    num2str(currentPart),'.png'),'png'); 
             end
             %Investigating the Adjacency Matrix:
             [ignore,path] = sort(eigenvector3L);
-            figure('Name',strcat('Part_',currentPart,'_AdjacencySpy'));
+            figure('Name',strcat('Part_',num2str(currentPart),'_AdjacencySpy'));
             spy(AdjacencyMatrix(path,path));
             
             if saving_wanted == true
                 saveas(gcf,strcat(savepath,...
                     'Spy_AdjacencyMatrix_Part',...
-                    currentPart,'.png'),'png');
+                    num2str(currentPart),'.png'),'png');
             end
             
            % Highlighting the graph partitions in the graph
-            figure('Name',strcat('Part_',currentPart,'_Clusters'));
+            figure('Name',strcat('Part_',num2str(currentPart),'_Clusters'));
             plotty = plot(graphy,'MarkerSize',4,'LineWidth',1.5);
             highlight(plotty,index(1:length(eig_neg)),'NodeColor','r');
             highlight(plotty,index(length(eig_neg)+1:end),'NodeColor','g');
+            title(strcat('Part ',num2str(currentPart),' Clusters'))
             if saving_wanted == true
                 saveas(gcf,strcat(savepath,...
                     'Clusters_Part_',...
-                    currentPart,'.png'),'png');
+                    num2str(currentPart),'.png'),'png');
             end
             %Plot the Eigenvalue Histogram and save the Eigenvalue Spectrum
             if saving_wanted == true
-                save([savepath 'Part_' currentPart...
+                save([savepath 'Part_' num2str(currentPart)...
                     '_EigenvalueSpectrumL,mat'],'EigenvalueL');
             end
             figure('Name', strcat('Part_',...
-                currentPart,'_2nd_Smallest_Eigenvector'));
+                num2str(currentPart),'_2nd_Smallest_Eigenvector'));
             histogram(eigenvector3L);
             xlabel('Eigenvector entry value'); ylabel('Count');
+            title(strcat('Part ',num2str(currentPart),' 2nd_Smallest_Eigenvector'))
             if saving_wanted == true
                 saveas(gcf,strcat(savepath,...
-                    'Part_',currentPart,...
+                    'Part_',num2str(currentPart),...
                     '_Histogram_3nd_Smallest_EigenvectorL.png'),'png');
             end
         end
     else 
-        disp(strcat(currentPart,...
+        disp(strcat(num2str(currentPart),...
             'seems to be seperated into three graphs'));
         end 
         
 %----------------------------- Saving -------------------------------------
        if saving_wanted == true    
-            save([savepath 'Part_' currentPart '_eig_pos.mat'],...
+            save([savepath 'Part_' num2str(currentPart) '_eig_pos.mat'],...
                 'eig_posT');
-            save([savepath 'Part_' currentPart '_eig_neg.mat'],...
+            save([savepath 'Part_' num2str(currentPart) '_eig_neg.mat'],...
                 'eig_negT');
        end
 
