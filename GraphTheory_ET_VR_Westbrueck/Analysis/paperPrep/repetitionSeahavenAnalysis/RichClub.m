@@ -80,13 +80,13 @@ path = what;
 path = path.path;
 
 % cd into graph folder location
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs\';
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\Pre-processsing_pipeline\graphs\';
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\RichClub\';
+savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\RichClub\';
 
 imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
 clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
-landmarkPath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\';
+landmarkPath = 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\NodeDegreeCentrality\';
 
 %% -------------------------- Initialisation ------------------------------
 
@@ -264,7 +264,7 @@ end
          
          
        % Are always the same houses in the repective rich club? 
-         DegreeOver10 = ND>=13;
+         DegreeOver10 = ND>=15;
 
          NodeCountSub = ...
              ismember(houseList.target_collider_name,graphy.Nodes.Name(DegreeOver10));
@@ -279,32 +279,35 @@ for index = 1:length(PartList)
     num = PartList{index};
     partList2(index) = {strcat('Part_', num2str(num))};
 end
-richClubND13_NodeCountAll = array2table(NodeCountAll,'VariableNames',partList2);
-richClubND13_NodeCountAll.SumOverParticipants = sum(NodeCountAll, 2);
-richClubND13_NodeCountAll.BuildingNames = houseList.target_collider_name;
+richClubND15_NodeCountAll = array2table(NodeCountAll,'VariableNames',partList2);
+richClubND15_NodeCountAll.SumOverParticipants = sum(NodeCountAll, 2);
+richClubND15_NodeCountAll.BuildingNames = houseList.target_collider_name;
 
 
-% Take the mean over all subjects
-MeanRichClub = nanmean(RichT(:,2:end));
-
-% identify the buildings that occur in a rich club with at least 13 node
-% degree more often than the threshold of mean + std
+% identify the buildings that occur in a rich club with at least 15 node
+% degree more often than the threshold of mean + std node degree
+% then calculate mean and std of this count variable and identify threshold
+% for rich club buildings
 
     
-meanCountAll = mean(richClubND13_NodeCountAll.SumOverParticipants);
-stdCountAll = std(richClubND13_NodeCountAll.SumOverParticipants);
+meanCountAll = mean(richClubND15_NodeCountAll.SumOverParticipants);
+stdCountAll = std(richClubND15_NodeCountAll.SumOverParticipants);
 
-thresholdHighRCCount = meanCountAll + stdCountAll;
+thresholdHighRCCount = meanCountAll + (2*stdCountAll);
 
-disp(strcat(num2str(meanCountAll), ' = mean of count how often the buildings appear in the rich club with at least 13 node degree centrality'))
+disp(strcat(num2str(meanCountAll), ' = mean of count how often the buildings appear in the rich club with at least 15 node degree centrality'))
 
-disp(strcat(num2str(stdCountAll), ' = std of count how often the buildings appear in the rich club with at least 13 node degree centrality'))
+disp(strcat(num2str(stdCountAll), ' = std of count how often the buildings appear in the rich club with at least 15 node degree centrality'))
 
 disp(strcat(num2str(thresholdHighRCCount), ' = threshold for rich club buildings')) 
 
-highCountIndex = richClubND13_NodeCountAll.SumOverParticipants > thresholdHighRCCount;
+highCountIndex = richClubND15_NodeCountAll.SumOverParticipants > thresholdHighRCCount;
 
-richClubND13_highCountBuildings = richClubND13_NodeCountAll(highCountIndex,:);
+richClubND15_highCountBuildings = richClubND15_NodeCountAll(highCountIndex,:);
+
+% Calculate the mean adjusted rich club coefficient over all subjects -
+% preparation for plotting (Figure 1)
+MeanRichClub = nanmean(RichT(:,2:end));
     
 %% --------------------------- Plotting -----------------------------------
 
@@ -317,11 +320,11 @@ if plotting_wanted == true
     plot(MeanRichClub(1,1:17),'LineWidth',4);
     xlabel('Node Degree')
     ylabel('Mean Rich Club (Real/Random)');
-%     xlim([1,13]);
-%     xticks([1:2:13]);
+    xlim([1,15]);
+    xticks([1:2:15]);
     ylim([0.7,2.5]);
     set(gca,'FontName','Helvetica','FontWeight','bold')
-    xline(13,'-r')
+    xline(15,'-r')
 %     set(gca,'FontName','Helvetica','FontSize',40,'FontWeight','bold')
 
     pbaspect([1 1 1]);
@@ -340,7 +343,7 @@ if plotting_wanted == true
     xlabel('Node degree')
     ylabel('Number of nodes');
     
-    xline(13,'-r')
+    xline(15,'-r')
 
     
     if saving_wanted == true
@@ -348,11 +351,11 @@ if plotting_wanted == true
     end
 
     
-    maxNum13 = max(RC_Num(:,14)');
-    minNum13 = min(RC_Num(:,14)');
+    maxNum15 = max(RC_Num(:,14)');
+    minNum15 = min(RC_Num(:,14)');
     
-    disp(strcat('Max number of included building at ND 13', num2str(maxNum13)));
-    disp(strcat('Min number of included building at ND 13', num2str(minNum13)));
+    disp(strcat('Max number of included building at ND 15', num2str(maxNum15)));
+    disp(strcat('Min number of included building at ND 15', num2str(minNum15)));
    
     
     
@@ -365,7 +368,7 @@ if plotting_wanted == true
     alpha(0.2)
     hold on;
 
-    markerInfo = richClubND13_NodeCountAll.SumOverParticipants;
+    markerInfo = richClubND15_NodeCountAll.SumOverParticipants;
 
     % plotty = scatter(houseList.transformed_collidercenter_x, houseList.transformed_collidercenter_y,meanNDofHouses*2 +16,meanNDofHouses,'filled');
     plotty = scatter(houseList.transformed_collidercenter_x, houseList.transformed_collidercenter_y,markerInfo*1.2+14,markerInfo,'filled');
@@ -374,7 +377,7 @@ if plotting_wanted == true
     set(gca,'xdir','normal','ydir','normal')
 
     climits = caxis;
-    title({'Buildings sized and colored according to how often they appear', 'in the rich club with at least 13 node degree centrality nodes'})
+    title({'Buildings sized and colored according to how often they appear', 'in the rich club with at least 15 node degree centrality nodes'})
 
     hold off
     
@@ -394,7 +397,7 @@ if plotting_wanted == true
     alpha(0.2)
     hold on;
 
-    markerInfo = richClubND13_NodeCountAll.SumOverParticipants;
+    markerInfo = richClubND15_NodeCountAll.SumOverParticipants;
 
     % plotty = scatter(houseList.transformed_collidercenter_x, houseList.transformed_collidercenter_y,meanNDofHouses*2 +16,meanNDofHouses,'filled');
     plotty = scatter(houseList.transformed_collidercenter_x, houseList.transformed_collidercenter_y,markerInfo*1.2+13,markerInfo,'filled');
@@ -404,7 +407,7 @@ if plotting_wanted == true
     set(gca,'xdir','normal','ydir','normal')
 
     climits = caxis;
-    title({'Buildings sized and colored according to how often they appear', 'in the rich club with at least 13 node degree centrality nodes','high count buildings circled red'})
+    title({'Buildings sized and colored according to how often they appear', 'in the rich club with at least 15 node degree centrality nodes','high count buildings circled red'})
 
     hold off
 
@@ -423,7 +426,7 @@ if plotting_wanted == true
     alpha(0.2)
     hold on;
 
-    markerInfo = richClubND13_NodeCountAll.SumOverParticipants;
+    markerInfo = richClubND15_NodeCountAll.SumOverParticipants;
 
     % plotty = scatter(houseList.transformed_collidercenter_x, houseList.transformed_collidercenter_y,meanNDofHouses*2 +16,meanNDofHouses,'filled');
     plotty = scatter(houseList.transformed_collidercenter_x, houseList.transformed_collidercenter_y,markerInfo*1.2+13,markerInfo,'filled');
@@ -433,7 +436,7 @@ if plotting_wanted == true
     set(gca,'xdir','normal','ydir','normal')
 
     climits = caxis;
-    title({'Buildings sized and colored according to how often they appear', 'in the rich club with at least 13 node degree centrality nodes', 'landmarks circled red'})
+    title({'Buildings sized and colored according to how often they appear', 'in the rich club with at least 15 node degree centrality nodes', 'landmarks circled red'})
 
     hold off
     
@@ -454,11 +457,11 @@ if saving_wanted == true
     
     save([savepath 'Mean_RichClub.mat'],'MeanRichClub');
     
-    save([savepath 'richClubND13_NodeCountAll'],'richClubND13_NodeCountAll');
-    writetable(richClubND13_NodeCountAll, [savepath, 'richClubND13_NodeCountAll.csv']);
+    save([savepath 'richClubND15_NodeCountAll'],'richClubND15_NodeCountAll');
+    writetable(richClubND15_NodeCountAll, [savepath, 'richClubND15_NodeCountAll.csv']);
     
-    save([savepath 'richClubND13_highCountBuildings'],'richClubND13_highCountBuildings');  
-    writetable(richClubND13_highCountBuildings, [savepath, 'richClubND13_highCountBuildings.csv']);
+    save([savepath 'richClubND15_highCountBuildings'],'richClubND15_highCountBuildings');  
+    writetable(richClubND15_highCountBuildings, [savepath, 'richClubND15_highCountBuildings.csv']);
 
 end
 

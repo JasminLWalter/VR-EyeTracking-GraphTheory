@@ -16,9 +16,9 @@ clear all;
 
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
-savepath= 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\tempDevelopment\1minSections\';
+savepath= 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\tempDevelopment\1minSections\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\gazes_vs_noise\';
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\Pre-processsing_pipeline\gazes_vs_noise\';
 
 % 26 participants with 5x30min VR trainging less than 30% data loss
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
@@ -31,10 +31,11 @@ Number = length(PartList);
 
 % overviews
 overviewClusterDuration = zeros(Number,1);
-overviewNrViewedBuildings = zeros(Number,160);
-overviewNrEdges = zeros(Number,160);
-overviewDensity = zeros(Number,160);
-overviewDiameter = zeros(Number,160);
+overviewNrViewedBuildings = zeros(Number,150);
+overviewNrEdges = zeros(Number,150);
+overviewDensity = zeros(Number,150);
+overviewDiameter = zeros(Number,150);
+overviewIndices = zeros(Number,150);
 
 
 
@@ -88,25 +89,25 @@ for indexParts = 1:Number
     end
     indexList = [indexList, length(gazesData)];
     
-    
+    overviewIndices(indexParts,:) = indexList;
 
     
     for index1min = 1:length(indexList)
         currentLoc = indexList(index1min);
-        
+
         gazedTable = table;
         gazedTable.hitObjectColliderName = [gazesData.hitObjectColliderName]';
-    
+
         currentData = gazedTable(1:currentLoc,:);
         % remove all NH and sky elements
         nohouse=strcmp(currentData.hitObjectColliderName(:),{'NH'});
         currentData(nohouse,:)=[];
-        
+
         % check the duration of the data section
-        
-        
+
+
         % create the graph for the current data snippet
-        
+
         % create nodetable
         uniqueHouses= unique(currentData.hitObjectColliderName(:));
         NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
@@ -204,9 +205,9 @@ for indexParts = 1:Number
         graphy = rmnode(graphyNoData, 'noData');
         graphy = rmnode(graphy, 'newSession');
 
-    
+
         %% calculate and save graph measures
-        
+
         nrNodes = height(graphy.Nodes);
         nrEdges = height(graphy.Edges);
         maxEdges = (nrNodes * (nrNodes -1)) / 2;
@@ -217,14 +218,14 @@ for indexParts = 1:Number
         checkInf = isinf(distanceM);
         distanceM(checkInf) = 0;
         diameter = max(max(distanceM));
-        
+
         % save into overviews
         overviewNrViewedBuildings(indexParts,index1min)= nrNodes;
         overviewNrEdges(indexParts,index1min)= nrEdges;
         overviewDensity(indexParts,index1min)= density;
         overviewDiameter(indexParts,index1min)= diameter;
-        
-    
+
+
     end
     index1min = 1;
     
@@ -235,5 +236,6 @@ save([savepath 'overviewNrViewedBuildings_1min.mat'],'overviewNrViewedBuildings'
 save([savepath 'overviewNrEdges_1min.mat'],'overviewNrEdges');
 save([savepath 'overviewDensity_1min.mat'],'overviewDensity');
 save([savepath 'overviewDiameter_1min.mat'],'overviewDiameter');
+save([savepath 'overviewIndices_1min.mat'],'overviewIndices');
 
 disp('done');

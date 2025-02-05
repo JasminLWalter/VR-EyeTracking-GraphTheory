@@ -38,9 +38,9 @@
 clear all;
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\newThreshold250\analysis\';
+savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\analysisPreprocessing\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\newThreshold250\interpolatedColliders\'
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\Step3_interpolation\'
 
 % participant list of 90 min VR - only with participants who have lost less than 30% of
 % their data (after running script cleanParticipants_V2)
@@ -65,6 +65,7 @@ allDurations = [];
 
 for ii = 1:Number
     currentPart = cell2mat(PartList(ii));
+    disp(currentPart)
     
     file = strcat(num2str(currentPart),'_interpolatedColliders_5Sessions_WB.mat');
     
@@ -77,7 +78,7 @@ for ii = 1:Number
         disp(strcat(file,' does not exist in folder'));
     %% main code   
     elseif exist(file)==2
-        tic
+        % tic
         countAnalysedPart = countAnalysedPart +1;
         % load data
         interpolatedData = load(file);
@@ -94,16 +95,16 @@ for ii = 1:Number
         
         % save information about distribution of gazes and noise
         % something was fixated when having more than 7 samples
-        gazes = [interpolatedData(:).clusterDuration] > 250;
+        gazes = [interpolatedData(:).clusterDuration] > 266.6;
 
         
-        gazedObjects = interpolatedData(gazes);
+        % gazedObjects = interpolatedData(gazes);
+        % 
+        % noisyObjects = interpolatedData(not(gazes));
+        % 
         
-        noisyObjects = interpolatedData(not(gazes));
-              
-        
-        sumG = sum([gazedObjects(:).clusterDuration],'omitnan');
-        sumN = sum([noisyObjects(:).clusterDuration],'omitnan');
+        sumG = sum([interpolatedData(gazes).clusterDuration],'omitnan');
+        sumN = sum([interpolatedData(not(gazes)).clusterDuration],'omitnan');
         overviewGazes.Participant(ii) = currentPart;
         overviewGazes.SumGazeDuration(ii) = sumG;
         overviewGazes.SumNoiseDuration(ii) = sumN;
@@ -120,9 +121,10 @@ for ii = 1:Number
 %         
 
      
-  
-        toc
         
+        % toc
+        clearvars interpolatedData;
+
     else
         disp('something went really wrong with participant list');
     end

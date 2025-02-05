@@ -1,4 +1,4 @@
-%% ------------------ extractData_PTB_control_WB.m-----------------------
+%% ------------------ overview_Step1_extractData_PTB_controls_WB.m-----------------------
 
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------

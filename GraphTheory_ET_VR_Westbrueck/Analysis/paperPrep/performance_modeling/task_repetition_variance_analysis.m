@@ -8,11 +8,12 @@ clear all;
 
 %% adjust the following variables:  
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\RepetitionAnalysis\';
+savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\P2B_controls_analysis\RepetitionAnalysis\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\';
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\P2B_controls_analysis\';
 
 PartList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080];
+
 %% load data
 
 dataP2B = readtable('overviewTable_P2B_Prep_complete.csv');
@@ -329,7 +330,7 @@ hold off
 %legend(["performance data","performance mean"])
  
 
-saveas(gcf, strcat(savepath, 'Boxplot pointing errors sorted into trial sequence at the same start location.png'));
+saveas(gcf, strcat(savepath, 'Boxplot pointing errors sorted into trial sequence at the same start location_fig10.png'));
 
 
 % figure 11
@@ -350,7 +351,7 @@ plot(groupStats7.mean_RecalculatedAngle, '-o')  % x-axis is the intergers of pos
 hold off
 %legend(["performance data","performance mean"])
 
-saveas(gcf, strcat(savepath, 'Boxplot pointing errors sorted into trial sequence at the same start location.png'));
+saveas(gcf, strcat(savepath, 'Boxplot pointing errors sorted into trial sequence at the same start location_fig11.png'));
 
 
 % figure 12
@@ -379,4 +380,4 @@ plotty = plot(groupStats14.mean_RecalculatedAngle,'-o','Color','k','MarkerFaceCo
 
 hold off
 
-saveas(gcf, strcat(savepath, 'Boxplot pointing errors sorted into trial sequence at the same start location.png'));
+saveas(gcf, strcat(savepath, 'Boxplot pointing errors sorted into trial sequence at the same start location_fig12.png'));

@@ -27,9 +27,9 @@ clear all;
 
 %% adjust the following variables: savepath and current folder!-----------
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\';
+savepath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\'
+cd 'F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\'
 
 %--------------------------------------------------------------------------
 
@@ -232,6 +232,33 @@ typeBuilding = categorical(tbIndex(1:end-2,:),logical([1 0]),{'TaskBuilding','Bu
 
 figure(6)
 x = [1:244];
+
+plotty2 = errorbar(x, sortedbyHP.meanOfHouses(1:244), sortedbyHP.stdOfHouses(1:244),'b','Linewidth',2.5, 'Color',[0.75 0.75 0.75],'CapSize',0);
+ 
+hold on
+
+
+xlabel('houses')
+ylabel('node degree')
+xlim([-1 246])
+ax = gca;
+ax.XTick = 0:10:244;
+ax.TickDir = 'out';
+ax.XMinorTick = 'on';
+ax.XAxis.MinorTickValues = 1:1:244;
+% hold on
+
+plotty2a = plot(sortedbyHP.meanOfHouses(1:end-2)','b','Linewidth',2);
+
+
+hold off
+
+saveas(gcf,strcat(savepath,'MeanND_StdError_AllBuildings'));
+ax = gca;
+exportgraphics(ax,strcat(savepath,'MeanND_StdError_AllBuildings_600dpi.png'),'Resolution',600)
+
+figure(7)
+x = [1:244];
 for index = 1:244
     if (tbIndex(index) == 1)
         color = [0.4660 0.6740 0.1880];
@@ -264,6 +291,7 @@ hold off
 saveas(gcf,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings'));
 ax = gca;
 exportgraphics(ax,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings_600dpi.png'),'Resolution',600)
+
 
 
 %% --------------------------- combine imagescale and corr. into one panel

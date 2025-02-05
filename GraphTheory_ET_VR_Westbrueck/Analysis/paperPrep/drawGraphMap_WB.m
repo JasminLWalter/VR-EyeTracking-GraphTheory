@@ -27,11 +27,11 @@ clear all;
 %% adjust the following variables: 
 % savepath, imagepath, clistpath, current folder and participant list!-----
 
-savepath = 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\visualization_graph_plots\graphsOnMap\';
+savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\visualizations_graph_plots\graph_plots\';
 imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
 clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
 
-cd 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs\';
+cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
 
 
 % 20 participants with 90 min VR trainging less than 30% data loss

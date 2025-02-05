@@ -8,9 +8,9 @@ clear all;
 
 %% adjust the following variables: 
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\';
+savepath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\P2B_controls_analysis\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\';
+cd 'F:\WestbrookProject\Spa_Re\control_group\Analysis\P2B_controls_analysis\';
 
 PartList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080];
 
@@ -18,7 +18,7 @@ PartList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 105
 %% load data
 
 dataP2B = readtable('overviewTable_P2B_Prep_complete.csv');
-dataP2B_withoutRep_pred = readtable(' dataP2B_withoutReps_predictions.csv');
+dataP2B_withoutRep_pred = readtable('dataP2B_withoutReps_predictions.csv');
 
 
 % load trial id table
@@ -47,9 +47,9 @@ for index = 1:height(stCombiIds)
     mean_stCombi_overview.stC_Mean_Predictions_Mfull_112(index) = mean(dataP2B_withoutRep_pred.Predictions_full_112(selectionPart_56));
     mean_stCombi_overview.stC_Mean_Predictions_Mfull_56(index) = mean(dataP2B_withoutRep_pred.Predictions_full_56(selectionPart_56));
     
-    mean_stCombi_overview.stC_Mean_Predictions_M2(index) = mean(dataP2B_withoutRep_pred.Predictions_M2(selectionPart_56));
-    mean_stCombi_overview.stC_Mean_Predictions_M3(index) = mean(dataP2B_withoutRep_pred.Predictions_M3(selectionPart_56));
-    mean_stCombi_overview.stC_Mean_Predictions_M4(index) = mean(dataP2B_withoutRep_pred.Predictions_M4(selectionPart_56));
+    % mean_stCombi_overview.stC_Mean_Predictions_M2(index) = mean(dataP2B_withoutRep_pred.Predictions_M2(selectionPart_56));
+    % mean_stCombi_overview.stC_Mean_Predictions_M3(index) = mean(dataP2B_withoutRep_pred.Predictions_M3(selectionPart_56));
+    % mean_stCombi_overview.stC_Mean_Predictions_M4(index) = mean(dataP2B_withoutRep_pred.Predictions_M4(selectionPart_56));
 
     
     
@@ -87,9 +87,9 @@ mean_stCombi_overview.Error_minus_Mean = mean_stCombi_overview.stC_Mean_112 - me
 
 mean_stCombi_overview.Error_minus_Pred_MF = mean_stCombi_overview.stC_Mean_112 - mean_stCombi_overview.stC_Mean_Predictions_Mfull_112;
 
-mean_stCombi_overview.Error_minus_Pred_M2 = mean_stCombi_overview.stC_Mean_112 - mean_stCombi_overview.stC_Mean_Predictions_M2;
-mean_stCombi_overview.Error_minus_Pred_M3 = mean_stCombi_overview.stC_Mean_112 - mean_stCombi_overview.stC_Mean_Predictions_M3;
-mean_stCombi_overview.Error_minus_Pred_M4 = mean_stCombi_overview.stC_Mean_112 - mean_stCombi_overview.stC_Mean_Predictions_M4;
+% mean_stCombi_overview.Error_minus_Pred_M2 = mean_stCombi_overview.stC_Mean_112 - mean_stCombi_overview.stC_Mean_Predictions_M2;
+% mean_stCombi_overview.Error_minus_Pred_M3 = mean_stCombi_overview.stC_Mean_112 - mean_stCombi_overview.stC_Mean_Predictions_M3;
+% mean_stCombi_overview.Error_minus_Pred_M4 = mean_stCombi_overview.stC_Mean_112 - mean_stCombi_overview.stC_Mean_Predictions_M4;
 
 meanError56 = mean(mean_stCombi_overview.stC_Mean_56);
 mean_stCombi_overview.Error_minus_Mean_2 = mean_stCombi_overview.stC_Mean_56 - meanError56;
@@ -104,15 +104,15 @@ overviewR2 = table;
 overviewR2.Var_MF = var(mean_stCombi_overview.Error_minus_Pred_MF)/var(mean_stCombi_overview.Error_minus_Mean);
 overviewR2.Var_MF_56 = var(mean_stCombi_overview.Error_minus_Pred_MF_2)/var(mean_stCombi_overview.Error_minus_Mean_2);
 
-overviewR2.Var_M2= var(mean_stCombi_overview.Error_minus_Pred_M2)/var(mean_stCombi_overview.Error_minus_Mean);
-overviewR2.Var_M3 = var(mean_stCombi_overview.Error_minus_Pred_M3)/var(mean_stCombi_overview.Error_minus_Mean);
-overviewR2.Var_M4 = var(mean_stCombi_overview.Error_minus_Pred_M4)/var(mean_stCombi_overview.Error_minus_Mean);
+% overviewR2.Var_M2= var(mean_stCombi_overview.Error_minus_Pred_M2)/var(mean_stCombi_overview.Error_minus_Mean);
+% overviewR2.Var_M3 = var(mean_stCombi_overview.Error_minus_Pred_M3)/var(mean_stCombi_overview.Error_minus_Mean);
+% overviewR2.Var_M4 = var(mean_stCombi_overview.Error_minus_Pred_M4)/var(mean_stCombi_overview.Error_minus_Mean);
 
 overviewR2.R2_MF = 1- overviewR2.Var_MF;
 overviewR2.R2_MF_56 = 1- overviewR2.Var_MF_56;
-overviewR2.R2_M2 = 1- overviewR2.Var_M2;
-overviewR2.R2_M3 = 1- overviewR2.Var_M3;
-overviewR2.R2_M4 = 1- overviewR2.Var_M4;
+% overviewR2.R2_M2 = 1- overviewR2.Var_M2;
+% overviewR2.R2_M3 = 1- overviewR2.Var_M3;
+% overviewR2.R2_M4 = 1- overviewR2.Var_M4;
 
 
 save([savepath 'overviewR2_s-t-combi_means.mat'],'overviewR2');
@@ -145,7 +145,7 @@ disp(strcat('R2 = 1- (ss²A/ss²B) = ', num2str(r2_var)));
 
 
 
-
+% 
 % 
 % var112 = var(mean_stCombi_overview.stC_Mean_112);
 % var56 = var(mean_stCombi_overview.stC_Mean_56);
@@ -158,9 +158,9 @@ disp(strcat('R2 = 1- (ss²A/ss²B) = ', num2str(r2_var)));
 % explainedVar56 = varPred/var56;
 % 
 % 
-% 
-% 
-% 
+
+
+
 
 
 

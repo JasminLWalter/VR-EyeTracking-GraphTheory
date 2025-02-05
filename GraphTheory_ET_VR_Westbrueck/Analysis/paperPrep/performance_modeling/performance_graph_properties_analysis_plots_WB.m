@@ -3,6 +3,7 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
+
 % Description: 
 
 
@@ -15,11 +16,11 @@ clear all;
 
 %% adjust the following variables: 
 
-savepath = 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\performance_graph_properties_analysis\graphPropertiesPlots\';
+savepath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\P2B_controls_analysis\performance_graph_properties_analysis\';
 
-cd 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\';
+cd 'F:\WestbrookProject\Spa_Re\control_group\Analysis\P2B_controls_analysis\';
 
-graphPath = 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs\';
+graphPath = 'F:\WestbrookProject\Spa_Re\control_group\Pre-processsing_pipeline\graphs\';
 
 PartList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080];
 
@@ -29,14 +30,19 @@ dataP2B = readtable('overviewTable_P2B_Prep_complete.csv');
 variableNames = dataP2B.Properties.VariableNames;
 
 %% load overview of the mean performance of each participant
-overviewPerformance = load('F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\performance_graph_properties_analysis\overviewPerformance.mat');
-overviewPerformance = overviewPerformance.overviewPerformance;
+overviewPerformance = readtable('F:\WestbrookProject\Spa_Re\control_group\Analysis\P2B_controls_analysis\performance_graph_properties_analysis\overviewPerformance.csv');
 
 %% load hierarchy index
 
-hierarchyIndex = load('F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\HierarchyIndex\HierarchyIndex_Table.mat');
+hierarchyIndex = load('F:\WestbrookProject\Spa_Re\control_group\Analysis\HierarchyIndex\HierarchyIndex_Table.mat');
 
 hierarchyIndex = hierarchyIndex.HierarchyIndex;
+
+
+%% load gaze-graph-defined landmark list
+
+commonGGLandmarks = load('F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\list_gaze_graph_defined_landmarks.mat');
+commonGGLandmarks = commonGGLandmarks.landmarks.houseNames;
 
 
 %% load graphs and calculate missing measures
@@ -50,8 +56,7 @@ hierarchyIndex = hierarchyIndex.HierarchyIndex;
 % 
 % overviewNodeDegreeW = cell2table(houseNames);
 
-overviewGraphMeasures = table; 
-overviewGraphMeasures.Participants = PartList';
+overviewGraphMeasures = overviewPerformance; 
 
 
 overviewGraphMeasures_longFormat = table;
@@ -76,6 +81,31 @@ for index = 1:length(PartList)
     checkInf = isinf(distanceM);
     distanceM(checkInf) = 0;
     diameter = max(max(distanceM));
+    avgShortestPath = mean(distanceM, "all");
+    
+    % calculate some gaze-graph-defined landmark stats
+    
+    nodeDegrees = degree(graphy);
+          
+    
+    nodeDegreeTable = table;
+    nodeDegreeTable = graphy.Nodes;
+    nodeDegreeTable.nodeDegrees = nodeDegrees;
+    
+    threshold = mean(nodeDegrees) + (2* std(nodeDegrees));
+    selection = nodeDegreeTable.nodeDegrees >= threshold;
+    
+    
+    allLandmarks = nodeDegreeTable(selection,:); 
+    nrAllLandmarks = height(allLandmarks);
+       
+    nrCommonLandmarks = sum(ismember(allLandmarks.Name, commonGGLandmarks));  
+    nrIndividualLandmarks = nrAllLandmarks - nrCommonLandmarks;
+    meanND = mean(nodeDegrees);
+   
+
+    % calculate dwelling time as well
+    
     
     % add data to overview
     
@@ -83,6 +113,15 @@ for index = 1:length(PartList)
     overviewGraphMeasures.nrEdges(index) = nrEdges;
     overviewGraphMeasures.density(index) = density;
     overviewGraphMeasures.diameter(index) = diameter;
+    overviewGraphMeasures.avgShortestPath(index) = avgShortestPath;
+    
+    overviewGraphMeasures.nrAllLandmarks(index) = nrAllLandmarks;
+    overviewGraphMeasures.nrCommonLandmarks(index) = nrCommonLandmarks;
+    overviewGraphMeasures.nrIndividualLandmarks(index) = nrIndividualLandmarks;
+    overviewGraphMeasures.meanND(index) = meanND;
+    overviewGraphMesures.thresholdL(index) = threshold;
+
+
     
     % create long data format as well
     lengthPart = sum(dataP2B.SubjectID == currentPart);   
@@ -93,6 +132,14 @@ for index = 1:length(PartList)
     longTable.nrEdges(1:lengthPart) = nrEdges;
     longTable.density(1:lengthPart) = density;
     longTable.diameter(1:lengthPart) = diameter;
+    longTable.avgShortestPath(1:lengthPart) = avgShortestPath;
+    
+    longTable.nrAllLandmarks(1:lengthPart) = nrAllLandmarks;
+    longTable.nrCommonLandmarks(1:lengthPart) = nrCommonLandmarks;
+    longTable.nrIndividualLandmarks(1:lengthPart) = nrIndividualLandmarks;
+    longTable.meanND(1:lengthPart) = meanND;
+    longTable.thresholdL(1:lengthPart) = threshold;
+    
     
     overviewGraphMeasures_longFormat = [overviewGraphMeasures_longFormat; longTable];
     
@@ -107,6 +154,25 @@ writetable(overviewGraphMeasures, [savepath, 'overviewGraphMeasures.csv']);
 
 save([savepath 'overviewGraphMeasures_longFormat'],'overviewGraphMeasures_longFormat');
 writetable(overviewGraphMeasures_longFormat, [savepath, 'overviewGraphMeasures_longFormat.csv']);
+
+%% create covariance plot
+% Create a heatmap of the correlation matrix
+
+numericData = overviewGraphMeasures{:, 2:end};
+
+% Compute the correlation matrix
+correlationMatrix = corr(numericData);
+
+figure(100)
+
+h = heatmap(overviewGraphMeasures.Properties.VariableNames(2:end), overviewGraphMeasures.Properties.VariableNames(2:end), correlationMatrix, ...
+       'Colormap',jet,'ColorbarVisible', 'on', 'Interpreter','none');
+caxis(h, [-1 1]);
+title('Correlation Matrix Heatmap');
+xlabel('Measures');
+ylabel('Measures');
+
+
 
 
 %% create a sorted overview for the plots
@@ -271,6 +337,147 @@ ax = gca;
 exportgraphics(ax,strcat(savepath, 'scatter_performance_hierarchyIndex.png'),'Resolution',600)
 
 
+
+%% landmark plots
+
+figure(9)
+x= overviewGraphMeasures.nrAllLandmarks;
+y = overviewPerformance.meanPerformance;
+plotty4 = scatter(x,y,'filled');
+xlabel('nr all landmarks')
+ylabel('mean error')
+title('Nr all landmarks and performance')
+% xlim([6,10]);
+
+% Calculate regression line
+p = polyfit(x, y, 1);  % Fit a first-order polynomial (i.e. a line)
+yfit = polyval(p, x);
+
+% Add regression line to plot
+hold on
+plot(x, yfit, 'r-')
+% legend('Data', 'Regression Line')
+hold off
+
+ax = gca;
+exportgraphics(ax,strcat(savepath, 'scatter_performance_nrAllLandmarks.png'),'Resolution',600)
+
+
+figure(10)
+x= overviewGraphMeasures.nrCommonLandmarks;
+y = overviewPerformance.meanPerformance;
+plotty4 = scatter(x,y,'filled');
+xlabel('nr common landmarks')
+ylabel('mean error')
+title('Nr common landmarks and performance')
+% xlim([6,10]);
+
+% Calculate regression line
+p = polyfit(x, y, 1);  % Fit a first-order polynomial (i.e. a line)
+yfit = polyval(p, x);
+
+% Add regression line to plot
+hold on
+plot(x, yfit, 'r-')
+% legend('Data', 'Regression Line')
+hold off
+
+ax = gca;
+exportgraphics(ax,strcat(savepath, 'scatter_performance_nrCommonLandmarks.png'),'Resolution',600)
+
+
+figure(11)
+x= overviewGraphMeasures.nrIndividualLandmarks;
+y = overviewPerformance.meanPerformance;
+plotty4 = scatter(x,y,'filled');
+xlabel('nr individual landmarks')
+ylabel('mean error')
+title('Nr individual landmarks and performance')
+% xlim([6,10]);
+
+% Calculate regression line
+p = polyfit(x, y, 1);  % Fit a first-order polynomial (i.e. a line)
+yfit = polyval(p, x);
+
+% Add regression line to plot
+hold on
+plot(x, yfit, 'r-')
+% legend('Data', 'Regression Line')
+hold off
+
+ax = gca;
+exportgraphics(ax,strcat(savepath, 'scatter_performance_nrIndividualLandmarks.png'),'Resolution',600)
+
+
+figure(12)
+x= overviewGraphMeasures.nrIndividualLandmarks;
+y = overviewGraphMeasures.nrAllLandmarks;
+plotty4 = scatter(x,y,'filled');
+xlabel('nr individual landmarks')
+ylabel('nr all landmarks')
+title('Nr individual landmarks and nr all landmarks')
+% xlim([6,10]);
+
+% Calculate regression line
+p = polyfit(x, y, 1);  % Fit a first-order polynomial (i.e. a line)
+yfit = polyval(p, x);
+
+% Add regression line to plot
+hold on
+plot(x, yfit, 'r-')
+% legend('Data', 'Regression Line')
+hold off
+
+ax = gca;
+exportgraphics(ax,strcat(savepath, 'scatter_allLandmarks_individualLandmarks.png'),'Resolution',600)
+
+figure(13)
+x= overviewGraphMeasures.nrCommonLandmarks;
+y =overviewGraphMeasures.nrAllLandmarks;
+plotty4 = scatter(x,y,'filled');
+xlabel('nr common landmarks')
+ylabel('nr all landmarks')
+title('Nr common landmarks and nr all landmarks')
+% xlim([6,10]);
+
+% Calculate regression line
+p = polyfit(x, y, 1);  % Fit a first-order polynomial (i.e. a line)
+yfit = polyval(p, x);
+
+% Add regression line to plot
+hold on
+plot(x, yfit, 'r-')
+% legend('Data', 'Regression Line')
+hold off
+
+ax = gca;
+exportgraphics(ax,strcat(savepath, 'scatter_allLandmarks_commonLandmarks.png'),'Resolution',600)
+
+figure(14)
+x= overviewGraphMeasures.nrIndividualLandmarks;
+y = overviewGraphMeasures.nrCommonLandmarks;
+plotty4 = scatter(x,y,'filled');
+xlabel('nr individual landmarks')
+ylabel('nr common landmarks')
+title('Nr individual landmarks and nr common landmarks')
+% xlim([6,10]);
+
+% Calculate regression line
+p = polyfit(x, y, 1);  % Fit a first-order polynomial (i.e. a line)
+yfit = polyval(p, x);
+
+% Add regression line to plot
+hold on
+plot(x, yfit, 'r-')
+% legend('Data', 'Regression Line')
+hold off
+
+ax = gca;
+exportgraphics(ax,strcat(savepath, 'scatter_commonLandmarks_individualLandmarks.png'),'Resolution',600)
+
+
+
+%%
 
 % figure(4)
 

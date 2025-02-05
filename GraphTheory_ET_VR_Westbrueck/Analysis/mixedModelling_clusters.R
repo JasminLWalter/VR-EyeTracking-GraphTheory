@@ -13,8 +13,8 @@ library(performance)
 library(lubridate)
 
 
-savepath <- "E:\\Westbrueck Data\\SpaRe_Data\\1_Exploration\\Analysis\\P2B_controls_analysis\\"
-
+# savepath <- "E:\\WestbrookProject\\SpaRe_Data\\control_data\\Analysis\\P2B_controls_analysis\\"
+savepath <- "F:\\WestbrookProject\\Spa_Re\\control_group\\Analysis\\P2B_controls_analysis\\"
 setwd(savepath)
 
 ################################################################################
@@ -22,15 +22,21 @@ setwd(savepath)
 # load the data
 
 # full data frame
-dataP2B <- read.csv("E:/Westbrueck Data/SpaRe_Data/1_Exploration/Analysis/P2B_controls_analysis/overviewTable_P2B_Prep_complete.csv")
+dataP2B <- read.csv("F:/WestbrookProject/Spa_Re/control_group/Analysis/P2B_controls_analysis/overviewTable_P2B_Prep_complete.csv")
 dataP2B$SubjectID <- as.factor(dataP2B$SubjectID)
 dataP2B$StartBuildingName <- as.factor(dataP2B$StartBuildingName)
 dataP2B$TargetBuildingName <- as.factor(dataP2B$TargetBuildingName)
-dataP2B$RouteID <- as.factor(dataP2B$RouteID)
+#dataP2B$RouteID <- as.factor(dataP2B$RouteID)
+
+# data with mean values for each s-t combi
+
+dataP2B_stcombis <- read.csv("F:/WestbrookProject/Spa_Re/control_group/Analysis/P2B_controls_analysis/dataP2B_stCombi_means.csv")
+dataP2B_stcombis$stCombiID <- as.factor(dataP2B_stcombis$stCombiID)
+
 
 # data without repetitions and mean for angle, trial duration and distance participant to target building
 
-dataP2B_withoutReps <- read.csv("E:/Westbrueck Data/SpaRe_Data/1_Exploration/Analysis/P2B_controls_analysis/overviewTable_P2B_Prep_complete_withoutReps.csv")
+dataP2B_withoutReps <- read.csv("F:/WestbrookProject/Spa_Re/control_group/Analysis/P2B_controls_analysis/overviewTable_P2B_Prep_complete_withoutReps.csv")
 dataP2B_withoutReps$SubjectID <- as.factor(dataP2B_withoutReps$SubjectID)
 dataP2B_withoutReps$StartBuildingName <- as.factor(dataP2B_withoutReps$StartBuildingName)
 dataP2B_withoutReps$TargetBuildingName <- as.factor(dataP2B_withoutReps$TargetBuildingName)
@@ -38,18 +44,20 @@ dataP2B_withoutReps$RouteID <- as.factor(dataP2B_withoutReps$RouteID)
 
 # other data frames
 
-dataFRS <- read.csv("E:/Westbrueck Data/SpaRe_Data/1_Exploration/Analysis/P2B_controls_analysis/overview_FRS_Data.csv")
+dataFRS <- read.csv("F:/WestbrookProject/Spa_Re/control_group/Analysis/P2B_controls_analysis/overview_FRS_Data.csv")
 
-dataPerformance <- read.csv("E:/Westbrueck Data/SpaRe_Data/1_Exploration/Analysis/P2B_controls_analysis/performance_graph_properties_analysis/overviewPerformance.csv")
+dataPerformance <- read.csv("F:/WestbrookProject/Spa_Re/control_group/Analysis/P2B_controls_analysis/performance_graph_properties_analysis/overviewPerformance.csv")
 
-dataGraphMeasures <- read.csv("E:/Westbrueck Data/SpaRe_Data/1_Exploration/Analysis/P2B_controls_analysis/performance_graph_properties_analysis/graphPropertiesPlots/overviewGraphMeasures.csv")
+dataGraphMeasures <- read.csv("F:/WestbrookProject/Spa_Re/control_group/Analysis/P2B_controls_analysis/performance_graph_properties_analysis/graphPropertiesPlots/overviewGraphMeasures.csv")
 
-dataGraphM <- cbind(dataPerformance[, c(1,2)], dataGraphMeasures[, c(2,3,4,5,6)])
+dataGraphM <- cbind(dataPerformance[, c(1,2)], dataGraphMeasures[, c(2,3,4,5,6,7,8,9)])
 dataGraphMFRS <- cbind(dataGraphM, dataFRS[, c(2,5,8)])
 dataGraphMFRS$Participants <- as.factor(dataGraphMFRS$Participants)
 
+dataGraphMeasures2 <- read.csv("F:/WestbrookProject/Spa_Re/control_group/analysis_durationBased_2023/overviewGraphMeasures.csv")
+dataGraphM2 <- cbind(dataPerformance[, c(1,2)], dataGraphMeasures2[, c(2,3,4,5,6,7,8,9,10,11)])
 
-dataGraphMeasures_longF <- read.csv("E:/Westbrueck Data/SpaRe_Data/1_Exploration/Analysis/P2B_controls_analysis/performance_graph_properties_analysis/graphPropertiesPlots/overviewGraphMeasures_longFormat.csv")
+dataGraphMeasures_longF <- read.csv("F:/WestbrookProject/Spa_Re/control_group/Analysis/P2B_controls_analysis/performance_graph_properties_analysis/graphPropertiesPlots/overviewGraphMeasures_longFormat.csv")
 dataGraphMFRS$Participants <- as.factor(dataGraphMFRS$Participants)
 
 
@@ -58,7 +66,28 @@ dataPGM_long <- cbind(dataP2B[, c(5,20)], dataGraphMeasures_longF[, c(1,2,3,4,5)
 
 dataP2B_GM <- cbind(dataP2B, dataGraphMeasures_longF[, c(2,3,4,5)])
 
+###################
+model_stcombis <- lm(AngularError ~ 
+                             NodeDegreeStartBuilding + NodeDegreeTargetBuilding + 
+                             StartBuildingDwellingTime + TargetBuildingDwellingTime + 
+                             MaxFlowS + ShortestPathDistance + 
+                             AlternatingIndex + DistancePart2TargetBuilding,
+                           data = dataP2B_stcombis)
 
+summary(model_stcombis)
+
+plot(model_stcombis, wich = 1, main = "Model Fit")
+
+
+model_stcombisI <- lm(AngularError ~ 
+                        NodeDegreeStartBuilding ,
+                     data = dataP2B_stcombis)
+
+summary(model_stcombisI)
+
+library(car)
+vif_vals <- vif(model_stcombis)
+barplot(vif_vals)
 ################################################################################
 
 # modeling
@@ -72,22 +101,30 @@ model_ln_stCombi_112 <- lm(RecalculatedAngle ~
                            NodeDegreeWeightedStartBuilding + NodeDegreeWeightedTargetBuilding + 
                            StartBuildingDwellingTime + TargetBuildingDwellingTime + 
                            MaxFlowS + MaxFlowWeighted + ShortestPathDistance + 
-                           AlternatingIndex + DistancePart2TargetBuilding,
-                           data = dataP2B_GM)
+                           AlternatingIndex + DistancePart2TargetBuilding,data = dataP2B_GM)
 
 summary(model_ln_stCombi_112)
 
+vif(model_ln_stCombi_112)
+
+model_rd_stCombi <- lmer(RecalculatedAngle ~(1|RouteID), data=dataP2B_GM)
+summary(model_rd_stCombi)
+r2_nakagawa(model_rd_stCombi)
 
 
-model_ln_stCombi_56 <- lm(RecalculatedAngle ~ 
+
+model_ln_stCombi_56 <- lmer(RecalculatedAngle ~ 
                          NodeDegreeStartBuilding + NodeDegreeTargetBuilding + 
                          NodeDegreeWeightedStartBuilding + NodeDegreeWeightedTargetBuilding + 
                          StartBuildingDwellingTime + TargetBuildingDwellingTime + 
                          MaxFlowS + MaxFlowWeighted + ShortestPathDistance + 
-                         AlternatingIndex + DistancePart2TargetBuilding,
+                         AlternatingIndex + DistancePart2TargetBuilding + (1|RouteID),
                        data = dataP2B_withoutReps)
 
 summary(model_ln_stCombi_56)
+summary(model_ln_stCombi_56)
+r2_nakagawa(model_ln_stCombi_56)
+
 
 AIC(model_ln_stCombi_112)
 AIC(model_ln_stCombi_56)
@@ -118,6 +155,8 @@ model_ln_stCombi_112_diameter = lm(RecalculatedAngle ~
                                    data = dataP2B_GM)
 
 summary(model_ln_stCombi_112_diameter)
+
+
 
 AIC(model_ln_stCombi_112_diameter)
 BIC(model_ln_stCombi_112_diameter)
@@ -312,7 +351,14 @@ model_rd_PRST <- lmer(RecalculatedAngle ~ (1|SubjectID) + (1|RouteID),
 
 summary(model_rd_PRST)
 
-r2_nakagawa(model_rd_PRST) # 0.209
+r2_nakagawa(model_rd_PRST) # 0.202
+
+
+# as factors
+model_ln_factor_p_stCombi <- lm(RecalculatedAngle ~ as.factor(SubjectID) + as.factor(RouteID),
+                              data = dataP2B_GM)
+
+summary(model_ln_factor_p_stCombi) #Multiple R-squared:  0.2201,	Adjusted R-squared:  0.1981
 
 # as linear model
 
@@ -321,6 +367,23 @@ model_lm_PRST <- lm(RecalculatedAngle ~ as.factor(SubjectID) + as.factor(RouteID
                     data = dataP2B)
 
 summary(model_lm_PRST) # 0.2201
+
+model_startTarget <- lm(RecalculatedAngle ~as.factor(StartBuildingName), data = dataP2B)
+summary(model_startTarget)
+
+model_rd_st <- lmer(RecalculatedAngle ~ (1|StartBuildingName), data = dataP2B)
+
+summary(model_rd_st)
+r2_nakagawa(model_rd_st)
+
+###################
+############
+#testi
+model_test<- lmer(RecalculatedAngle ~ (1|SubjectID) + (1|RouteID), data = dataP2B)
+
+summary(model_test)
+
+r2_nakagawa(model_test)
 
 
 ################################################################################
@@ -343,14 +406,31 @@ model_lm_participantID <- lm(RecalculatedAngle ~ as.factor(SubjectID), data = da
 
 summary(model_lm_participantID)
 
+
+# s-t combi
+
+model_lm_stcombi <- lm(RecalculatedAngle ~ as.factor(RouteID), data = dataP2B)
+
+summary(model_lm_stcombi)
+
+
+# s-t combi & participant
+
+# s-t combi
+
+model_lm_part_stcombi <- lm(RecalculatedAngle ~ as.factor(SubjectID) + as.factor(RouteID), data = dataP2B)
+
+summary(model_lm_part_stcombi)
+
+
+
 # linear model with graph measures - only participants differences
 
-
+## add average shortest path here!
 
 # general graph properties and FRS
-modelGraphFRS <- lm(meanPerformance ~ nrViewedHouses + density + diameter +
-                    hierarchyIndex + Mean_egocentric_global + Mean_survey +
-                    Mean_cardinal  ,data = dataGraphMFRS)
+modelGraphFRS <- lm(meanPerformance ~ nrViewedHouses + density + diameter + avgShortestPath +
+                    hierarchyIndex ,data = dataGraphM2)
 summary(modelGraphFRS)
 
 # general graph properties and FRS + edges!!!!
@@ -361,10 +441,10 @@ summary(modelGraphFRS2)
 
 # residual plots
 
-hist(resid(modelGraphFRS2))
+hist(resid(modelGraphFRS))
 
 # check for normality of residuals
-ggplot(data.frame(residuals = residuals(modelGraphFRS2), fitted = fitted(modelGraphFRS2)), aes(x = fitted, y = residuals)) +
+ggplot(data.frame(residuals = residuals(modelGraphFRS), fitted = fitted(modelGraphFRS)), aes(x = fitted, y = residuals)) +
   geom_point() +
   geom_smooth() +
   ggtitle("Residuals vs Fitted") +
@@ -372,18 +452,18 @@ ggplot(data.frame(residuals = residuals(modelGraphFRS2), fitted = fitted(modelGr
   ylab("Residuals")
 
 # check for outliers
-qqnorm(resid(modelGraphFRS2))
-qqline(resid(modelGraphFRS2))
+qqnorm(resid(modelGraphFRS))
+qqline(resid(modelGraphFRS))
 
 # create scale-location plot of residuals
-plot(fitted(modelGraphFRS2), sqrt(abs(resid(modelGraphFRS2))))
+plot(fitted(modelGraphFRS), sqrt(abs(resid(modelGraphFRS))))
 
 # create Cook's distance plot
-plot(cooks.distance(modelGraphFRS2))
+plot(cooks.distance(modelGraphFRS))
 
 
 # check for homoscedasticity
-ggplot(data.frame(residuals = residuals(modelGraphFRS2), fitted = fitted(modelGraphFRS2)), aes(x = fitted, y = residuals)) +
+ggplot(data.frame(residuals = residuals(modelGraphFRS), fitted = fitted(modelGraphFRS)), aes(x = fitted, y = residuals)) +
   geom_point() +
   ggtitle("Residuals vs Fitted") +
   xlab("Fitted Values") +
@@ -393,7 +473,7 @@ ggplot(data.frame(residuals = residuals(modelGraphFRS2), fitted = fitted(modelGr
   geom_smooth(se = FALSE)
 
 # check for linearity
-ggplot(data.frame(y = dataGraphMFRS$meanPerformance, fitted = fitted(modelGraphFRS2)), aes(x = fitted, y = y)) +
+ggplot(data.frame(y = dataGraphMFRS$meanPerformance, fitted = fitted(modelGraphFRS)), aes(x = fitted, y = y)) +
   geom_point() +
   geom_smooth() +
   ggtitle("Actual vs Fitted") +
@@ -401,18 +481,103 @@ ggplot(data.frame(y = dataGraphMFRS$meanPerformance, fitted = fitted(modelGraphF
   ylab("Actual Values")
 
 # check for independence
-acf(residuals(my_model))
+acf(residuals(modelGraphFRS))
 
 
 
 #################################################
 
-# only general graph based measures
-modelGGraph <- lm(meanPerformance ~ nrViewedHouses + density + diameter +
-                      hierarchyIndex ,data = dataGraphMFRS)
-summary(modelGGraph)
+# landmark measures & global graph measure model
 
-# only general graph based measures + edges
+# only landmark stuff
+
+modelGGraph_landmarks <- lm(meanPerformance ~ nrIndividualLandmarks+nrCommonLandmarks , data = dataGraphMFRS)
+
+
+
+summary(modelGGraph_landmarks)
+
+########## individual regressions
+modelGGraph_landmarks2 <- lm(meanPerformance ~ nrIndividualLandmarks, data = dataGraphMFRS)
+
+summary(modelGGraph_landmarks2)
+
+modelGGraph_landmarks3 <- lm(meanPerformance ~ nrCommonLandmarks, data = dataGraphMFRS)
+
+summary(modelGGraph_landmarks3)
+
+model_landmark <- lm(nrCommonLandmarks ~ nrIndividualLandmarks, data = dataGraphMFRS)
+
+summary(model_landmark)
+
+
+###########
+
+modelGGraph_landmarks <- lm(meanPerformance ~ nrIndividualLandmarks+nrCommonLandmarks , data = dataGraphMFRS)
+
+
+
+summary(modelGGraph_landmarks)
+
+
+modelGGraph_landmarks2 <- lm(meanPerformance ~ nrAllLandmarks + nrCommonLandmarks, data = dataGraphM2)
+
+
+summary(modelGGraph_landmarks2)
+
+
+# testi diameter and nr common landmarks
+modelGGraph_landmarks3 <- lm(meanPerformance ~ nrCommonLandmarks, data = dataGraphM2)
+
+
+summary(modelGGraph_landmarks3)
+
+testi <- lm(meanPerformance ~ diameter, data = dataGraphM2)
+summary(testi)
+
+###
+# testi with new preprocessing of graphs
+
+modelTesti <- lm(meanPerformance ~ nrViewedHouses + nrEdges + density + 
+                                    diameter + hierarchyIndex,data = dataGraphM2)
+
+summary(modelTesti)
+
+modelTesti2 <- lm(meanPerformance ~ diameter,data = dataGraphM2)
+summary(modelTesti2)
+
+testi3 <- lm(meanPerformance ~ diameter,data = dataGraphM2)
+
+summary(testi3)
+
+################ 
+
+# all global graph measures + landmark stats
+
+modelVH <- lm(meanPerformance ~ nrViewedHouses,data = dataGraphMFRS)
+summary(modelVH)
+
+modelE <- lm(meanPerformance ~ nrEdges,data = dataGraphMFRS)
+summary(modelE)
+
+modelDe <- lm(meanPerformance ~ density,data = dataGraphMFRS)
+summary(modelDe)
+
+modelDi <- lm(meanPerformance ~ diameter, data = dataGraphMFRS)
+summary(modelDi)
+
+modelH <- lm(meanPerformance ~ hierarchyIndex, data = dataGraphMFRS)
+summary(modelH)
+
+
+
+# only general graph based measures
+modelGGraphAll <- lm(meanPerformance ~ nrViewedHouses + nrEdges + density + 
+                    diameter + hierarchyIndex +
+                    nrAllLandmarks + nrCommonLandmarks,data = dataGraphMFRS)
+summary(modelGGraphAll)
+
+# only general graph based measures
 modelGGraph2 <- lm(meanPerformance ~ nrViewedHouses + nrEdges + density + 
                     diameter + hierarchyIndex ,data = dataGraphMFRS)
 summary(modelGGraph2)
@@ -440,10 +605,17 @@ summary(modelGGraph7)
 
 
 #########-------------------------------------------
-modelGGraph_Nodiameter <- lm(meanPerformance ~ nrViewedHouses + nrEdges + density + 
-                                             hierarchyIndex ,data = dataGraphMFRS)
+modelGGraph_Nodiameter <- lm(meanPerformance ~ nrViewedHouses + nrEdges + density  +
+                                             hierarchyIndex,data = dataGraphMFRS)
 
 summary(modelGGraph_Nodiameter)
+
+modelGGraph_Nodiameter <- lmer(RecalculatedAngle ~ nrViewedHouses + nrEdges + density + diameter +
+                                 (1|SubjectID),data = dataP2B_GM)
+
+summary(modelGGraph_Nodiameter)
+
+r2_nakagawa(modelGGraph_Nodiameter)
 
 # only FRS measures
 modelFRS <- lm(meanPerformance ~ Mean_egocentric_global + Mean_survey +

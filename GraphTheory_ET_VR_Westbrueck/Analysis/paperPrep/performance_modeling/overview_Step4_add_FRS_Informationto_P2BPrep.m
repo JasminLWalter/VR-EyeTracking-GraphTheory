@@ -8,9 +8,8 @@ clear all;
 
 %% adjust the following variables: 
 
-savepath = 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\';
-
-cd 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\P2B_controls_analysis\';
+savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\P2B_controls_analysis\';
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\P2B_controls_analysis\';
 
 PartList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080];
 
@@ -41,6 +40,10 @@ for index = 1:height(overviewFRS)
 
 
 end
+
+%% add trial time to overview
+overviewTableP2BPrep3.TrialTime = overviewTableP2BPrep3.TimeStampBegin;
+
 
 %% remove the unnecessary variables
 
@@ -159,8 +162,60 @@ for indexPart = 1:length(PartList)
     end
     
     overviewRepetitionData = [overviewRepetitionData; selectionTable];
+
+%% add full 112 trial sequence to the full overview
+    startTS = min(overviewTableP2BPrep3.TimeStampBegin(selectionPart));
+    overviewTableP2BPrep3.TrialTime(selectionPart) = overviewTableP2BPrep3.TrialTime(selectionPart)-startTS; 
+     
+
+    for indexTrial = 1:112
+    
+        minTrial = min(overviewTableP2BPrep3.TrialTime(selectionPart));
+        minIndex = overviewTableP2BPrep3.TrialTime == minTrial;
+        
+        overviewTableP2BPrep3.TrialSequence(minIndex) = indexTrial;
+        
+        selectionPart = selectionPart & not(minIndex); 
+
+    end
+
+
     
 end
+
+%% add trial sequence at same location to the full overview
+
+for indexPart2 = 1: length(PartList)
+   
+    currentPart = PartList(indexPart2);
+    selection = overviewTableP2BPrep3.SubjectID == currentPart;
+    
+    for indexStart = 1:height(uniqueTrials)
+        
+       selection2 = strcmp(overviewTableP2BPrep3.StartBuildingName(:),uniqueTrials{indexStart,1});
+       
+       selection3 = selection & selection2;
+       nrSameStarts = overviewTableP2BPrep3.TrialSequence(selection3);
+       
+       for index4 = 1: length(nrSameStarts)
+          
+         minTrial = min(overviewTableP2BPrep3.TrialSequence(selection3));
+         minIndex = overviewTableP2BPrep3.TrialSequence == minTrial;
+         
+         overviewTableP2BPrep3.TrialSequence_SameStart14(minIndex) = index4;
+         
+         selection3 = selection3 & not(minIndex); 
+         
+       end
+    end
+end
+
+overviewTableP2BPrep3.TrialSequence_SameStart7 = overviewTableP2BPrep3.TrialSequence_SameStart14;
+overviewTableP2BPrep3.TrialSequence_SameStart7(overviewTableP2BPrep3.TrialOrder == 2) = overviewTableP2BPrep3.TrialSequence_SameStart7(overviewTableP2BPrep3.TrialOrder == 2) -7;
+
+
+
+
 
 % remove all repetition trials from the overview
 reps = overviewTableP2BPrep3_withoutReps.TrialOrder == 2;
