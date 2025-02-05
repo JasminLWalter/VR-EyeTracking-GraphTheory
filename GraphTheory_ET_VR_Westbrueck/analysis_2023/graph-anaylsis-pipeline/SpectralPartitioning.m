@@ -77,12 +77,11 @@ path = what;
 path = path.path;
 
 %savepath
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\spectralPartitioning\';
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\spectralPartitioning\';
 
 
 % cd into graph folder location
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
-
+cd 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
 
 plotting_wanted = true; % if you want to plot, set to true
 saving_wanted = true; % if you want to save, set to true
