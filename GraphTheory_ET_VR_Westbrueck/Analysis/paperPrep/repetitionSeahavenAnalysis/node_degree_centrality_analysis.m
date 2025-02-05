@@ -292,6 +292,61 @@ saveas(gcf,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings'));
 ax = gca;
 exportgraphics(ax,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings_600dpi.png'),'Resolution',600)
 
+%% extract landmark information
+
+threshLandmarks = std(meanNDofHouses)*2 + mean(meanNDofHouses);
+disp('node degree threshold to identify landmarks = ')
+disp(threshLandmarks)
+
+overviewDegreeSorted = sortrows(overviewDegree,'meanOfHouses');
+landMselection = overviewDegreeSorted.meanOfHouses > threshLandmarks;
+
+landmarks = overviewDegreeSorted(landMselection,:);
+
+disp(['number of landmarks = ' ,num2str(height(landmarks))])
+
+
+
+landmarksInv = landmarks{:,2:end-1}';
+landmarksMean = landmarks{:,end}';
+landmarkNames = landmarks{:,1}';
+
+
+figure(11)
+plotty = boxchart(landmarksInv);
+xlabel('landmarks');
+ylabel('node degree');
+title({'landmark buildings'});
+% 
+hold on
+plot(landmarksMean, '-o')  % x-axis is the intergers of position
+hold off
+
+% Set the x-axis tick labels
+ax = gca; % Get current axes
+ax.XTickLabel = landmarkNames;
+ax.TickLabelInterpreter = 'none'; % Disable TeX interpreter
+
+exportgraphics(ax,strcat(savepath, 'landmarks_boxplot.png'),'Resolution',600)
+
+
+writetable(landmarks,strcat(savepath,'landmarkOverview.csv'));
+
+
+disp('--------------------------------')
+disp(['grand mean of node degree (averaged over buildings)' , num2str(mean(meanNDofHouses))])
+disp(['std of node degree (averaged over buildings)' , num2str(std(meanNDofHouses))])
+
+disp('--------------------------------')
+
+disp(['grand mean of node degree (averaged over parts)' , num2str(mean(meanNDofParticipants))])
+disp(['std of node degree (averaged over parts)' , num2str(std(meanNDofParticipants))])
+
+disp('--------------------------------')
+disp(['landmark thresh ', num2str(threshLandmarks)])
+
+disp(['nr of gaze graph defined landmarks ', num2str(height(landmarks))])
+
 
 
 %% --------------------------- combine imagescale and corr. into one panel

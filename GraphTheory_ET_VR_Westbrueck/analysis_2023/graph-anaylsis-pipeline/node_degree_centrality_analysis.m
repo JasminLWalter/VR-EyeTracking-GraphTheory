@@ -27,9 +27,9 @@ clear all;
 
 %% adjust the following variables: savepath and current folder!-----------
 
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\nodeDegreeCentrality\';
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\';
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\nodeDegreeCentrality\'
+cd 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\'
 
 %--------------------------------------------------------------------------
 
@@ -231,11 +231,12 @@ typeBuilding = categorical(tbIndex(1:end-2,:),logical([1 0]),{'TaskBuilding','Bu
 
 
 figure(6)
-x = (1:244);
+x = [1:244];
 
 plotty2 = errorbar(x, sortedbyHP.meanOfHouses(1:244), sortedbyHP.stdOfHouses(1:244),'b','Linewidth',2.5, 'Color',[0.75 0.75 0.75],'CapSize',0);
  
 hold on
+
 
 xlabel('houses')
 ylabel('node degree')
@@ -255,9 +256,6 @@ hold off
 saveas(gcf,strcat(savepath,'MeanND_StdError_AllBuildings'));
 ax = gca;
 exportgraphics(ax,strcat(savepath,'MeanND_StdError_AllBuildings_600dpi.png'),'Resolution',600)
-
-
-
 
 figure(7)
 x = [1:244];
@@ -293,6 +291,8 @@ hold off
 saveas(gcf,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings'));
 ax = gca;
 exportgraphics(ax,strcat(savepath,'TaskBuildings_MeanND_StdError_AllBuildings_600dpi.png'),'Resolution',600)
+
+
 
 %% --------------------------- combine imagescale and corr. into one panel
 % 
@@ -363,3 +363,17 @@ exportgraphics(ax,strcat(savepath, 'landmarks_boxplot.png'),'Resolution',600)
 
 
 writetable(landmarks,strcat(savepath,'landmarkOverview.csv'));
+
+disp('--------------------------------')
+disp(['grand mean of node degree (averaged over buildings)' , num2str(mean(meanNDofHouses))])
+disp(['std of node degree (averaged over buildings)' , num2str(std(meanNDofHouses))])
+
+disp('--------------------------------')
+
+disp(['grand mean of node degree (averaged over parts)' , num2str(mean(meanNDofParticipants))])
+disp(['std of node degree (averaged over parts)' , num2str(std(meanNDofParticipants))])
+
+disp('--------------------------------')
+disp(['landmark thresh ', num2str(threshLandmarks)])
+
+disp(['nr of gaze graph defined landmarks ', num2str(height(landmarks))])
