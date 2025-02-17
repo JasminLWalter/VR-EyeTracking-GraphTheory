@@ -6,20 +6,21 @@
 % Description: 
 % 
 clear all;
+disp(datetime('now'))
 
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
-savepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\differences_old_2023_graphs\overviews\';
+savepath = 'D:\Jasmin\SpaReControlData\analysis2023\differences_old_2023_graphs\overviews\';
 
 
-oldDataPath =  'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\differences_old_2023_graphs\gaze_noise_prep\';
-newDataPath =  'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step3_gazeProcessing\';
+oldDataPath =  'D:\Jasmin\SpaReControlData\analysis2023\differences_old_2023_graphs\gaze_noise_prep\';
+newDataPath =  'D:\Jasmin\SpaReControlData\pre-processing_2023\velocity_based\step3_gazeProcessing\';
 
-colliderList = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
+colliderList = readtable('D:\Jasmin\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
 
 
 % 20 participants with 90 min VR trainging less than 30% data loss
-PartList = {1004};% 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
+PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
 
 %----------------------------------------------------------------------------
 
@@ -35,9 +36,9 @@ overview_saccadeCluster.Participants = PartList';
 
 
 for ii = 1:Number
-    tic
     disp(ii)
     currentPart = cell2mat(PartList(ii));
+    tic
     
     % load old data
     fileOld = strcat(oldDataPath, num2str(currentPart), '_data_gazeInfo_WB.mat');
@@ -71,10 +72,12 @@ for ii = 1:Number
     oldData.eventDurations = repmat({0}, height(oldData), 1);
 
     oldData.gazeCounter = zeros(height(oldData),1);
-    oldData.gazeHitPointNames = repmat({0}, height(oldData), 1);
+    oldData.gazeHitPointNames = repmat({'NaN'}, height(oldData), 1);
     oldData.gazeDurations = zeros(height(oldData),1);
     oldData.gazeDurations_per = zeros(height(oldData),1);
 
+    oldData.numUniqueGazeBuildings = zeros(height(oldData),1);
+    oldData.uniqueBuildingNamesOfGazes = repmat({'NaN'}, height(oldData), 1);
 
     oldData.num_sameGazeHitPoint = zeros(height(oldData),1);
     oldData.num_sameGazeHitPoint_per = zeros(height(oldData),1);
@@ -113,7 +116,6 @@ for ii = 1:Number
     end
 
     newData.isNH = ~isInColliderList;
-    tic
     events = newData.events;
      % Find event start and end indices
     saccade_start = find(events == 1);
@@ -176,17 +178,17 @@ for ii = 1:Number
 
     
 
-
-    tic
-
     %% go through all clusters and analyse their counter rows
     for index = 1:height(oldData)-1
+        
 
         currentCluster = oldData(index,:);
+
 
         %%
         if(strcmp(currentCluster.hitObjectColliderName, 'newSession')) 
             toc
+            disp(datetime('now'))
             
             oldStartTS = oldData.timeStampDataPointStart{index+1,1}(1);
 
@@ -399,9 +401,10 @@ for ii = 1:Number
                         oldData.gazeStart_NH(index) = currentNewData.isNH(1);
                         if currentNewData.isNH(1)
                             oldData.gazeStart_sameHitObject(index) = strcmp('NH', currentCluster.hitObjectColliderName);
-                            gaze_hitPointName = {gaze_hitPointName; 'NH'};
+                           gaze_hitPointName = [gaze_hitPointName; {'NH'}];
                         else
                             oldData.gazeStart_sameHitObject(index)= strcmp(currentNewData.namesNH(1), currentCluster.hitObjectColliderName);
+                            gaze_hitPointName = [gaze_hitPointName; currentNewData.namesNH(indexC)];
                         end
 
                     else
@@ -459,6 +462,19 @@ for ii = 1:Number
                     oldData.gazeCounter(index) = gazeCounter;
                     oldData.gazeHitPointNames(index) = {gaze_hitPointName};
 
+                    % check how many gazes on buildings it includes
+                    uniqueNames = unique(gaze_hitPointName);
+                    isNH = strcmp(uniqueNames, 'NH');
+                    
+                    buildingNames = uniqueNames(~isNH);
+
+                    if(length(buildingNames) > 0)
+                        oldData.numUniqueGazeBuildings(index) = length(buildingNames);
+                        oldData.uniqueBuildingNamesOfGazes(index) = {buildingNames};
+                    else
+                        oldData.numUniqueGazeBuildings(index) = 0;
+                    end
+
                     gazeSamples = currentNewData.eventCategory ==2;
                     oldData.gazeDurations(index) = sum(gazeSamples)/90;
                     oldData.gazeDurations_per(index) = (sum(gazeSamples)/90)/currentCluster.clusterDuration;
@@ -494,49 +510,12 @@ for ii = 1:Number
            
 
 
-            %% analysis with event based timestamp matching
-
-            
-            % % if it stayed in the original gazes
-            %     if (logical(currentCluster.isGaze))
-            % 
-            %         if(strcmp(currentCluster.hitObjectColliderName, 'noData'))
-            % 
-            %         elseif (strcmp(currentCluster.hitObjectColliderName, 'NH'))
-            % 
-            %         else
-            % 
-            % 
-            %         end
-            % 
-            %     % if it was excluded --> noisy data  
-            %     else
-            % 
-            %         if(strcmp(currentCluster.hitObjectColliderName, 'noData'))
-            % 
-            %         elseif (strcmp(currentCluster.hitObjectColliderName, 'NH'))
-            % 
-            %         else
-            % 
-            % 
-            %         end
-            % 
-            % 
-            %     end
-
+          
             
 
             end
             
-%             % Step 2: Remove duplicate matches (greedy approach)
-%             [uniqueIdx, ia] = unique(idx, 'stable'); % Keep only the first occurrence
-% 
-%             % Step 3: Extract matched pairs
-%             matchedData1 = oldTS(ia, :); % Rows from data1 that have unique matches
-%             matchedData2 = newData(uniqueIdx, :); % Corresponding matched rows from data2
-% 
-% % Step 4: Compare the data row-by-row
-% comparisonResults = matchedData1(:, 2:end) == matchedData2(:, 2:end); % Example for numeric data
+
 
 
 
