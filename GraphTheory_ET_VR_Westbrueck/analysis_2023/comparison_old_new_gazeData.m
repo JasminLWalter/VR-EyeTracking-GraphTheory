@@ -17,7 +17,7 @@ oldDataPath =  'D:\Jasmin\SpaReControlData\analysis2023\differences_old_2023_gra
 newDataPath =  'D:\Jasmin\SpaReControlData\pre-processing_2023\velocity_based\step3_gazeProcessing\';
 
 colliderList = readtable('D:\Jasmin\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
-
+uniqueBuildingNames = unique(colliderList.target_collider_name);
 
 % 20 participants with 90 min VR trainging less than 30% data loss
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
@@ -52,46 +52,11 @@ for ii = 1:Number
     % Efficiently extract only selected fields for all elements
 
     oldData = rmfield(fullData, setdiff(fieldnames(fullData), fieldsToKeep));
-    oldData = struct2table(oldData);
+    % oldData = struct2table(oldData);
     clear fullData;
 
-    
-    oldData.eventBoundaryDifference_start = zeros(height(oldData),1);
-    oldData.eventBoundaryDifference_end = zeros(height(oldData),1);
 
-    oldData.gazeStart = false(height(oldData),1);
-    oldData.gazeStart_NH = false(height(oldData),1);
-    oldData.gazeStart_sameHitObject = false(height(oldData),1);
-    
-    oldData.gazeEnd = false(height(oldData),1);
-    oldData.gazeEnd_NH = false(height(oldData),1);
-    oldData.gazeEnd_sameHitObject = false(height(oldData),1);
-
-    oldData.eventCounter = zeros(height(oldData),1);
-    oldData.eventList = repmat({0}, height(oldData), 1);
-    oldData.eventDurations = repmat({0}, height(oldData), 1);
-
-    oldData.gazeCounter = zeros(height(oldData),1);
-    oldData.gazeHitPointNames = repmat({'NaN'}, height(oldData), 1);
-    oldData.gazeDurations = zeros(height(oldData),1);
-    oldData.gazeDurations_per = zeros(height(oldData),1);
-
-    oldData.numUniqueGazeBuildings = zeros(height(oldData),1);
-    oldData.uniqueBuildingNamesOfGazes = repmat({'NaN'}, height(oldData), 1);
-
-    oldData.num_sameGazeHitPoint = zeros(height(oldData),1);
-    oldData.num_sameGazeHitPoint_per = zeros(height(oldData),1);
-    
-    oldData.sameGazeHitPoint_Duration = zeros(height(oldData),1);
-    oldData.sameGazeHitPoint_Duration_old = zeros(height(oldData),1);
-    
-    oldData.sameGazeHitPoint_Duration_per = zeros(height(oldData),1);
-    oldData.sameGazeHitPoint_Duration_per_old = zeros(height(oldData),1);
-
-
-  
-
-    oldStartTS = oldData.timeStampDataPointStart{1,1}(1);
+    oldStartTS = oldData(1).timeStampDataPointStart(1);
 
 
     dirSess = dir([newDataPath, num2str(currentPart) '_Session_*_data_processed_gazes.csv']);
@@ -179,10 +144,44 @@ for ii = 1:Number
     
 
     %% go through all clusters and analyse their counter rows
-    for index = 1:height(oldData)-1
+    for index = 1:length(oldData)-1
         
 
-        currentCluster = oldData(index,:);
+        currentCluster = oldData(index);
+
+        oldData(index).eventBoundaryDifference_start = 0;
+        oldData(index).eventBoundaryDifference_end = 0;
+    
+        oldData(index).gazeStart = false;
+        oldData(index).gazeStart_NH = false;
+        oldData(index).gazeStart_sameHitObject = false;
+        
+        oldData(index).gazeEnd = false;
+        oldData(index).gazeEnd_NH = false;
+        oldData(index).gazeEnd_sameHitObject = false;
+    
+        oldData(index).eventCounter = 0;
+        oldData(index).eventList = {0};
+        oldData(index).eventDurations =  {0};
+    
+        oldData(index).gazeCounter = 0;
+        oldData(index).gazeHitPointNames = {'NaN'};
+        oldData(index).gazeDurations = 0;
+        oldData(index).gazeDurations_per = 0;
+    
+        oldData(index).numUniqueGazeBuildings = 0;
+        oldData(index).uniqueBuildingNamesOfGazes ={'NaN'};
+    
+        oldData(index).num_sameGazeHitPoint = 0;
+        oldData(index).num_sameGazeHitPoint_per = 0;
+        
+        oldData(index).sameGazeHitPoint_Duration = 0;
+        oldData(index).sameGazeHitPoint_Duration_old = 0;
+
+
+        oldData(index).sameGazeHitPoint_Duration_per = 0;
+        oldData(index).sameGazeHitPoint_Duration_per_old = 0;
+
 
 
         %%
@@ -190,13 +189,13 @@ for ii = 1:Number
             toc
             disp(datetime('now'))
             
-            oldStartTS = oldData.timeStampDataPointStart{index+1,1}(1);
+            oldStartTS = oldData(index+1).timeStampDataPointStart(1);
 
             newFileIndex = newFileIndex +1;
             disp(['load new file ' fileNames_sorted{newFileIndex}])
             newData = readtable(strcat(newDataPath, fileNames_sorted{newFileIndex}));
 
-            uniqueBuildingNames = unique(colliderList.target_collider_name);
+            
     
             isInColliderList = false(height(newData),1);
             
@@ -275,7 +274,7 @@ for ii = 1:Number
             %% in case the new session is not starting, do the main code
         else
 
-            oldTS = currentCluster.timeStampDataPointStart{1,1};
+            oldTS = [currentCluster.timeStampDataPointStart];
             oldTS = oldTS - oldStartTS;
 
             % oldTS_u = unique(oldTS);
@@ -305,7 +304,7 @@ for ii = 1:Number
             % than 1 row
             if (endIdx-startIdx) > 2
                 % if the event boundary is not at the current end index
-                if strcmp(oldData.hitObjectColliderName(index+1),'newSession')
+                if strcmp([oldData(index+1).hitObjectColliderName],'newSession')
                         endIdx = height(newData);
                         eventChangeIdx_end = height(newData);
                 elseif ~ (newData.eventCategory(endIdx) ~= newData.eventCategory(endIdx+1))
@@ -333,7 +332,7 @@ for ii = 1:Number
                  
                         end
                                          
-                        endTSnextCluster= fix(oldData.clusterDuration(index+1) *90);
+                        endTSnextCluster= fix(oldData(index+1).clusterDuration *90);
                         if (endIdx + endTSnextCluster <= height(newData))
                             boundary = endIdx + endTSnextCluster;
                         else
@@ -372,8 +371,8 @@ for ii = 1:Number
 
             % save event boundary information
 
-            oldData.eventBoundaryDifference_start(index) = newData.timeStampRS(eventChangeIdx_start) - newData.timeStampRS(startIdx);
-            oldData.eventBoundaryDifference_end(index) = newData.timeStampRS(eventChangeIdx_end) - newData.timeStampRS(endIdx);
+            oldData(index).eventBoundaryDifference_start = newData.timeStampRS(eventChangeIdx_start) - newData.timeStampRS(startIdx);
+            oldData(index).eventBoundaryDifference_end = newData.timeStampRS(eventChangeIdx_end) - newData.timeStampRS(endIdx);
  
 
 
@@ -397,19 +396,19 @@ for ii = 1:Number
                     % check whether first event is a gaze event
                     if(lastEvent == 2)
                         gazeCounter = 1;
-                        oldData.gazeStart(index) = true;
-                        oldData.gazeStart_NH(index) = currentNewData.isNH(1);
+                        oldData(index).gazeStart = true;
+                        oldData(index).gazeStart_NH = currentNewData.isNH(1);
                         if currentNewData.isNH(1)
-                            oldData.gazeStart_sameHitObject(index) = strcmp('NH', currentCluster.hitObjectColliderName);
-                           gaze_hitPointName = [gaze_hitPointName; {'NH'}];
+                           oldData(index).gazeStart_sameHitObject = strcmp('NH', currentCluster.hitObjectColliderName);
+                           gaze_hitPointName = [gaze_hitPointName, {'NH'}];
                         else
-                            oldData.gazeStart_sameHitObject(index)= strcmp(currentNewData.namesNH(1), currentCluster.hitObjectColliderName);
-                            gaze_hitPointName = [gaze_hitPointName; currentNewData.namesNH(indexC)];
+                            oldData(index).gazeStart_sameHitObject= strcmp(currentNewData.namesNH(1), currentCluster.hitObjectColliderName);
+                            gaze_hitPointName = [gaze_hitPointName, currentNewData.namesNH(indexC)];
                         end
 
                     else
                         gazeCounter = 0;
-                        oldData.gazeStart(index) = false;
+                        oldData(index).gazeStart = false;
                     end
 
                 else
@@ -426,9 +425,9 @@ for ii = 1:Number
                             gazeCounter = gazeCounter+1;
 
                             if currentNewData.isNH(indexC)
-                                gaze_hitPointName = [gaze_hitPointName; {'NH'}];
+                                gaze_hitPointName = [gaze_hitPointName, {'NH'}];
                             else
-                                gaze_hitPointName = [gaze_hitPointName; currentNewData.namesNH(indexC)];
+                                gaze_hitPointName = [gaze_hitPointName, currentNewData.namesNH(indexC)];
                             end
                         end
 
@@ -438,17 +437,17 @@ for ii = 1:Number
                         % if this is currently the last 
                         if indexC == height(currentNewData)
                              if(lastEvent == 2)
-                                oldData.gazeEnd(index) = true;
-                                oldData.gazeEnd_NH(index) = currentNewData.isNH(indexC);
+                                oldData(index).gazeEnd = true;
+                                oldData(index).gazeEnd_NH = currentNewData.isNH(indexC);
                                 
                                 if currentNewData.isNH(indexC)
-                                    oldData.gazeEnd_sameHitObject(index) = strcmp('NH', currentCluster.hitObjectColliderName);
+                                    oldData(index).gazeEnd_sameHitObject = strcmp('NH', currentCluster.hitObjectColliderName);
                                 else
-                                    oldData.gazeEnd_sameHitObject(index) = strcmp(currentNewData.namesNH(indexC), currentCluster.hitObjectColliderName);
+                                    oldData(index).gazeEnd_sameHitObject = strcmp(currentNewData.namesNH(indexC), currentCluster.hitObjectColliderName);
                                 end
 
                             else
-                                oldData.gazeEnd(index) = false;
+                                oldData(index).gazeEnd = false;
                             end
 
                         end
@@ -456,11 +455,11 @@ for ii = 1:Number
                     end
 
                     % save analysis into old Data
-                    oldData.eventCounter(index) = eventCounter;
-                    oldData.eventList(index) = {eventL};
-                    oldData.eventDurations(index) = {eventDurations};
-                    oldData.gazeCounter(index) = gazeCounter;
-                    oldData.gazeHitPointNames(index) = {gaze_hitPointName};
+                    oldData(index).eventCounter = eventCounter;
+                    oldData(index).eventList= eventL;
+                    oldData(index).eventDurations = eventDurations;
+                    oldData(index).gazeCounter= gazeCounter;
+                    oldData(index).gazeHitPointNames = gaze_hitPointName;
 
                     % check how many gazes on buildings it includes
                     uniqueNames = unique(gaze_hitPointName);
@@ -469,15 +468,15 @@ for ii = 1:Number
                     buildingNames = uniqueNames(~isNH);
 
                     if(length(buildingNames) > 0)
-                        oldData.numUniqueGazeBuildings(index) = length(buildingNames);
-                        oldData.uniqueBuildingNamesOfGazes(index) = {buildingNames};
+                        oldData(index).numUniqueGazeBuildings = length(buildingNames);
+                        oldData(index).uniqueBuildingNamesOfGazes= buildingNames;
                     else
-                        oldData.numUniqueGazeBuildings(index) = 0;
+                        oldData(index).numUniqueGazeBuildings = 0;
                     end
 
                     gazeSamples = currentNewData.eventCategory ==2;
-                    oldData.gazeDurations(index) = sum(gazeSamples)/90;
-                    oldData.gazeDurations_per(index) = (sum(gazeSamples)/90)/currentCluster.clusterDuration;
+                    oldData(index).gazeDurations = sum(gazeSamples)/90;
+                    oldData(index).gazeDurations_per = (sum(gazeSamples)/90)/currentCluster.clusterDuration;
 
                     if currentCluster.isGaze
 
@@ -492,14 +491,14 @@ for ii = 1:Number
                         end
 
                         isGaze = currentNewData.eventCategory == 2;
-                        oldData.num_sameGazeHitPoint(index) = sum(numSameNameGazes);
-                        oldData.num_sameGazeHitPoint_per(index) = sum(numSameNameGazes)/sum(eventL == 2);
+                        oldData(index).num_sameGazeHitPoint = sum(numSameNameGazes);
+                        oldData(index).num_sameGazeHitPoint_per = sum(numSameNameGazes)/sum(eventL == 2);
 
-                        oldData.sameGazeHitPoint_Duration(index) = sum(sameName & isGaze) /90;
-                        oldData.sameGazeHitPoint_Duration_per(index) = (sum(sameName & isGaze) /90)/ currentCluster.clusterDuration;
+                        oldData(index).sameGazeHitPoint_Duration = sum(sameName & isGaze) /90;
+                        oldData(index).sameGazeHitPoint_Duration_per = (sum(sameName & isGaze) /90)/ currentCluster.clusterDuration;
                        
-                        oldData.sameGazeHitPoint_Duration_old(index) = sum(sameNameOld & isGaze) /90;
-                        oldData.sameGazeHitPoint_Duration_per_old(index) = (sum(sameNameOld & isGaze) /90)/ currentCluster.clusterDuration;
+                        oldData(index).sameGazeHitPoint_Duration_old = sum(sameNameOld & isGaze) /90;
+                        oldData(index).sameGazeHitPoint_Duration_per_old = (sum(sameNameOld & isGaze) /90)/ currentCluster.clusterDuration;
                     end
                        
                     
