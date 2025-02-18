@@ -15,14 +15,13 @@
 clear all;
 
 %% adjust the following variables: savepath, current folder and participant list!-----------
+baseSavepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\tempDevelopment\1minSections\';
+savepathDensity = strcat(baseSavepath,'\plotsDensity\');
+savepathDiameter = strcat(baseSavepath, '\plotsDiameter\');
+savepathNrEdges = strcat(baseSavepath,'\plotsNrEdges\');
+savepathNrNodes = strcat(baseSavepath,'\plotsNrNodes\');
 
-savepathDensity = 'D:\Jasmin\SpaReControlData\analysis2023\tempDevelopment\1minSections\plotsDensity\';
-savepathDiameter = 'D:\Jasmin\SpaReControlData\analysis2023\tempDevelopment\1minSections\plotsDiameter\';
-savepathNrEdges = 'D:\Jasmin\SpaReControlData\analysis2023\tempDevelopment\1minSections\plotsNrEdges\';
-savepathNrNodes = 'D:\Jasmin\SpaReControlData\analysis2023\tempDevelopment\1minSections\plotsNrNodes\';
-
-cd 'D:\Jasmin\SpaReControlData\analysis2023\tempDevelopment\1minSections\';
-
+cd 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\tempDevelopment\1minSections\'
 
 
 % overviews
@@ -63,7 +62,7 @@ for index = 1:26
     figure(2)
     
     plot2 = plot(overviewNrEdges(index,1:150),'Color',color(index,:));
-    ylim([0,1710])
+    ylim([0,3000])
     hold on
     plot2m = plot(meanNrEdges(1:150),'black');
     xlabel('time')
@@ -76,7 +75,7 @@ for index = 1:26
     figure(3)
     
     plot3 = plot(overviewDensity(index,1:150),'Color',color(index,:));
-    ylim([0,0.33])
+    ylim([0,0.22])
     hold on
     plot3m = plot(meanDensity(1:150),'black');
     xlabel('time')
@@ -89,7 +88,7 @@ for index = 1:26
     figure(4)
     
     plot4 = plot(overviewDiameter(index,1:150),'Color',color(index,:));
-    ylim([0,41])
+    ylim([0,30])
     hold on
     plot1m = plot(meanDiameter(1:150),'black');
     xlabel('time')
@@ -120,7 +119,7 @@ figure(6)
 
 plot6 = plot(overviewNrEdges(:,1:150)');
 set(plot6,{'color'}, num2cell(parula(26),2));
-ylim([0,1710])
+ylim([0,3000])
 hold on
 plot6m = plot(meanNrEdges(1:150),'black','LineWidth',1.2);
 xlabel('time')
@@ -134,7 +133,7 @@ figure(7)
 
 plot7 = plot(overviewDensity(:,1:150)');
 set(plot7,{'color'}, num2cell(parula(26),2));
-ylim([0,0.33])
+ylim([0,0.22])
 hold on
 plot7m = plot(meanDensity(1:150),'black','LineWidth',1.2);
 xlabel('time')
@@ -148,7 +147,7 @@ figure(8)
 
 plot8 = plot(overviewDiameter(:,1:150)');
 set(plot8,{'color'}, num2cell(parula(26),2));
-ylim([0,41])
+ylim([0,30])
 hold on
 plot8m = plot(meanDiameter(1:150),'black','LineWidth',1.2);
 xlabel('time')
