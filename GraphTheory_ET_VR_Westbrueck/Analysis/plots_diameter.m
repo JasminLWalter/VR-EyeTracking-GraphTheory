@@ -528,37 +528,42 @@ for index9 = 7:9
 
 end
 
-
-
-
-%% 
-st7 = [overviewMaxDiameter(is7).StartNode];
-st8 = [overviewMaxDiameter(is8).StartNode];
-st9 = [overviewMaxDiameter(is9).StartNode];
-e7 = [overviewMaxDiameter(is7).EndNode];
-e8 = [overviewMaxDiameter(is8).EndNode];
-e9 = [overviewMaxDiameter(is9).EndNode];
-
-st7 = struct2table(st7);
-st8 = struct2table(st8);
-st9 = struct2table(st9);
-e9 = struct2table(e9);
-e8 = struct2table(e8);
-e7 = struct2table(e7);
-
-unique7 = unique([st7;e7]);
-unique8 = unique([st8;e8]);
-unique9 = unique([st9;e9]);
+% lastValues = overviewEndDiameter.endDiameter;
 % 
-% isDiff79 = setdiff(unique7, unique9);
-% isDiff97 = setdiff(unique9, unique7);
-inters79 = intersect(unique7, unique9);
-inters78 = intersect(unique7, unique8);
-inters98 = intersect(unique9, unique8);
-
-inters7978 = intersect(inters79,inters78);
-inters7998 = intersect(inters79, inters98);
-inters9878 = intersect(inters98, inters87);
-
-
-
+% 
+% is7 = lastValues == 5;
+% is8 = lastValues == 6;
+% is9 = lastValues == 7;
+% 
+% 
+% %% 
+% st7 = [overviewMaxDiameter(is7).StartNode];
+% st8 = [overviewMaxDiameter(is8).StartNode];
+% st9 = [overviewMaxDiameter(is9).StartNode];
+% e7 = [overviewMaxDiameter(is7).EndNode];
+% e8 = [overviewMaxDiameter(is8).EndNode];
+% e9 = [overviewMaxDiameter(is9).EndNode];
+% 
+% st7 = struct2table(st7);
+% st8 = struct2table(st8);
+% st9 = struct2table(st9);
+% e9 = struct2table(e9);
+% e8 = struct2table(e8);
+% e7 = struct2table(e7);
+% 
+% unique7 = unique([st7;e7]);
+% unique8 = unique([st8;e8]);
+% unique9 = unique([st9;e9]);
+% % 
+% % isDiff79 = setdiff(unique7, unique9);
+% % isDiff97 = setdiff(unique9, unique7);
+% inters79 = intersect(unique7, unique9);
+% inters78 = intersect(unique7, unique8);
+% inters98 = intersect(unique9, unique8);
+% 
+% inters7978 = intersect(inters79,inters78);
+% inters7998 = intersect(inters79, inters98);
+% inters9878 = intersect(inters98, inters87);
+% 
+% 
+% 
