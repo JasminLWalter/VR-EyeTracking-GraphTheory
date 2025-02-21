@@ -27,13 +27,13 @@ clear all;
 
 %% adjust the following variables: savepath and current folder!-----------
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\';
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\';
 
 imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
 clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
 
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\'
+cd 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\'
 
 %--------------------------------------------------------------------------
 
