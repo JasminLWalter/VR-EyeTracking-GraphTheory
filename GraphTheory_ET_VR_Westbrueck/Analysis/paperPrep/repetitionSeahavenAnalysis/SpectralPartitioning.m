@@ -77,11 +77,12 @@ path = what;
 path = path.path;
 
 %savepath
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\SpectralPartitioning\';
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\Analysis\SpectralPartitioning\';
+
 
 
 % cd into graph folder location
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs\';
+cd 'E:\WestbrookProject\Spa_Re\control_group\\Pre-processsing_pipeline\graphs\';
 
 plotting_wanted = true; % if you want to plot, set to true
 saving_wanted = true; % if you want to save, set to true
@@ -318,32 +319,33 @@ eigenvalue3L = [];
         Adj_between(p_pos,p_pos) = 0;
         Adj_between = Adj_between(path,path);
         
-        spy(Adj_pos,'r',20);
+        spy(Adj_pos,'r');
         hold on;
-        spy(Adj_neg,'g',20);
+        spy(Adj_neg,'g');
         hold on;
-        spy(Adj_between, 'k', 20);
+        spy(Adj_between, 'k');
         xlabel('Matrix Entries');
         ylabel('Matrix Entries');
         xticks([0 100 200]);
         yticks([0 100 200]);
-        set(gca,'FontSize',40,'FontWeight','bold','Box','off');
-        rectangle('Position',[0 0 212 212],'LineWidth',1.5);
+        set(gca,'FontSize',20,'FontWeight','bold','Box','off');
+        % rectangle('Position',[0 0 212 212],'LineWidth',1.5);
         
-        hold on;
-        x1 = [0 max(path)];
-        y1 = [cut_index cut_index];
-        line(x1,y1,'Color',[0.96,0.73,0.23],'LineStyle','-', 'LineWidth',7);
-        
-        hold on;
-        x2 = [cut_index cut_index];
-        y2 = [0 max(path)];
-        line(x2,y2,'Color',[0.96,0.73,0.23],'LineStyle','-', 'LineWidth',7);
+        % hold on;
+        % x1 = [0 max(path)];
+        % y1 = [cut_index cut_index];
+        % line(x1,y1,'Color',[0.96,0.73,0.23],'LineStyle','-', 'LineWidth',7);
+        % 
+        % hold on;
+        % x2 = [cut_index cut_index];
+        % y2 = [0 max(path)];
+        % line(x2,y2,'Color',[0.96,0.73,0.23],'LineStyle','-', 'LineWidth',7);
+        hold off
 
             
         if saving_wanted == true
             saveas(gcf,strcat(savepath,'Spy_AdjacencyMatrix_Part',...
-                currentPart,'.png'),'png'); 
+                num2str(currentPart),'.png'),'png'); 
         end
         
       % Highlighting the graph partitions in the graph
