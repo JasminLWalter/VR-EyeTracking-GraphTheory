@@ -9,10 +9,10 @@ clear all;
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
 
-savepath= 'E:\Cyprus_project_overview\data\graphs\';
+savepath= 'E:\Cyprus_project_overview\data\analysis\exploration\graphs\';
 
 
-cd 'E:\Cyprus_project_overview\data\graphs\graphPrepETdata\';
+cd 'E:\Cyprus_project_overview\data\analysis\exploration\graphs\graphPrepETdata\';
 
 clistpath = 'E:\Cyprus_project_overview\data\buildings\';
 colliderList = readtable(strcat(clistpath, "building_coordinate_list.csv"));
