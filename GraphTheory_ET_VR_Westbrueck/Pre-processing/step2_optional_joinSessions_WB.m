@@ -25,9 +25,9 @@ clear all;
 
 %% --------adjust the following variables savepath, cd, listpath
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\condensedColls_combinedSess\';
+savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\Step2_combinedFiles\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\condensedColliders\';
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\Step1_condensedColliders\';
 
 % load list that contains the participant numbers belonging together sorted
 % into the different sessions (this list here is uploaded with the other
@@ -119,98 +119,6 @@ for indexPart = 1:Number
     save([savepath, num2str(currentPart), '_condensedColliders5S_WB.mat'],'condensedColliders5S');
     
 end
-
-
-
-% for part = 1: height(combinedSessions)
-% 
-% 
-%     data1 = load(strcat(num2str(combinedSessions.Session1(part)),'_condensedColliders_V3.mat'));
-%     data1 = data1.condensedData;
-%     
-%     data2 = load(strcat(num2str(combinedSessions.Session2(part)),'_condensedColliders_V3.mat'));
-%     data2 = data2.condensedData;
-%     
-%     data3 = load(strcat(num2str(combinedSessions.Session3(part)),'_condensedColliders_V3.mat'));
-%     data3 = data3.condensedData;
-%     
-%     % add variable session to each data
-%     % for data1
-%     s1 = cell(length(data1),1);
-%     s1(:) = {'Session1'};
-%     [data1.Session] = s1{:};
-%     order = [21,1:20];
-%     data1 = orderfields(data1,order);
-%     
-%     % for data2
-%     s2 = cell(length(data2),1);
-%     s2(:) = {'Session2'};
-%     [data2.Session] = s2{:};
-%     data2 = orderfields(data2,order);
-%             
-%     % for data3
-%     s3 = cell(length(data3),1);
-%     s3(:) = {'Session3'};
-%     [data3.Session] = s3{:};
-%     data3 = orderfields(data3,order);
-%     
-%     
-%     % add a row to seperate sessions, in case they need to be identified
-%     % again at a later point
-%     data1(end+1).Collider = 'newSession';  
-%     
-%     data1(end).Session= NaN; 
-%     data1(end).TimeStamp= NaN; 
-%     data1(end).Samples= NaN; 
-%     data1(end).Distance= NaN; 
-%     data1(end).hitPointX= NaN; 
-%     data1(end).hitPointY= NaN; 
-%     data1(end).hitPointZ= NaN; 
-%     data1(end).PosX= NaN; 
-%     data1(end).PosY= NaN; 
-%     data1(end).PosZ= NaN; 
-%     data1(end).PosRX= NaN; 
-%     data1(end).PosRY= NaN; 
-%     data1(end).PosRZ= NaN; 
-%     data1(end).PosTimeStamp=NaN; 
-%     data1(end).PupilLTimeStamp= NaN; 
-%     data1(end).VectorX= NaN; 
-%     data1(end).VectorY= NaN; 
-%     data1(end).VectorZ= NaN; 
-%     data1(end).eye2Dx= NaN; 
-%     data1(end).eye2Dy= NaN; 
-% 
-%     % same with data2
-%     
-%     data2(end+1).Collider = 'newSession';
-%     
-%     data2(end).Session= NaN; 
-%     data2(end).TimeStamp= NaN; 
-%     data2(end).Samples= NaN; 
-%     data2(end).Distance= NaN; 
-%     data2(end).hitPointX= NaN; 
-%     data2(end).hitPointY= NaN; 
-%     data2(end).hitPointZ= NaN; 
-%     data2(end).PosX= NaN; 
-%     data2(end).PosY= NaN; 
-%     data2(end).PosZ= NaN; 
-%     data2(end).PosRX= NaN; 
-%     data2(end).PosRY= NaN; 
-%     data2(end).PosRZ= NaN; 
-%     data2(end).PosTimeStamp=NaN; 
-%     data2(end).PupilLTimeStamp= NaN; 
-%     data2(end).VectorX= NaN; 
-%     data2(end).VectorY= NaN; 
-%     data2(end).VectorZ= NaN; 
-%     data2(end).eye2Dx= NaN; 
-%     data2(end).eye2Dy= NaN;
-% 
-%     % combine all the session
-%     condensedColliders3S = [data1, data2, data3];
-%     newName = strcat(num2str(combinedSessions.newPartNumber(part)),'condensedColliders_3Sessions_V3');
-%     save(strcat(savepath,newName),'condensedColliders3S');
-% 
-% end
 
 
 disp('done');
