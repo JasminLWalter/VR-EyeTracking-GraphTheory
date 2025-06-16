@@ -63,7 +63,7 @@ clear all;
 %% adjust the following variables: 
 % savepath, imagepath, clistpath, overviewNDpath and current folder-----------------------
 
-savepath= 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\walkingPaths_triangulation\';
+savepath= 'F:\WestbrookProject\Spa_Re\control_group\Analysis\walkingPaths_triangulation\';
 
 savepath30minPlots = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\walkingPaths_triangulation\walkingPaths_30min_individual\';
 savepath150minPlots = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\walkingPaths_triangulation\walkingPaths_150min_individual\';
@@ -73,12 +73,12 @@ imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additiona
 clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
 
 %  path to the overviewNodeDegree file created when running script nodeDegree_createOverview_V3
-landmarkspath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\NodeDegreeCentrality\';
+landmarkspath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\';
 
 % location of file containing all gaze data and all interpolated of all participants
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\interpolatedColliders\'
+cd 'F:\WestbrookProject\Spa_Re\control_group\Pre-processsing_pipeline\interpolatedColliders\'
 
-pathAllParts = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\allParticipants\';
+pathAllParts = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\allParticipants\';
 
 
 %------------------------------------------------------------------------
@@ -167,10 +167,9 @@ edgesCol = linspace(1,columns,nrSquares);
 % create density of walking paths plot
 % create triangulation plot
 
-%% participant data loop
+% participant data loop
 partList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080];
 
-countMatrix_logical_30Min = [];
 countMatrix_logical_5sess_150Min = [];
 countMatrix_logical_150Min = [];
 
@@ -186,9 +185,9 @@ for partIndex = 1:length(partList)
     currentPart = partList(partIndex);
     disp(currentPart)
     tic
-    
+
     file = strcat(num2str(currentPart),'_interpolatedColliders_5Sessions_WB.mat');
- 
+
      % load data
     interpolatedData = load(file);
     interpolatedData = interpolatedData.interpolatedData;
@@ -206,208 +205,96 @@ for partIndex = 1:length(partList)
     % add last session index to list as well
     newSessionIndex  = [newSessionIndex, length(interpolatedData)];
     min30Index = newSessionIndex(1);
-    
-%     for index = 1:(length(interpolatedData))
-%         if not(strcmp(interpolatedData(index).hitObjectColliderName,'newSession'))
-%             
-%             if(interpolatedData(index).timeStampDataPointStart(1) - interpolatedData(1).timeStampDataPointStart(1)) <= 1800
-%                 min30Index = index;
-%             end  
-%         end
-%     end
-   
-    %% plot the walking paths - first all 150 min in total 
-    figure(3)
-    
-    imshow(map_flipped);
-    alpha(0.3)
-    hold on
-    
-    plotty2 = scatter([interpolatedData.playerBodyPosition_x] *multipFactor +additiveF,[interpolatedData.playerBodyPosition_z] *multipFactor +additiveF,5);        
-    set(gca,'xdir','normal','ydir','normal')    
-    hold off
-    title(strcat("Participant ",num2str(currentPart)," walking path of 150 min"))
-    saveas(gcf,strcat(savepath150minPlots,num2str(currentPart),'_walkingPath_150min.png'));
 
-    % walking paths of first 30 min
-    figure(4)
-    
-    imshow(map_flipped);
-    alpha(0.3)
-    hold on
-    
-    plotty3 = scatter([interpolatedData(1:min30Index).playerBodyPosition_x] *multipFactor +additiveF,[interpolatedData(1:min30Index).playerBodyPosition_z] *multipFactor +additiveF,5);        
-    hold off
-    set(gca,'xdir','normal','ydir','normal')    
-    title(strcat("Participant ",num2str(currentPart)," walking path of 30 min"))
-    saveas(gcf,strcat(savepath30minPlots,num2str(currentPart),'_walkingPath_30min.png'));
+
+    % %% plot the walking paths - first all 150 min in total 
+    % figure(3)
+    % 
+    % imshow(map_flipped);
+    % alpha(0.3)
+    % hold on
+    % 
+    % plotty2 = scatter([interpolatedData.playerBodyPosition_x] *multipFactor +additiveF,[interpolatedData.playerBodyPosition_z] *multipFactor +additiveF,5);        
+    % set(gca,'xdir','normal','ydir','normal')    
+    % hold off
+    % title(strcat("Participant ",num2str(currentPart)," walking path of 150 min"))
+    % saveas(gcf,strcat(savepath150minPlots,num2str(currentPart),'_walkingPath_150min.png'));
+    % 
+    % 
 
     %% calculated the visited area during all sessions
-    
+
     countMatrix_allETSess = zeros(length(edgesRows)-1,length(edgesCol)-1);
-    
+
     for index = 1:length(newSessionIndex)
-        
+
         [currentCountMatrix,rowEdges, colEdges] = histcounts2([interpolatedData(1:newSessionIndex(index)).playerBodyPosition_x]' *multipFactor +additiveF, [interpolatedData(1:newSessionIndex(index)).playerBodyPosition_z]' *multipFactor +additiveF, edgesRows, edgesCol);
-        
+
         current_coutM_logical = currentCountMatrix;
         isVisited = current_coutM_logical >= 1;
         current_coutM_logical(isVisited) = 1; 
-    
+
         countMatrix_allETSess = countMatrix_allETSess + current_coutM_logical;
-    
+
     end
     % add count Matrix to the matrix of all participants
     countMatrix_logical_5sess_150Min(:,:,partIndex) = countMatrix_allETSess;
 
     % now check the session independent walking area and calculate the
     % duration visited 
-    
+
     [countMatrix150,rowEdges, colEdges, binX_150, binY_150] = histcounts2([interpolatedData.playerBodyPosition_x]' *multipFactor +additiveF, [interpolatedData.playerBodyPosition_z]' *multipFactor +additiveF, edgesRows, edgesCol);
+    % apply kernel
+
     coutM_logical150 = countMatrix150;
     isVisited150 = coutM_logical150 >= 1;
     coutM_logical150(isVisited150) = 1; 
-    
+
     countMatrix_logical_150Min(:,:,partIndex) = coutM_logical150;
 
     uniqueSqX150 = unique(binX_150);
     uniqueSqY150 = unique(binY_150);
-    
+
     durations = [];
     startPointsPlus1 = [];
     lastSessionBegin = 1;
     for index2 = 1:length(newSessions)
-        
+
         currentEndSession = newSessions(index2);
-        
+
         startPoints = [interpolatedData(lastSessionBegin:currentEndSession).timeStampDataPointStart]'; 
         startPointsPlus1 = startPoints;
-        
+
         startPoints(end) = [];
         startPointsPlus1(1) = [];
         currentDurs = abs(startPointsPlus1 - startPoints);
         durations = [durations; currentDurs; 0];
         lastSessionBegin = currentEndSession;
-        
+
     end
 
-    
+
     for indexI = 1:length(uniqueSqX150)
         squareI = uniqueSqX150(indexI);
         locBinX = binX_150 == squareI;
-        
+
         for indexJ = 1:length(uniqueSqY150)
-            
+
             squareJ = uniqueSqY150(indexJ);
             locBinY = binY_150 == squareJ;
-            
+
             % identify the duration of the selected squares
             locXY = locBinX & locBinY;
-                       
+
             countMatrix_timeSpend_150min(squareI,squareJ,partIndex) = sum(durations(locXY));
-            
+
         end
     end
-    
-    %% calculated the visited area during the first 30 min session only
-    [countMatrix30,rowEdges, colEdges, binX_30, binY_30] = histcounts2([interpolatedData(1:newSessionIndex(1)).playerBodyPosition_x]' *multipFactor +additiveF, [interpolatedData(1:newSessionIndex(1)).playerBodyPosition_z]' *multipFactor +additiveF, edgesRows, edgesCol);
-    coutM_logical = countMatrix30;
-    isVisited30 = coutM_logical >= 1;
-    coutM_logical(isVisited30) = 1; 
-    
-    countMatrix_logical_30Min(:,:,partIndex) = coutM_logical;
 
-    % duration calculation adds about 50 sec for each participant to 
-    % runtime and not really necessary
 
-%     uniqueSqX30 = unique(binX_30);
-%     uniqueSqY30 = unique(binY_30);
-%     disp('5')
-%     for indexI = 1:length(uniqueSqX30)
-%         squareI = binX_30(indexI);
-%         locBinX = binX_30 == squareI;
-% 
-%         for indexJ = 1:length(uniqueSqY30)
-%             squareJ = binY_30(indexJ);
-%             locBinY = binY_30 == squareJ;
-%             
-%             locXY = locBinX & locBinY;            
-%                    
-%             durations = abs(startPointsPlus1(locXY) - startPoints(locXY));
-%             
-%             countMatrix_timeSpend_30min(squareI,squareJ,partIndex) = sum(durations);
-%             
-%         end
-%     end
 
-    %% plot the walking paths separated after sessions
-    % 150 min
-    
-    % get alpha data so that all areas that were not visited in the first place
-    % can be set to 0 transparency in the plot
-    alphaD = countMatrix_allETSess';
-    findzeros = alphaD(:,:)==0;
-    alphaD(findzeros) = 0.3;
-    alphaD(~findzeros) = 1;%0.6;
-    
-
-    % save the size of the visited area
-    squares.sum_150min(partIndex) = sum(not(findzeros),'all');
-    squares.sum_30min(partIndex) = sum(isVisited30,'all');
-    
-    figure(5)
-    imshow(map_normal);
-    alpha(0.3)
-    hold on
-    
-    plotty5 = imagesc([1,rows],[columns,1],countMatrix_allETSess','AlphaData', alphaD);
-    colorbar('Ticks',[0,1,2,3,4,5])
-    hold off
-    title(strcat("Participant ",num2str(currentPart)," walking path overlap/density all 5 sessions"))
-    
-    saveas(gcf,strcat(savepathWPD,num2str(currentPart),'_walkingPath_density.png'));
-    
-    %% plot the walking area with the duration spend there color coded
-    
-    % 150 min
-    alphaD150 = countMatrix_timeSpend_150min(:,:,partIndex)';
-    findzeros = alphaD150(:,:)==0;
-    alphaD150(findzeros) = 0.3;
-    alphaD150(~findzeros) = 1;%0.6;
-    
-    figure(6)
-    imshow(map_normal);
-    alpha(0.3)
-    hold on
-    
-    plotty6 = imagesc([1,rows],[columns,1],countMatrix_timeSpend_150min(:,:,partIndex)','AlphaData', alphaD150);
-    colorbar
-    hold off
-    title(strcat("Participant ",num2str(currentPart)," duration spend in visited area - 150 min"))
-    
-    saveas(gcf,strcat(savepathWPD,num2str(currentPart),'_duration spend in visited area_150min.png'));
-    
-%     % 30 min
-%     alphaD30 = countMatrix_timeSpend_30min(:,:,partIndex)';
-%     findzeros = alphaD30(:,:)==0;
-%     alphaD30(findzeros) = 0.3;
-%     alphaD30(~findzeros) = 1;%0.6;
-%     figure(7)
-%     imshow(map_normal);
-%     alpha(0.3)
-%     hold on
-%     
-%     plotty7 = imagesc([1,rows],[columns,1],countMatrix_timeSpend_30min(:,:,partIndex)','AlphaData', alphaD30);
-%     colorbar
-%     hold off
-%     title(strcat("Participant ",num2str(currentPart)," duration spend in visited area - 30 min"))
-%     
-%     saveas(gcf,strcat(savepathWPD,num2str(currentPart),'_duration spend in visited area_30min.png'));
-%     
-%     disp('participant done')
-    
     toc
-    
+
 end
 
 
@@ -432,55 +319,8 @@ plotty8 = imagesc([1,rows],[columns,1],sumCM_150','AlphaData', alphaD);
 colorbar
 hold off
 title(strcat("Density of all walking paths of all participants"))
-    
+
 saveas(gcf,strcat(savepath,'Density of all walking paths of all participants.png'));
-
-% for the 30 min as well
-% transform count matrix to a logical one
-bigger1 = countMatrix_logical_30Min==0;
-logical_countM_30 = countMatrix_logical_30Min;
-logical_countM_30(not(bigger1)) = 1;
-sumCM_30 = sum(logical_countM_30,3);
-
-alphaD = sumCM_30';
-findzeros = alphaD(:,:)==0;
-alphaD(findzeros) = 0.3;
-alphaD(~findzeros) = 1;
-
-figure(9)
-
-imshow(map_normal);
-alpha(0.3)
-hold on
-
-plotty9 = imagesc([1,rows],[columns,1],sumCM_30','AlphaData', alphaD);
-colorbar
-hold off
-title(strcat("Density of the first 30 min walking paths of all participants"))
-    
-saveas(gcf,strcat(savepath,'Density of the first 30 min walking paths of all participants.png'));
-
-%% check how much area they walk during the first 30 min
-squares.percentage = squares.sum_30min ./ squares.sum_150min;
-
-figure(10)
-
-plotty10 = histogram(squares.percentage);
-title('Histogram: percentage of the walking area covered during the first 30 min')
-
-saveas(gcf,strcat(savepath,'hist_percentage of the walking area covered during the first 30 min.png'));
-
-
-figure(11)
-
-plotty11 = pie(mean(squares{:,1:2}));
-
-title('Mean area over participants walked during 30 min and 150 min')
-legend({'150 min','30 min'})
-saveas(gcf,strcat(savepath,'pie_Mean area walked during 30 min and 150 min.png'));
-
-save(strcat(savepath, 'squaresOverview'), 'squares')
-
 
 
 %% rest of the original script
@@ -573,8 +413,13 @@ for index3 = 1:length(fullCount)
     
 end
 
+save([savepath 'logical3D.mat'],'logical3D');
+
 
 sumAll = sum(logical3D,3);
+
+
+
 
 %% plot the summed matrix - use alpha for alphadata to only colour space
 % that was actually visited
@@ -642,82 +487,189 @@ legend(labelsData,'location', 'northeastoutside')
 title('Percentage of possibility to triangulate in walked area');
 saveas(gcf, strcat(savepath, 'piePlot_triangualationPercentage.png'));
 
-
-
-%% how much of the experiment time did participants spend in areas where
-% triangulation is possible?
-
-% load data interpolated - here the analysis does not depend on the eye
-% tracking data, therefore the data is used before the gaze separation.
-% Note that the position data used here is not affected by the
-% interpolation or the pre-preprocessing pipeline until the gaze - noise
-% separation. Thus, since we are interested in the whole experiment time, 
-% we want to use the position data before it gets affected by the gaze 
-% separation. Here we use the interpolated data files, instead we could 
-% also use data files earlier in the preprocessing pipeline, like 
-% the condensedCollider files once all sessions have been combined.
-
-% interpol_allParts = load('interpolData_allParticipants.mat');
-% interpol_allParts = interpol_allParts.interpolData_allParticipants;
 % 
-% disp('interpolated data loaded')
 % 
-% positionsID = table;
-% positionsID.X = [interpol_allParts(:).PosX]'*xT+xA;
-% positionsID.Z = [interpol_allParts(:).PosZ]'*zT+zA;
+% %% how much of the experiment time did participants spend in areas where
+% % triangulation is possible?
 % 
-% [countMatrixID,colEdgesAll,rowEdgesAll] = histcounts2(positionsID.Z, positionsID.X, edgesCol,edgesRows);
+% % load data interpolated - here the analysis does not depend on the eye
+% % tracking data, therefore the data is used before the gaze separation.
+% % Note that the position data used here is not affected by the
+% % interpolation or the pre-preprocessing pipeline until the gaze - noise
+% % separation. Thus, since we are interested in the whole experiment time, 
+% % we want to use the position data before it gets affected by the gaze 
+% % separation. Here we use the interpolated data files, instead we could 
+% % also use data files earlier in the preprocessing pipeline, like 
+% % the condensedCollider files once all sessions have been combined.
+% 
+% % interpol_allParts = load('interpolData_allParticipants.mat');
+% % interpol_allParts = interpol_allParts.interpolData_allParticipants;
+% % 
+% % disp('interpolated data loaded')
+% % 
+% % positionsID = table;
+% % positionsID.X = [interpol_allParts(:).PosX]'*xT+xA;
+% % positionsID.Z = [interpol_allParts(:).PosZ]'*zT+zA;
+% % 
+% % [countMatrixID,colEdgesAll,rowEdgesAll] = histcounts2(positionsID.Z, positionsID.X, edgesCol,edgesRows);
+% 
+% logicSaw2 = sumAll2cut == 2;
+% logicSaw1 = sumAll2cut == 1;
+% logicSaw0 = sumAll2cut == 0;
+% 
+% sumCountM_duration = sum(countMatrix_timeSpend_150min,3);
+% 
+% timeTr2 = sumCountM_duration(logicSaw2);
+% timeTr1 = sumCountM_duration(logicSaw1);
+% timeTr0 = sumCountM_duration(logicSaw0);
+% 
+% % now sum the areas
+% sumTTri2 = sum(timeTr2);
+% sumTTri1 = sum(timeTr1);
+% sumTTri0 = sum(timeTr0);
+% sumAllInterpol = sum(sumCountM_duration, 'all');
+% 
+% percTableTimeTri = table;
+% percTableTimeTri.percentage_Time0Houses = (sumTTri0 /sumAllInterpol)*100;
+% percTableTimeTri.percentage_Time1House = (sumTTri1/sumAllInterpol)*100;
+% percTableTimeTri.percentage_Time2Houses = (sumTTri2/sumAllInterpol)*100;
+% save([savepath,'table_times_triangulation_possible.mat'],'percTableTimeTri');
+% 
+% figure(21)
+% labelsData = {'0 houses','1 house','2 or more houses'};
+% figgy20 = pie([sumTTri0, sumTTri1, sumTTri2]);
+% legend(labelsData,'location', 'northeastoutside')
+% title('Percentage of experiment time spend in areas with more or less landmarks visible');
+% saveas(gcf, strcat(savepath, 'piePlot_TimesTriangualationPossible.png'));
+% 
+% 
+% figure(22)
+% 
+% imshow(map_normal);
+% alpha(0.3)
+% hold on
+% plotty13 = imagesc([1,rows],[columns,1],sumCountM_duration','AlphaData', alphaDAll);
+% colorbar
+% 
+% title('Duration spend within the walking paths - city areas');
+% 
+% saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.png'));
+% saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.fig'));
+% 
+% hold off
+% 
+% 
+% %% save overviews
+% 
+% save([savepath 'sumCountM_duration.mat'],'sumCountM_duration');
+% save([savepath 'countMatrix_timeSpend_150min.mat'],'countMatrix_timeSpend_150min');
+% save([savepath 'countMatrix_allETSess.mat'],'countMatrix_allETSess');
+% 
 
-logicSaw2 = sumAll2cut == 2;
-logicSaw1 = sumAll2cut == 1;
-logicSaw0 = sumAll2cut == 0;
 
-sumCountM_duration = sum(countMatrix_timeSpend_150min,3);
+%% get some statistics on the visibility
 
-timeTr2 = sumCountM_duration(logicSaw2);
-timeTr1 = sumCountM_duration(logicSaw1);
-timeTr0 = sumCountM_duration(logicSaw0);
+visL = table;
 
-% now sum the areas
-sumTTri2 = sum(timeTr2);
-sumTTri1 = sum(timeTr1);
-sumTTri0 = sum(timeTr0);
-sumAllInterpol = sum(sumCountM_duration, 'all');
+visL.landmarks = landmarks.houseNames;
 
-percTableTimeTri = table;
-percTableTimeTri.percentage_Time0Houses = (sumTTri0 /sumAllInterpol)*100;
-percTableTimeTri.percentage_Time1House = (sumTTri1/sumAllInterpol)*100;
-percTableTimeTri.percentage_Time2Houses = (sumTTri2/sumAllInterpol)*100;
-save([savepath,'table_times_triangulation_possible.mat'],'percTableTimeTri');
+for index4 = 1:length(fullCount)
 
-figure(21)
-labelsData = {'0 houses','1 house','2 or more houses'};
-figgy20 = pie([sumTTri0, sumTTri1, sumTTri2]);
-legend(labelsData,'location', 'northeastoutside')
-title('Percentage of experiment time spend in areas with more or less landmarks visible');
-saveas(gcf, strcat(savepath, 'piePlot_TimesTriangualationPossible.png'));
+    sumL = sum(logical3D(:,:,index4),'all');
+    visL.VisibilityCount(index4) = sumL;
+
+end
+
+visL.VisibilityPer = visL.VisibilityCount ./ sumGridAll;
+
+meanVisibilityLandmarks = mean(visL.VisibilityPer);
+stdVisibilityLandmarks = std(visL.VisibilityPer);
+
+disp('---------------------------')
+disp('landmarks were visible in the city on average and std: ')
+disp(meanVisibilityLandmarks)
+disp(stdVisibilityLandmarks)
+disp('---------------------------')
 
 
-figure(22)
+save([savepath 'visibilityLandmarks.mat'],'visL');
 
-imshow(map_normal);
-alpha(0.3)
-hold on
-plotty13 = imagesc([1,rows],[columns,1],sumCountM_duration','AlphaData', alphaDAll);
-colorbar
-
-title('Duration spend within the walking paths - city areas');
-
-saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.png'));
-saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.fig'));
-
-hold off
+%% now check visibility of all buildings:
 
 
-%% save overviews
+fullCount2 = struct;
 
-save([savepath 'sumCountM_duration.mat'],'sumCountM_duration');
-save([savepath 'countMatrix_timeSpend_150min.mat'],'countMatrix_timeSpend_150min');
-save([savepath 'countMatrix_allETSess.mat'],'countMatrix_allETSess');
+for index5 = 1:height(uhouses)
+        
+    houseName = uhouses(index5);
+    houseIndex =  strcmp([gazes_allParts.hitObjectColliderName],houseName);
+    positions = table;
+    positions.X = [gazes_allParts(houseIndex).playerBodyPosition_x]'*multipFactor + additiveF;
+    positions.Z = [gazes_allParts(houseIndex).playerBodyPosition_z]'*multipFactor + additiveF;
+    
+    [countMatrix,colEdges,rowEdges] = histcounts2(positions.X, positions.Z, edgesRows,edgesCol);
+    fullCount2(index5).columnEdges = colEdges;
+    fullCount2(index5).rowEdges = rowEdges;
+    fullCount2(index5).countMatrix = countMatrix;
+ 
+end
 
+% apply kernal smoothing / convolution
+kernel  = [1,1,1;1,1,1;1,1,1];
+convCount2 = fullCount2;
+
+
+for index6 = 1:length(fullCount2)
+
+    convCount2(index6).countMatrix = conv2(convCount2(index6).countMatrix,kernel,'same');
+end
+
+logicalCount2 = convCount2;
+
+for index7 = 1:length(fullCount2)
+
+    logicalCount2(index7).countMatrix = convCount2(index7).countMatrix > 0;
+ 
+end
+
+logicalCell2 = struct2cell(logicalCount2);
+
+logical3D2 = [];
+
+for index8 = 1:length(fullCount2)
+    logical3D2(:,:,index8) = logicalCell2{3,1,index8};
+    
+end
+
+save([savepath 'logical3D_allbuildings.mat'],'logical3D2');
+
+
+
+% get some statistics on the visibility
+
+visL2 = table;
+
+visL2.houseNames = uhouses;
+
+for index9 = 1:length(fullCount2)
+
+    sumL2 = sum(logical3D2(:,:,index9),'all');
+    visL2.VisibilityCount(index9) = sumL2;
+
+end
+
+visL2.VisibilityPer = visL2.VisibilityCount ./ sumGridAll;
+
+isLandmark = ismember(uhouses,landmarks.houseNames);
+
+meanVisibilityBuildings = mean(visL2.VisibilityPer(not(isLandmark)));
+stdVisibilityBuildings = std(visL2.VisibilityPer(not(isLandmark)));
+
+disp('---------------------------')
+disp('no landmark buildings were visible in the city on average and std: ')
+disp(meanVisibilityBuildings)
+disp(stdVisibilityBuildings)
+disp('---------------------------')
+
+save([savepath 'visibilityNoLandmarkBuildigns.mat'],'visL2');
 
