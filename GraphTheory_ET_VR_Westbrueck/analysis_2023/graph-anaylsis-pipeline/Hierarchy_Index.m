@@ -30,10 +30,11 @@ path = what;
 path = path.path;
 
 %savepaths
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\hierarchyIndex\';
+savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\HierarchyIndex\';
 
 % cd into graph folder location
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\'
+cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs\';
+
 
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
 
@@ -158,19 +159,6 @@ if saving_wanted == true
     disp('Saved HierarchyIndex_Table');
     
 end
-
-
-disp('hierarchy index max')
-disp(max(HierarchyIndex.Slope))
-
-disp('hierarchy index min')
-disp(min(HierarchyIndex.Slope))
-
-disp('hierarchy index mean')
-disp(mean(HierarchyIndex.Slope))
-
-disp('hierarchy index std')
-disp(std(HierarchyIndex.Slope))
 
 disp('Done');
 
