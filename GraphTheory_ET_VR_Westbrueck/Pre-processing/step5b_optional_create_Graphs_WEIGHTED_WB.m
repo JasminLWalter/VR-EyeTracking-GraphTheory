@@ -12,11 +12,10 @@
 clear all;
 
 
-savepath= 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs_weighted\';
+savepath= 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\Step5_graphs_weighted\';
 
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\gazes_vs_noise\'
-
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\Step4_gazes\';
 % 26 participants with 5x30min VR trainging less than 30% data loss
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
 
@@ -48,24 +47,24 @@ for ii = 1:Number
         % create table with necessary fields
         
         gazedTable = table;
-        gazedTable.hitObjectColliderName = [gazesData.hitObjectColliderName]';
+        gazedTable.pipelineDur_collider_name = [gazesData.pipelineDur_collider_name]';
 %         gazedTable.Samples = [gazedObjects.Samples]';
         
         currentPartName= strcat('Participant_',num2str(currentPart));
         
         % remove all NH and sky elements
-        nohouse=strcmp(gazedTable.hitObjectColliderName(:),{'NH'});
+        nohouse=strcmp(gazedTable.pipelineDur_collider_name(:),{'NH'});
         housesTable = gazedTable;
         housesTable(nohouse,:)=[];
         
         
          % create nodetable
-        uniqueHouses= unique(housesTable.hitObjectColliderName(:));
+        uniqueHouses= unique(housesTable.pipelineDur_collider_name(:));
         NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
         
         % create edge table
         
-        fullEdgeT= cell2table(housesTable.hitObjectColliderName,'VariableNames',{'Column1'});
+        fullEdgeT= cell2table(housesTable.pipelineDur_collider_name,'VariableNames',{'Column1'});
         
         
         % prepare second column to add to specify edges
@@ -198,7 +197,7 @@ end
 disp(strcat(num2str(Number), ' Participants analysed'));
 disp(strcat(num2str(countMissingPart),' files were missing'));
 
- csvwrite(strcat(savepath,'Missing_Participant_Files'),noFilePartList);
- disp('saved missing participant file list');
+csvwrite(strcat(savepath,'Missing_Participant_Files'),noFilePartList);
+disp('saved missing participant file list');
 
 disp('done');
