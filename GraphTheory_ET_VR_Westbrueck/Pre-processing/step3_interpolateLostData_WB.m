@@ -25,9 +25,9 @@ clear all;
 
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\newThreshold250\interpolatedColliders\';
+savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\Step3_interpolation\';
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\condensedColls_combinedSess\'
+cd 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\Step2_combinedFiles\'
 
 
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
@@ -76,7 +76,7 @@ for ii = 1:Number
         for index = 1:length(condensedColliders)
 
             % if the row is a noData row
-            if strcmp(condensedColliders(index).hitObjectColliderName,'noData')
+            if strcmp(condensedColliders(index).pipelineDur_collider_name,'noData')
   
 %                 clusterDur = condensedColliders(index).clusterDuration;
                 
@@ -97,7 +97,7 @@ for ii = 1:Number
               
                 %% differentiating if seen houses before and after missing
                 % if colliders are identical
-                elseif strcmp(condensedColliders(index-1).hitObjectColliderName,condensedColliders(index+1).hitObjectColliderName)
+                elseif strcmp(condensedColliders(index-1).pipelineDur_collider_name,condensedColliders(index+1).pipelineDur_collider_name)
                     
                     % and if the line before was not already marked for removal
                     if (removeRows(index-1) == false)
@@ -121,14 +121,19 @@ for ii = 1:Number
                         interpolatedData(index-1).timeStampGetVerboseData  = [interpolatedData(index-1:index+1).timeStampGetVerboseData];
 
                         % raycast information
-                        interpolatedData(index-1).hitPointOnObject_x  = [interpolatedData(index-1:index+1).hitPointOnObject_x];
-                        interpolatedData(index-1).hitPointOnObject_y  = [interpolatedData(index-1:index+1).hitPointOnObject_y];
-                        interpolatedData(index-1).hitPointOnObject_z  = [interpolatedData(index-1:index+1).hitPointOnObject_z] ;
 
-                        interpolatedData(index-1).hitObjectColliderBoundsCenter_x = [interpolatedData(index-1:index+1).hitObjectColliderBoundsCenter_x];
-                        interpolatedData(index-1).hitObjectColliderBoundsCenter_y = [interpolatedData(index-1:index+1).hitObjectColliderBoundsCenter_y];
-                        interpolatedData(index-1).hitObjectColliderBoundsCenter_z = [interpolatedData(index-1:index+1).hitObjectColliderBoundsCenter_z];
+                        interpolatedData(index-1).processedCollider_name  = [interpolatedData(index-1:index+1).processedCollider_name];
 
+                        interpolatedData(index-1).processedCollider_hitPointOnObject_x  = [interpolatedData(index-1:index+1).processedCollider_hitPointOnObject_x];
+                        interpolatedData(index-1).processedCollider_hitPointOnObject_y  = [interpolatedData(index-1:index+1).processedCollider_hitPointOnObject_y];
+                        interpolatedData(index-1).processedCollider_hitPointOnObject_z  = [interpolatedData(index-1:index+1).processedCollider_hitPointOnObject_z] ;
+
+                        interpolatedData(index-1).processedCollider_hitObjectColliderBoundsCenter_x = [interpolatedData(index-1:index+1).processedCollider_hitObjectColliderBoundsCenter_x];
+                        interpolatedData(index-1).processedCollider_hitObjectColliderBoundsCenter_y = [interpolatedData(index-1:index+1).processedCollider_hitObjectColliderBoundsCenter_y];
+                        interpolatedData(index-1).processedCollider_hitObjectColliderBoundsCenter_z = [interpolatedData(index-1:index+1).processedCollider_hitObjectColliderBoundsCenter_z];
+
+                        interpolatedData(index-1).processedColliderIsNH = [interpolatedData(index-1:index+1).processedColliderIsNH];
+                        interpolatedData(index-1).replacedRows = [interpolatedData(index-1:index+1).replacedRows];
                         interpolatedData(index-1).hitObjectColliderisGraffiti  = [interpolatedData(index-1:index+1).hitObjectColliderisGraffiti];
 
                         % hdm information
@@ -240,14 +245,18 @@ for ii = 1:Number
                         interpolatedData(rowTest).timeStampGetVerboseData  = [interpolatedData(rowTest).timeStampGetVerboseData ,interpolatedData(index:index+1).timeStampGetVerboseData];
 
                         % raycast information
-                        interpolatedData(rowTest).hitPointOnObject_x  = [interpolatedData(rowTest).hitPointOnObject_x ,interpolatedData(index:index+1).hitPointOnObject_x];
-                        interpolatedData(rowTest).hitPointOnObject_y  = [interpolatedData(rowTest).hitPointOnObject_y,interpolatedData(index:index+1).hitPointOnObject_y];
-                        interpolatedData(rowTest).hitPointOnObject_z  = [interpolatedData(rowTest).hitPointOnObject_z,interpolatedData(index:index+1).hitPointOnObject_z] ;
+                        interpolatedData(rowTest).processedCollider_name  = [interpolatedData(rowTest).processedCollider_name, interpolatedData(index:index+1).processedCollider_name];
 
-                        interpolatedData(rowTest).hitObjectColliderBoundsCenter_x = [interpolatedData(rowTest).hitObjectColliderBoundsCenter_x,interpolatedData(index:index+1).hitObjectColliderBoundsCenter_x];
-                        interpolatedData(rowTest).hitObjectColliderBoundsCenter_y = [interpolatedData(rowTest).hitObjectColliderBoundsCenter_y,interpolatedData(index:index+1).hitObjectColliderBoundsCenter_y];
-                        interpolatedData(rowTest).hitObjectColliderBoundsCenter_z = [interpolatedData(rowTest).hitObjectColliderBoundsCenter_z,interpolatedData(index:index+1).hitObjectColliderBoundsCenter_z];
+                        interpolatedData(rowTest).processedCollider_hitPointOnObject_x  = [interpolatedData(rowTest).processedCollider_hitPointOnObject_x ,interpolatedData(index:index+1).processedCollider_hitPointOnObject_x];
+                        interpolatedData(rowTest).processedCollider_hitPointOnObject_y  = [interpolatedData(rowTest).processedCollider_hitPointOnObject_y,interpolatedData(index:index+1).processedCollider_hitPointOnObject_y];
+                        interpolatedData(rowTest).processedCollider_hitPointOnObject_z  = [interpolatedData(rowTest).processedCollider_hitPointOnObject_z,interpolatedData(index:index+1).processedCollider_hitPointOnObject_z] ;
 
+                        interpolatedData(rowTest).processedCollider_hitObjectColliderBoundsCenter_x = [interpolatedData(rowTest).processedCollider_hitObjectColliderBoundsCenter_x,interpolatedData(index:index+1).processedCollider_hitObjectColliderBoundsCenter_x];
+                        interpolatedData(rowTest).processedCollider_hitObjectColliderBoundsCenter_y = [interpolatedData(rowTest).processedCollider_hitObjectColliderBoundsCenter_y,interpolatedData(index:index+1).processedCollider_hitObjectColliderBoundsCenter_y];
+                        interpolatedData(rowTest).processedCollider_hitObjectColliderBoundsCenter_z = [interpolatedData(rowTest).processedCollider_hitObjectColliderBoundsCenter_z,interpolatedData(index:index+1).processedCollider_hitObjectColliderBoundsCenter_z];
+
+                        interpolatedData(rowTest).processedColliderIsNH = [interpolatedData(rowTest).processedColliderIsNH, interpolatedData(index:index+1).processedColliderIsNH];
+                        interpolatedData(rowTest).replacedRows = [interpolatedData(rowTest).replacedRows, interpolatedData(index:index+1).replacedRows];
                         interpolatedData(rowTest).hitObjectColliderisGraffiti  = [interpolatedData(rowTest).hitObjectColliderisGraffiti,interpolatedData(index:index+1).hitObjectColliderisGraffiti];
 
                         % hdm information

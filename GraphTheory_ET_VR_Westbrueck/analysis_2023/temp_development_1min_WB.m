@@ -16,9 +16,11 @@ clear all;
 
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
-savepath= 'D:\Jasmin\SpaReControlData\analysis2023\tempDevelopment\1minSections\';
+savepath= 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\tempDevelopment\1minSections\';
 
-cd 'D:\Jasmin\SpaReControlData\pre-processing_2023\velocity_based\step3_gazeProcessing\';
+cd 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step3_gazeProcessing\';
+
+colliderList = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
 
 % 26 participants with 5x30min VR trainging less than 30% data loss
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
@@ -44,7 +46,7 @@ for indexParts = 1:Number
 
     %% load and combine gaze data
 
-     disp(['Paritipcant ', num2str(indexParts)])
+    disp(['Paritipcant ', num2str(indexParts)])
     currentPart = cell2mat(PartList(indexParts));
 
     gazesData = table;
@@ -97,6 +99,24 @@ for indexParts = 1:Number
 
    
     % overviewClusterDuration(indexParts,1) = (sum([gazesData.clusterDuration])/1000)/60;
+
+       % remove all elements that are not a building 
+    % and not the new session and noData markers
+
+    uniqueBuildingNames = unique(colliderList.target_collider_name);
+    
+    isInColliderList = false(height(gazesData),1);
+    
+    for indexNH = 1: length(uniqueBuildingNames)
+        
+        currentB = uniqueBuildingNames(indexNH);
+        locBuilding1 = strcmp(currentB, gazesData.hitObjectColliderName);
+        
+        isInColliderList = isInColliderList | locBuilding1;
+        
+    end
+
+    gazesData.isInColliderList = isInColliderList;
     
     
     %% do 1 min segments based on the time stamps - keep track of the session changes
@@ -143,6 +163,8 @@ for indexParts = 1:Number
 
         currentData = gazesData(1:currentLoc,:);
 
+        currentData(~currentData.isInColliderList,:) = [];
+
         % identify fixations and no data
         fixations = currentData.events == 2.0;
         noData = currentData.events == 3;
@@ -178,33 +200,40 @@ for indexParts = 1:Number
         % remove all repetitions
         % 1st round- using unique
 
-        uniqueTable= unique(fullEdgeT);
 
-        % Identify self-references
-        selfRefMask = strcmp(uniqueTable.Column1, uniqueTable.Column2);
-        selfReferences = uniqueTable(selfRefMask, :);
+        % Remove duplicate edges (first round)
+        uniqueTable = unique(fullEdgeT);
         
-        % Remove self-references
-        uniqueTable(selfRefMask, :) = [];
+        % Create reversed pairs explicitly
+        reversedPairs = uniqueTable(:, [2, 1]); 
+        reversedPairs.Properties.VariableNames = {'Column1', 'Column2'};
         
-        % Convert table columns to string arrays for sorting
-        column1Str = string(uniqueTable.Column1);
-        column2Str = string(uniqueTable.Column2);
+        % Combine original and reversed tables
+        combinedPairs = [uniqueTable; reversedPairs];
         
-        % Sort each row alphabetically to ensure (A,B) == (B,A)
+        % Convert to string arrays for sorting (handles mixed types)
+        column1Str = string(combinedPairs.Column1);
+        column2Str = string(combinedPairs.Column2);
+        
+        % Sort each row to normalize bidirectional edges
         sortedPairs = sort([column1Str, column2Str], 2);
         
         % Find unique bidirectional edges
         [~, uniqueIdx] = unique(sortedPairs, 'rows', 'stable');
+        noRepsTable = combinedPairs(uniqueIdx, :);
         
-        % Select only the unique edges
-        noRepsTable = uniqueTable(uniqueIdx, :);
+        % Remove self-references *after* deduplication
+        selfRefMask = strcmp(noRepsTable.Column1, noRepsTable.Column2);
+        selfReferences = noRepsTable(selfRefMask, :);
+        noRepsTable(selfRefMask, :) = [];
         
-        % Find repeated edges
-        repetitions = setdiff(uniqueTable, noRepsTable, 'rows');
+        % Find repeated edges (optional, for debugging)
+        repetitions = setdiff(combinedPairs, noRepsTable, 'rows');
         
         % Create final EdgeTable
         EdgeTable = mergevars(noRepsTable, {'Column1', 'Column2'}, 'NewVariableName', 'EndNodes');
+
+
 
      %    %% 2nd round using for loop
      % 

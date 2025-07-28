@@ -24,11 +24,11 @@ path = what;
 path = path.path;
 
 %savepath
-savepath =  'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\nodeDegreeCentrality\';
+savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\';
 
 
 % cd into centrality overview folder location
-cd 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\nodeDegreeCentrality\'
+cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\'
 
 
 
@@ -88,8 +88,8 @@ if saving_wanted == true
 
 end
 
-disp(['mean correlation coefficient =', num2str(mean(corr_array))])
-disp(['std correlation coefficient =', num2str(std(corr_array))])
+
+
 
 disp('Done');
 

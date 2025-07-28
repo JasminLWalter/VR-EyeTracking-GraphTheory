@@ -12,7 +12,7 @@ clear all;
 
 imagepath = 'E:\Cyprus_project_overview\data\maps\'; % path to the map image location
 
-cd 'E:\Cyprus_project_overview\data\graphs\';
+cd 'E:\Cyprus_project_overview\data\analysis\exploration\graphs\';
 
 
 clistpath = 'E:\Cyprus_project_overview\data\buildings\';
