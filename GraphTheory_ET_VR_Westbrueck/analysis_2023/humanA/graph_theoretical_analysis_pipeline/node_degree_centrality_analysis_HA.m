@@ -27,9 +27,9 @@ clear all;
 
 %% adjust the following variables: savepath and current folder!-----------
 
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\';
+savepath = 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\nodeDegree_analysis\';
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\'
+cd 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\nodeDegree_analysis\'
 
 %--------------------------------------------------------------------------
 
@@ -144,7 +144,7 @@ forPlotting = [array2table(sortedbyHP{end-1,2:end-2}'),array2table(sortedbyHP{en
 forPlottingS = sortrows(forPlotting);
 
 figure(3)
-y = [1:26];
+y = 1:width(overviewDegree)-2;
 plotty3 = errorbar(forPlottingS{:,1},y, forPlotting{:,2},'horizontal','b','Linewidth',1);
 ylim([0,27]);
 xlabel('node degree')
