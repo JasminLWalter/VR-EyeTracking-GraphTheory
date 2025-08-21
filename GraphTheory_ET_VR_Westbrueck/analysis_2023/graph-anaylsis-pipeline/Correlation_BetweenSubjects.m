@@ -24,11 +24,11 @@ path = what;
 path = path.path;
 
 %savepath
-savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\';
+savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\';
 
 
 % cd into centrality overview folder location
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\NodeDegreeCentrality\'
+cd 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\'
 
 
 
@@ -60,6 +60,10 @@ mean_corrZ = mean(corr_mat_Z);
 %Back Transformation
 mean_corr = fisherZ_Back(mean_corrZ);
 
+std_corrZ = std(corr_mat_Z);
+%Back Transformation
+std_corr = fisherZ_Back(std_corrZ);
+
 
 
 %% -------------------------- Plotting ------------------------------------
@@ -89,7 +93,8 @@ if saving_wanted == true
 end
 
 
-
+disp(['mean of correlation coefficients =  ', num2str(mean_corr)])
+disp(['std of correlation coefficients =  ', num2str(std_corr)])
 
 disp('Done');
 

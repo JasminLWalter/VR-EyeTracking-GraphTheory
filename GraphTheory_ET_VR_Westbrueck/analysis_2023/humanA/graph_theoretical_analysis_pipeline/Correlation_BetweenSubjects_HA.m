@@ -24,11 +24,12 @@ path = what;
 path = path.path;
 
 %savepath
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\';
+savepath = 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\nodeDegree_analysis\';
+
 
 
 % cd into centrality overview folder location
-cd 'F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\'
+cd 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\nodeDegree_analysis\'
 
 
 
@@ -92,11 +93,9 @@ if saving_wanted == true
 
 end
 
+
 disp(['mean of correlation coefficients =  ', num2str(mean_corr)])
 disp(['std of correlation coefficients =  ', num2str(std_corr)])
-
-
-
 
 disp('Done');
 
