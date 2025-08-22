@@ -80,13 +80,13 @@ path = what;
 path = path.path;
 
 % cd into graph folder location
-cd 'E:\WestbrookProject\SpaRe_Data\control_data\Pre-processsing_pipeline\graphs\';
+cd 'F:\WestbrookProject\Spa_Re\control_group\Pre-processsing_pipeline\graphs\';
 
-savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\RichClub\';
+savepath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\RichClub\';
 
-imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
-clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
-landmarkPath = 'E:\WestbrookProject\SpaRe_Data\control_data\Analysis\NodeDegreeCentrality\';
+imagepath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
+clistpath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
+nodeDegreePath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\';
 
 %% -------------------------- Initialisation ------------------------------
 
@@ -102,8 +102,25 @@ houseList = coordinateList(loc1,:);
 
 % load landmark overview
 
-landmarks = load(strcat(landmarkPath, 'list_gaze_graph_defined_landmarks'));
+landmarks = load(strcat(nodeDegreePath, 'list_gaze_graph_defined_landmarks'));
 landmarks = landmarks.landmarks;
+
+% define rich club threshold (min amount of node degree of nodes considered
+% in the final calculation of the adjusted rich club coefficient)
+
+overviewDegree= load(strcat(nodeDegreePath,'Overview_NodeDegree.mat'));
+
+overviewDegree= overviewDegree.overviewNodeDegree;
+
+meanNDofHouses = mean(overviewDegree{:,2:end},2);
+grandMean = mean(meanNDofHouses);
+grandStd = std(meanNDofHouses);
+
+% mean + std, that defines the min amount of node degree values of nodes 
+% considered for the final calculation of the adjusted rich club coefficient, 
+richClubThresh = fix(grandMean + grandStd); 
+disp(['rich club node degree threshold = ', num2str(richClubThresh)])
+
 
 %graphfolder
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
@@ -264,7 +281,7 @@ end
          
          
        % Are always the same houses in the repective rich club? 
-         DegreeOver10 = ND>=15;
+         DegreeOver10 = ND>=richClubThresh;
 
          NodeCountSub = ...
              ismember(houseList.target_collider_name,graphy.Nodes.Name(DegreeOver10));
@@ -284,6 +301,11 @@ richClubND15_NodeCountAll.SumOverParticipants = sum(NodeCountAll, 2);
 richClubND15_NodeCountAll.BuildingNames = houseList.target_collider_name;
 
 
+% Take the mean over all subjects
+MeanRichClub = mean(RichT(:,2:end),"omitmissing");
+
+
+
 % identify the buildings that occur in a rich club with at least 15 node
 % degree more often than the threshold of mean + std node degree
 % then calculate mean and std of this count variable and identify threshold
@@ -299,15 +321,25 @@ disp(strcat(num2str(meanCountAll), ' = mean of count how often the buildings app
 
 disp(strcat(num2str(stdCountAll), ' = std of count how often the buildings appear in the rich club with at least 15 node degree centrality'))
 
+disp(strcat(num2str(max(richClubND15_NodeCountAll.SumOverParticipants)), ' = max count how often the buildings appear in the rich club with at least 25 node degree centrality'))
+
 disp(strcat(num2str(thresholdHighRCCount), ' = threshold for rich club buildings')) 
 
 highCountIndex = richClubND15_NodeCountAll.SumOverParticipants > thresholdHighRCCount;
 
 richClubND15_highCountBuildings = richClubND15_NodeCountAll(highCountIndex,:);
 
-% Calculate the mean adjusted rich club coefficient over all subjects -
-% preparation for plotting (Figure 1)
-MeanRichClub = nanmean(RichT(:,2:end));
+% check whether landmarks are present in high count rich club buildings 
+
+allLandmarksInRichClub = ismember(landmarks.houseNames, richClubND15_highCountBuildings.BuildingNames);
+
+disp(strcat('number of all rich club buildings = ' , num2str(length(richClubND15_highCountBuildings.BuildingNames))))
+
+disp(strcat('number of landmark buildings in rich club buildings = ' , num2str(sum(allLandmarksInRichClub))))
+
+disp(strcat('number all landmarks = ',num2str(height(landmarks))))
+
+
     
 %% --------------------------- Plotting -----------------------------------
 
@@ -317,14 +349,14 @@ if plotting_wanted == true
     figure(1)
     plot(RichT(:,2:end)','LineStyle',':','Linewidth',1);
     hold on;
-    plot(MeanRichClub(1,1:17),'LineWidth',4);
+    plot(MeanRichClub(1,1:richClubThresh),'LineWidth',4);
     xlabel('Node Degree')
     ylabel('Mean Rich Club (Real/Random)');
-    xlim([1,15]);
-    xticks([1:2:15]);
+    xlim([1,richClubThresh]);
+    xticks([1:2:richClubThresh]);
     ylim([0.7,2.5]);
     set(gca,'FontName','Helvetica','FontWeight','bold')
-    xline(15,'-r')
+    % xline(richClubThresh,'-r') % for visualizations sometimes usesful
 %     set(gca,'FontName','Helvetica','FontSize',40,'FontWeight','bold')
 
     pbaspect([1 1 1]);
@@ -343,7 +375,7 @@ if plotting_wanted == true
     xlabel('Node degree')
     ylabel('Number of nodes');
     
-    xline(15,'-r')
+    xline(richClubThresh,'-r')
 
     
     if saving_wanted == true
@@ -351,11 +383,11 @@ if plotting_wanted == true
     end
 
     
-    maxNum15 = max(RC_Num(:,14)');
-    minNum15 = min(RC_Num(:,14)');
+    maxNum15 = max(RC_Num(:,richClubThresh)');
+    minNum15 = min(RC_Num(:,richClubThresh)');
     
-    disp(strcat('Max number of included building at ND 15', num2str(maxNum15)));
-    disp(strcat('Min number of included building at ND 15', num2str(minNum15)));
+    disp(strcat('Max number of included building at rich club threshold ND = ', num2str(maxNum15)));
+    disp(strcat('Min number of included building at rich club threshold ND = ' , num2str(minNum15)));
    
     
     
