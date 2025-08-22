@@ -80,13 +80,13 @@ path = what;
 path = path.path;
 
 % cd into graph folder location
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\'
+cd 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step4_graphs\'
 
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\richClub\';
+savepath = 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\richClub\';
 
 imagepath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
 clistpath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
-nodeDegreePath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\';
+nodeDegreePath = 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\nodeDegree_analysis\';
 
 
 %% -------------------------- Initialisation ------------------------------
@@ -122,8 +122,7 @@ richClubThresh = fix(grandMean + grandStd);
 disp(['rich club node degree threshold = ', num2str(richClubThresh)])
 
 %graphfolder
-PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
-
+PartList = {365 1754 2258 2693 3310 4176 4597 4796 4917 5741 6642 7093 7412 7842 8007 8469 8673 9472 9502 9586 9601};
 
 totalgraphs = length(PartList);
 
