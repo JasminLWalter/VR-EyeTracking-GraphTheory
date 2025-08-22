@@ -301,7 +301,7 @@ richClubND25_NodeCountAll.BuildingNames = houseList.target_collider_name;
 
 
 % Take the mean over all subjects
-MeanRichClub = nanmean(RichT(:,2:end));
+MeanRichClub = mean(RichT(:,2:end),"omitmissing");
 
 % identify the buildings that occur in a rich club with at least 25 node
 % degree more often than the threshold of mean + std node degree
@@ -351,7 +351,7 @@ if plotting_wanted == true
     xticks([1:2:richClubThresh]);
     ylim([0.7,2.5]);
     set(gca,'FontName','Helvetica','FontWeight','bold')
-    xline(richClubThresh,'-r')
+    % xline(richClubThresh,'-r') % for visualizations sometimes usesful
 %     set(gca,'FontName','Helvetica','FontSize',40,'FontWeight','bold')
 
     pbaspect([1 1 1]);
@@ -378,11 +378,11 @@ if plotting_wanted == true
     end
 
     
-    maxNum25 = max(RC_Num(:,14)');
-    minNum25 = min(RC_Num(:,14)');
+    maxNum25 = max(RC_Num(:,richClubThresh)');
+    minNum25 = min(RC_Num(:,richClubThresh)');
     
-    disp(strcat('Max number of included building at ND 25 = ', num2str(maxNum25)));
-    disp(strcat('Min number of included building at ND 25 = ', num2str(minNum25)));
+    disp(strcat('Max number of included building at rich club threshold ND = ', num2str(maxNum25)));
+    disp(strcat('Min number of included building at ND rich club threshold ND = ', num2str(minNum25)));
    
     
 
