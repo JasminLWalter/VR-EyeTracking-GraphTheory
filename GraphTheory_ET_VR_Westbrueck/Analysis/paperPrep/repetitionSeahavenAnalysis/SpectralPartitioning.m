@@ -26,11 +26,33 @@
 % second smallest Eigenvalue. Iff there are more than 1 non connected nodes
 % the 3rd smallest Eigenvalue will be used. 
 
-% Input: 
-% Graph_V3.mat           = the gaze graph object for every participant
+% Purpose: Performs spectral partitioning on participant gaze graphs. Builds the Laplacian (L=D−A),
+%          computes eigenpairs, uses the 2nd-smallest eigenvector (or 3rd if graph not fully connected)
+%          to split nodes by sign into two clusters, and documents/plots results.
+%
+% Usage:
+% - Adjust: savepath, input folder (cd), and partList.
+% - Optional flags: plotting_wanted (true/false), saving_wanted (true/false).
+% - Input files: <ParticipantID>Graph_WB.mat (variable: graphy; undirected, unweighted).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant MAT graph file (from optional Step 5), variable: graphy.
+%
+% Outputs:
+% - Per participant (savepath):
+%   - 2rdSmallestEigenvector<ID>.png (or 3rd if disconnected)
+%   - Spy_AdjacencyMatrix_Part<ID>.png
+%   - Clusters_Part_<ID>.png
+%   - Part_<ID>EigenvalueSpectrumL,mat
+%   - Part<ID>Histogram_2nd_Smallest_EigenvectorL.png (or 3rd)
+%   - Part<ID>eig_pos.mat, Part<ID>_eig_neg.mat (tables eig_posT/eig_negT if connected; vectors if not)
+% - Aggregates (savepath): CutEdges.mat; SpectralDocumentation.mat
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 
-% Output: 
+% Further notes: 
 % 2ndSmallestEigenvector.png = The second smallest eigenvector of the Laplacian 
                                % matrix is sorted ascendingly and color coded 
                                % into two clusters. (Fig 4c in the paper)

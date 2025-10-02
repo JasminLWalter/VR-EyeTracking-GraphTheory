@@ -6,11 +6,39 @@
 % -----------------adjusted and extended by Jasmin L. Walter---------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
+% Purpose: Computes the rich-club coefficient for each participant's gaze graph, normalizes by
+%          random graphs matched on nodes/edges and degree distribution (via KS selection), and
+%          summarizes/visualizes which buildings frequently belong to the rich club.
+%
+% Usage:
+% - Adjust: cd to the graphs folder; set savepath, imagepath, clistpath, nodeDegreePath, and PartList.
+% - Optional flags: plotting_wanted (true/false), saving_wanted (true/false).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant graphs: <ParticipantID>_Graph_WB.mat (variable: graphy; undirected, unweighted)
+% - Building list CSV: additional_Files/building_collider_list.csv (names and coordinates)
+% - Landmarks list: list_gaze_graph_defined_landmarks.mat (from node-degree analysis)
+% - Node-degree overview: Overview_NodeDegree.mat (used to set richClubThresh = mean + std of house means)
+% - Map image (for plots): additional_Files/map_natural_white_flipped.png
+%
+% Outputs (to savepath):
+% - Figures:
+%   - MeanRichClub.png (rich-club curves per subject + mean)
+%   - Number_of_buildings_included_with_increasing_node_degree.png
+%   - Map_with_RCbuildings_sized_colored_with_Count.png (.png and 600dpi export)
+%   - Map_with_RCbuildings_sized-colored_with_count_markedHighCountBuildings.png (.png and 600dpi)
+%   - Map_with_RCbuildings_sized-colored_with_count_markedLandmarks.png (.png and 600dpi)
+% - Data:
+%   - RichClub_AllSubs.mat and .csv (per-subject RC vs. degree threshold)
+%   - Mean_RichClub.mat (mean RC vs. degree threshold)
+%   - richClubND15_NodeCountAll.mat/.csv (per-building count across subjects at threshold)
+%   - richClubND15_highCountBuildings.mat/.csv (subset exceeding mean+2*std count)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
-% Requirements:
-% undirected, unweighted graphs with Edges and Nodes Table 
-% The Edges Table needs to contain an EndNodes column
 
+% Method description:
 % The rich club coefficient is calculated with the following formula:
 % RC(k) = 2E>k / N>k(N>k -1) 
 % with k = Node Degree, 
@@ -25,24 +53,13 @@
 % above 1 would indicate that high node degree nodes are connected to other
 % high node degree nodes above chance level 
 
-% Input:
-% Graph_V3.mat           = the gaze graph object for every participant
-
-% Map_Houses_New.png     = image of the map of Seahaven in black and white
-
-% CoordinateListNew.txt  = csv list of the house names and x,y coordinates
-%                          corresponding to the map of Seahaven
-
-% Output:
-% Figure 1 = All houses displayed on the map both color coded and size coded 
-%            according to their frequency of being part of the rich club 
-%            across participants (Fig 8b in paper)
+% most important variables:
 
 % Figure 2/ MeanRichClub.png = The development of the rich club coefficient 
 %                              with increasing node degree. The dot-lines 
 %                              are the rich club coefficients of individual 
 %                              participants, while the green line is the 
-%                              mean across all participants (Fig 8a in paper)
+%                              mean across all participants
 
 
 % RichClub_AllSubs.mat = overview of all rich club values as a function of 

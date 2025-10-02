@@ -6,12 +6,28 @@
 %-----------------adjusted and extended by Jasmin L. Walter, 2022/23-------
 %---------------------------jawalter@uos.de--------------------------------
 
-%Hierarchy index 
+% Purpose: Computes the hierarchy index for each participant's gaze graph by analyzing the
+%          degree distribution. Fits (1) a log–log linear model above the median degree and
+%          (2) a power-law model; the inverse exponent (-b) from the power fit is the hierarchy index.
+%
+% Usage:
+% - Adjust: savepath, input folder (cd), and PartList.
+% - Optional flags: plotting_wanted (true/false), saving_wanted (true/false).
+% - Input files: <ParticipantID>_Graph_WB.mat (variable: graphy; undirected, unweighted).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant MAT graph file (from optional Step 5), variable: graphy.
+%
+% Outputs:
+% - Table (savepath): HierarchyIndex_Table.mat (variables: Part, Slope, HierarchyIndex)
+% - Figures (if saving_wanted):
+%   - Per participant: Med_Hierarchy_Fit_Part<ParticipantID>.png
+%   - Summary: Histogram_HierarchyIndex.png
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
-% Requirements:
-% undirected, unweighted graphs with Edges and Nodes Table 
 
-%--------------------------------------------------------------------------
 %Procedure: 
 %Plotting all occuring degree values against their frequency
 %Afterwards fitting a power law function (a*x^b). 
