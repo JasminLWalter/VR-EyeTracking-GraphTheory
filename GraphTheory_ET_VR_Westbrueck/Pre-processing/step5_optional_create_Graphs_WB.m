@@ -1,9 +1,9 @@
-%% ------------------ step5_optional_create_Graphs_WB----------------------
+%% ------------------ step5_create_Graphs_WB----------------------
 
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description: 
+% Purpose: 
 % 5th and last step of prepreocessing pipeline.
 % The script creates the gaze graphs from the gaze events
 % This step is unnecessary if analysis does not involve graphs
@@ -11,14 +11,20 @@
 % To achieve this it removes all repetition and self references from graphs
 % and removes noData node after creation of graph
 
-% Input:  
-% gazes_data_V3.mat = a new data file containing all gazes
-
-% Output:
-% Graph_V3.mat = the gaze graph object for every participant
-% Missing_Participant_Files.mat = contains all participant numbers where the
-%                                  data file could not be loaded
-
+% Usage:
+% - Adjust: savepath, input folder (cd), and PartList.
+% - Input files: <ParticipantID>_gazes_data_WB.mat (variable: gazes_data).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant MAT file with gaze events (from Step 4), variable: gazes_data.
+%
+% Outputs:
+% - Per participant (savepath): <ID>_Graph_WB.mat (variable: graphy)
+% - Missing participant CSV: Missing_Participant_Files
+% - Console summary of missing files
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 clear all;
 

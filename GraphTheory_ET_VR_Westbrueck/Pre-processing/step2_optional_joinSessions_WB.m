@@ -3,23 +3,23 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description:
-% optional step after step 2 in pre-processing pipeline
+% Puprpose: optional step after step 2 in pre-processing pipeline
 % (only necessary if data acquisition was completed in several sessions)
 % combines condensedColliders files of different VR sessions into one file
 
 
-% Input: 
-% combinedSessions_newPartNumbers.csv = list matching the different
-%                                       numbers of each session to the 
-%                                       respective participant (uploaded in
-%                                       https://osf.io/aurjk/)
-% condensedColliders_V3.mat = files created when running script
-%                             step1_condenseRawData_V3.m
-% uses
-% Output: 
-% condensedColliders3S.mat     = files combining the three sessions for
-%                                each participant
+% Usage:
+% - Adjust: savepath, input folder (cd), and PartList.
+% - Input files: <ParticipantID>Session<S>ET<E>_condensedColliders_WB.mat (Sessions 1..5).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Condensed MAT files from Step 1 in the current folder (variable: condensedData).
+%
+% Outputs:
+% - Per participant (savepath): <ID>_condensedColliders5S_WB.mat (variable: condensedColliders5S)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 clear all;
 

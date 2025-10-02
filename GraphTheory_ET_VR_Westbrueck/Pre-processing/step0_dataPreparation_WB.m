@@ -3,21 +3,33 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description: 
-% 
-
-% Input: 
-% uses 1004_Expl_S_1_ET_1_flattened.csv file
-% Output: 
+% Purpose: Step 0 of the VR eye-tracking pre-processing pipeline; 
+% processes the flattened Unity data recordings from the Westbrook project 
+% to apply some collider name corrections, inkl. mapping graffiti to 
+% buildings, handling see-through/body hits, and creating processed collider 
+% fields.
+%
+% Usage:
+% - Adjust: savepath, input folder (cd), PartList, and paths to mapping CSVs.
+% - Input files: <ParticipantID>Expl_S<Session>*_flattened.csv (Sessions 1..5).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Eye-tracking CSVs (current folder)
+% - Mapping CSVs: additional_Files/building_collider_list.csv;
+%                 additional_Files/list_collider_changes.csv
+%
+% Outputs (to savepath):
+% - <ID>Session<S>ET<E>_data_prepared.csv
+% - overviewRenamedGraffiti.csv; overviewAllColliders.csv; overviewProcessedColliders.csv
+% - missingFiles.csv (if files are absent)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 
 clear all;
 
 %% adjust the following variables: savepath, current folder and participant list!-----------
-% datapaths Westbrook harddrive
-% savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\pre-processing_2023\';
-% 
-% cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\pre-processed_csv\'
 
 % datapaths Living Transformation harddrive
 savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_2023\Step0_dataPreparation\';
@@ -28,7 +40,6 @@ cd 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processed_csv\'
 % in Westbrook city
 
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
-% PartList = {1004};
 
 colliderList = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
 

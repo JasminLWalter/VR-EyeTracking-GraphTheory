@@ -3,13 +3,20 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description:
-% step 2 in pre-processing pipeline
-% Script investigates the percentage of missing data in each file and prints
-% some stat summary and suggestions. 
-
-
-% Input: 
+% Purpose: Step 2 of the VR eye-tracking pre-processing pipeline; inspects per-file missing-data
+%          rates from overviewMissingData.csv and prints summary statistics and guidance.
+%
+% Usage:
+% - Adjust: input folder (cd) to the location containing overviewMissingData.csv.
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - overviewMissingData.csv (from Step 1; expected columns: File, noDataRows, totalRows, percentageMissing)
+%
+% Outputs:
+% - Console summary only (counts for >=20% and >=30% missing data; worst-case and mean rates)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 %% adjust the following variables: current folder and participant list!-----------
 

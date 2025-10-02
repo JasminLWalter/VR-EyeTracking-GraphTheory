@@ -3,22 +3,26 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description: 
+% Purpose: 
 % Third script to run in pre-processing pipeline
 % applies the interpolation of lost data samples (noData) if the
 % interpolation conditions apply: interpolation of clusters only iff: 
 % noData clusters are < 266 ms long and occur between the same collider
 
-% Input: 
-% condensedColliders_3Sessions_V3.mat = the condesedColliders file after
-%                                       combining all 3 session in the
-%                                       script
-%                                       "step2_optional_join3SessionsVR_V3"
-% Output: 
-% interpolatedColliders_3Sessions_V3.mat = the newly interpolated data file
-
-% Missing_Participant_Files.mat = contains all participant numbers where the
-%                                  data file could not be loaded
+% Usage:
+% - Adjust: savepath, input folder (cd), and PartList.
+% - Input files: <ParticipantID>_condensedColliders5S_WB.mat (from optional Step 2; variable: condensedColliders5S).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant MAT file with condensed clusters (5 sessions combined), variable: condensedColliders5S.
+%
+% Outputs:
+% - Per participant (savepath): <ID>_interpolatedColliders_5Sessions_WB.mat (variable: interpolatedData)
+% - Console summary of interpolation and missing files
+% - CSV of missing participant IDs: Missing_Participant_Files
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 
 clear all;
