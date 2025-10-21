@@ -3,25 +3,28 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description:
-% Creates an image scale (pseudo 3D plot) color coding the node degree 
-% centrality values for every house and every participant (Fig. 5c). Also 
-% creates corresponding box plots with error bars: the individual mean node 
-% degrees of all subjects (Fig. 5a) and the individual mean node degree of
-% each house (Fig. 5e)
-
-% Input: 
-% Overview_NodeDegree.mat  =  table consisting of all node degree values
-%                             for all participants
-% Output: 
-% nodeDegree_imageScale.png = pseudo 3D plot color coding the node degree 
-%                             centrality values for every house and every 
-%                             participant (Fig. 5c)
-% nodeDegree_mean_std_allHouses.png = error bar plot of mean and std for 
-%                                     all houses (Fig. 5e)
-% nodeDegree_mean_std_allParticipants.png = error bar plot of mean and std
-%                                           for each participant (Fig. 5b)
-
+% Purpose: Visualizes average node-degree centrality on the city map and identifies landmarks.
+%          Plots per-building mean node degree as a colored scatter over the map, a histogram of means,
+%          highlights buildings above mean+2*std threshold (landmarks) on the map, and makes boxplots.
+%
+% Usage:
+% - Adjust: savepath, imagepath, clistpath, and input folder (cd).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Overview_NodeDegree.mat (variable: overviewNodeDegree; table with houseNames and Part_<ID> columns)
+% - additional_Files/building_collider_list.csv (building names and map coordinates)
+% - additional_Files/map_natural_white_flipped.png (background map image)
+%
+% Outputs (to savepath):
+% - GraphVisualization_averageNodeDegree.fig/.png
+% - Histogram_distribution_meanNodeDegree_of_each_building.fig/.png
+% - GraphVisualization_landmarks_withNames.fig/.png
+% - GraphVisualization_landmarks.fig/.png
+% - Boxplot_landmarks.fig/.png
+% - list_gaze_graph_defined_landmarks.mat (table: landmarks)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE
 
 clear all;
 

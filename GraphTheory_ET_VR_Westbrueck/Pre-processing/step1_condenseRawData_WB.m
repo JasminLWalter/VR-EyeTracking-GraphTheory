@@ -3,24 +3,27 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description: 
-% First script to run in pre-processing pipeline
-% Reads in raw csv file recorded in the Westbrook project
-% and condenses data, so that directly
-% consecutive instances of raycast hits on the same collider are merged into 
-% one row (hit point clusters). All other columns are moved into arrays 
-% into each row accordingly.
 
-% Input: 
-% uses 1004_Expl_S_1_ET_1_flattened.csv file
-% Output: 
-% condensedColliders_WB.mat     = new data files with each row containing 
-%                                 the data of a hit point cluster
-% OverviewAnalysis.mat          = summary of number and percentage of data
-%                                 rows with noData (= missing data samples)
-%                                 for each participant
-% Missing_Participant_Files.mat = contains all participant numbers where the
-%                                  data file could not be loaded
+% Purpose: Step 1 of the VR eye-tracking pre-processing pipeline; 
+% condenses prepared data by merging consecutive samples on the same 
+% collider into clusters and storing per-cluster arrays.
+%
+% Usage:
+% - Adjust: savepathNewData, savepathCondensedData, input folder (cd), and PartList.
+% - Input files: <ParticipantID>Session<Session>*_data_prepared.csv (Sessions 1..5).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Prepared CSVs (from Step 0) in the current folder.
+%
+% Outputs:
+% - Per ET file (savepathNewData): <ID>Session<S>ET<E>_uncondensed_pipelineDurData.csv
+% - Per ET file (savepathCondensedData): <ID>Session<S>ET<E>_condensedColliders_WB.mat (variable: condensedData)
+% - Overviews (savepathNewData): overviewRenamedGraffiti.mat; overviewRemainingColliders.mat; overviewAllColliders.mat
+% - Missing data summary: overviewMissingData.csv (written to both save paths)
+% - Missing file report: missingFiles.csv (written to both save paths, if any)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 clear all;
 

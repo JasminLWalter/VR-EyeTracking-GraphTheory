@@ -3,8 +3,24 @@
 % -------------------- written by Lucas Essmann - 2020 --------------------
 % ---------------------- lessmann@uni-osnabrueck.de -----------------------
 
-% Requirements:
-% Table of all node degree values (n) for all subjects (m) of shape (mxn)
+% Purpose: Computes pairwise correlations of node-degree distributions across subjects, applies
+%          Fisher z-transform to summarize mean and std correlations, and optionally plots a histogram.
+%
+% Usage:
+% - Adjust: savepath and input folder (cd).
+% - Optional flags: plotting_wanted (true/false), saving_wanted (true/false).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Overview_NodeDegree.mat (table with houseNames and Part_<ID> columns; shape m x n: m subjects, n buildings)
+%
+% Outputs:
+% - CorrelationArray.mat (vector of pairwise correlations)
+% - NodeDegree_Correlation_Histogram.png (if saving_wanted)
+% - Console: mean and std of correlations (Fisher z-transformed summary)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
+
 
 %--------------------------------------------------------------------------
 %Procedure: 

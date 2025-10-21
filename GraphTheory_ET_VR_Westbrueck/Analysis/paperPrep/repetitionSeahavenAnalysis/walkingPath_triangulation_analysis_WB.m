@@ -3,52 +3,49 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description:
+
+% Purpose: Analyzes where gaze-graph-defined landmarks were visible along participants' walking
+%          paths. Uses a ~4x4 m grid to map visibility, walking-path
+%          density, and the proportion/time of areas with 0, 1, or ≥2 landmarks (triangulation).
+%
+% Usage:
+% - Adjust: savepath, savepathWPD, imagepath, clistpath, landmarkspath, pathAllParts, input folder (cd), and partList.
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant: <ID>_interpolatedColliders_5Sessions_WB.mat (variable: interpolatedData)
+% - All participants gazes: gazes_allParticipants.mat (variable:
+% gazes_allParticipants) --> created by script: gazes_allParticipants_WB.m
+% - Landmarks list: list_gaze_graph_defined_landmarks.mat (variable: landmarks)
+% - Building list CSV: additional_Files/building_collider_list.csv
+% - Map images: additional_Files/map_natural_white.png; .../map_natural_white_flipped.png
+%
+% Outputs (to savepath):
+% - Figures:
+%   - Density of all walking paths of all participants.png
+%   - visibility of the gaze-graph-defined landmarks.png
+%   - visibility of the gaze-graph-defined landmarks - Triangulation.png/.fig
+%   - piePlot_triangualationPercentage.png
+%   - piePlot_TimesTriangualationPossible.png
+%   - Duration spend within the walking paths - city areas.png/.fig
+% - Tables/MAT:
+%   - table_percentage_triangulation.mat
+%   - table_times_triangulation_possible.mat
+%   - logical3D.mat (landmark visibility grid, per cell)
+%   - sumCountM_duration.mat; countMatrix_timeSpend_150min.mat; countMatrix_allETSess.mat
+%   - visibilityLandmarks.mat (per-landmark visibility stats)
+%   - logical3D_allbuildings.mat; visibilityNoLandmarkBuildigns.mat
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
+
+
+% Futher description:
 % Script analyses how many gaze-graph-defined landmarks were viewed from 
 % each location participants visited in the city. In addition, it analyses
 % how much of the total experiment time participants spend in these areas 
 % where the theoretical basis for triangulation would be given. 
-% The analysis is performed with a spatial resolution of 4x4m and an 
-% additional smoothing with a 3x3 unity kernel. 
-
-
-% Input: 
-% gazes_allParticipants.mat        = data file containing all gazes from all
-%                                    participants
-%                                    - created when running script...
-
-% interpolData_allParticipants.mat = data file containing all interpolated
-%                                    data from all participants
-%                                    - created when running script
-
-% Overview_NodeDegree.mat  =  table consisting of all node degree values
-%                             for all participants (alternatively the list
-%                             of the rich club count for all houses)
-%                          
-% Map_Houses_New.png       = image of the map of Seahaven 
-% CoordinateListNew.txt    = csv list of the house names and x,y coordinates
-%                            corresponding to the map of Seahaven
-
-
-% Output: 
-% Figure 1: visibility of top 10 houses - rich club and node degree
-% = map plot color coded for all top 10 houses
-
-% Figure 2: Visibility of top 10 houses - rich club & node degree'
-% = like figure 1, but here the map is only color coded to differentiate
-% areas where 0 top 10 houses, 1 top 10 house, and 2 or more top 10 houses
-% were viewed (Fig. 9 of the paper)
-
-% Figure 3: grid size_vibility plots.png
-% = visualization of the 4x4 grid dividing the city
-
-% Figure 20: Percentage of possibility to triangulate in walked area
-% = pie plot of the percentages of the different city areas participants 
-% were located in
-
-% Figure 21: Percentage of times triangulation was possible
-% = pie plot of the percentages of experiment time participants spend in
-% triangulation areas (same visualization as Figure 20, but different data)
+% The analysis is performed with a spatial resolution of 4x4m 
+% main results:
 
 % table_percentage_triangulation.mat
 % = table listing the percentages of the areas in the city where participants
@@ -63,22 +60,22 @@ clear all;
 %% adjust the following variables: 
 % savepath, imagepath, clistpath, overviewNDpath and current folder-----------------------
 
-savepath= 'F:\WestbrookProject\Spa_Re\control_group\Analysis\walkingPaths_triangulation\';
+savepath= 'E:\WestbrookProject\Spa_Re\control_group\Analysis\walkingPaths_triangulation\';
 
-savepath30minPlots = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\walkingPaths_triangulation\walkingPaths_30min_individual\';
-savepath150minPlots = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\walkingPaths_triangulation\walkingPaths_150min_individual\';
-savepathWPD = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\walkingPaths_triangulation\walkingPathDensity\';
+% savepath150minPlots = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\walkingPaths_triangulation\walkingPaths_150min_individual\';
+savepathWPD = 'E:\WestbrookProject\Spa_Re\control_group\Analysis\walkingPaths_triangulation\walkingPathDensity\';
 
-imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
-clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
+imagepath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
+clistpath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
+
 
 %  path to the overviewNodeDegree file created when running script nodeDegree_createOverview_V3
-landmarkspath = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\';
+landmarkspath = 'E:\WestbrookProject\Spa_Re\control_group\Analysis\NodeDegreeCentrality\';
 
 % location of file containing all gaze data and all interpolated of all participants
-cd 'F:\WestbrookProject\Spa_Re\control_group\Pre-processsing_pipeline\interpolatedColliders\'
+cd 'E:\WestbrookProject\Spa_Re\control_group\Pre-processsing_pipeline\interpolatedColliders\'
 
-pathAllParts = 'F:\WestbrookProject\Spa_Re\control_group\Analysis\allParticipants\';
+pathAllParts = 'E:\WestbrookProject\Spa_Re\control_group\Analysis\allParticipants\';
 
 
 %------------------------------------------------------------------------
@@ -161,8 +158,8 @@ edgesCol = linspace(1,columns,nrSquares);
 
 % plot the walking paths
 % save all walking coordinates
-% check area covered for each participant (after 30 min after 150 min)
-% check area covered over all participants (after 30 min after 150 min)
+% check area covered for each participant 
+% check area covered over all participants 
 
 % create density of walking paths plot
 % create triangulation plot
@@ -179,7 +176,6 @@ squares = table;
 allXBins = struct;
 allYBins = struct;
 countMatrix_timeSpend_150min = zeros(length(edgesRows)-1,length(edgesCol)-1,length(partList));
-countMatrix_timeSpend_30min = zeros(length(edgesRows)-1,length(edgesCol)-1,length(partList));
 
 for partIndex = 1:length(partList)
     currentPart = partList(partIndex);
@@ -228,7 +224,7 @@ for partIndex = 1:length(partList)
 
     for index = 1:length(newSessionIndex)
 
-        [currentCountMatrix,rowEdges, colEdges] = histcounts2([interpolatedData(1:newSessionIndex(index)).playerBodyPosition_x]' *multipFactor +additiveF, [interpolatedData(1:newSessionIndex(index)).playerBodyPosition_z]' *multipFactor +additiveF, edgesRows, edgesCol);
+        [currentCountMatrix,rowEdges, colEdges] = histcounts2([interpolatedData(1:newSessionIndex(index)).hmdPosition_x]' *multipFactor +additiveF, [interpolatedData(1:newSessionIndex(index)).hmdPosition_z]' *multipFactor +additiveF, edgesRows, edgesCol);
 
         current_coutM_logical = currentCountMatrix;
         isVisited = current_coutM_logical >= 1;
@@ -243,7 +239,7 @@ for partIndex = 1:length(partList)
     % now check the session independent walking area and calculate the
     % duration visited 
 
-    [countMatrix150,rowEdges, colEdges, binX_150, binY_150] = histcounts2([interpolatedData.playerBodyPosition_x]' *multipFactor +additiveF, [interpolatedData.playerBodyPosition_z]' *multipFactor +additiveF, edgesRows, edgesCol);
+    [countMatrix150,rowEdges, colEdges, binX_150, binY_150] = histcounts2([interpolatedData.hmdPosition_x]' *multipFactor +additiveF, [interpolatedData.hmdPosition_z]' *multipFactor +additiveF, edgesRows, edgesCol);
     % apply kernel
 
     coutM_logical150 = countMatrix150;
@@ -333,36 +329,20 @@ gazes_allParts = gazes_allParts.gazes_allParticipants;
 
 disp('data loaded')
 
-%% identify the locations of the top 10 houses
-landmarkIndex = ismember([gazes_allParts(:).hitObjectColliderName], landmarks.houseNames);
-positionsLandmarks = table;
-positionsLandmarks.X = [gazes_allParts(landmarkIndex).playerBodyPosition_x]'*multipFactor + additiveF;
-positionsLandmarks.Z = [gazes_allParts(landmarkIndex).playerBodyPosition_x]'*multipFactor + additiveF;
 
-
-
-[countMatrixLandmarks,colEdges,rowEdges] = histcounts2(positionsLandmarks.X, positionsLandmarks.Z, edgesRows, edgesCol);
-
-
-% [countMatrix,colEdges,rowEdges] = histcounts2(positions10.Z, positions10.X, edgesCol,edgesRows);
 
 %% which are was visited by participants in the first place?
 positionsAll = table;
-positionsAll.X = [gazes_allParts.playerBodyPosition_x]'*multipFactor + additiveF;
-positionsAll.Z = [gazes_allParts.playerBodyPosition_z]'*multipFactor + additiveF;
+positionsAll.X = [gazes_allParts.hmdPosition_x]'*multipFactor + additiveF;
+positionsAll.Z = [gazes_allParts.hmdPosition_z]'*multipFactor + additiveF;
 
 
 [countMatrixAll,colEdgesAll,rowEdgesAll] = histcounts2(positionsAll.X, positionsAll.Z,  edgesRows, edgesCol);
 
-% % apply kernal smoothing / convolution
-% kernel  = [1,1,1;1,1,1;1,1,1];
-% convCountAll = countMatrixAll;
-% convCountAll = conv2(convCountAll,kernel,'same');
-convCountAll = countMatrixAll; % comment line if kernel smoothing is applied)
 
 % get alpha data so that all areas that were not visited in the first place
 % can be set to 0 transparency in the plot
-alphaDAll = convCountAll';
+alphaDAll = countMatrixAll';
 findzeros = alphaDAll(:,:)==0;
 alphaDAll(~findzeros) = 0.6;
 
@@ -376,8 +356,8 @@ for index = 1:height(landmarks)
     houseName = landmarks.houseNames(index);
     houseIndex =  strcmp([gazes_allParts.hitObjectColliderName],houseName);
     positions = table;
-    positions.X = [gazes_allParts(houseIndex).playerBodyPosition_x]'*multipFactor + additiveF;
-    positions.Z = [gazes_allParts(houseIndex).playerBodyPosition_z]'*multipFactor + additiveF;
+    positions.X = [gazes_allParts(houseIndex).hmdPosition_x]'*multipFactor + additiveF;
+    positions.Z = [gazes_allParts(houseIndex).hmdPosition_z]'*multipFactor + additiveF;
     
     [countMatrix,colEdges,rowEdges] = histcounts2(positions.X, positions.Z, edgesRows,edgesCol);
     fullCount(index).columnEdges = colEdges;
@@ -386,21 +366,12 @@ for index = 1:height(landmarks)
  
 end
 
-% apply kernal smoothing / convolution
-kernel  = [1,1,1;1,1,1;1,1,1];
-convCount = fullCount;
 
-
-for index11 = 1:length(fullCount)
-
-    convCount(index11).countMatrix = conv2(convCount(index11).countMatrix,kernel,'same');
-end
-
-logicalCount = convCount;
+logicalCount = fullCount;
 
 for index2 = 1:length(fullCount)
 
-    logicalCount(index2).countMatrix = convCount(index2).countMatrix > 0;
+    logicalCount(index2).countMatrix = fullCount(index2).countMatrix > 0;
  
 end
 
@@ -464,8 +435,8 @@ hold off
 
 %% percentage of triangulation area vs walked area
 
-walkedGridAll = convCountAll ~= 0;
-sumGridAll = sum(walkedGridAll,'all');
+walkedGridAll = countMatrixAll ~= 0;
+sumWalkedGridAll = sum(walkedGridAll,'all');
 
 saw1 = sumAll2cut == 1;
 saw2 = sumAll2cut == 2;
@@ -474,97 +445,77 @@ sumGrid1 = sum(saw1, 'all');
 sumGrid2 = sum(saw2, 'all');
 
 percTable = table;
-percTable.percentage_0Houses = ((sumGridAll-(sumGrid1+sumGrid2))/sumGridAll)*100;
-percTable.percentage_1House = (sumGrid1/sumGridAll)*100;
-percTable.percentage_2Houses = (sumGrid2/sumGridAll)*100;
+percTable.percentage_0Houses = ((sumWalkedGridAll-(sumGrid1+sumGrid2))/sumWalkedGridAll)*100;
+percTable.percentage_1House = (sumGrid1/sumWalkedGridAll)*100;
+percTable.percentage_2Houses = (sumGrid2/sumWalkedGridAll)*100;
 save([savepath,'table_percentage_triangulation.mat'],'percTable');
 
 
 figure(20)
 labelsData = {'0 houses','1 house','2 or more houses'};
-figgy20 = pie([sumGridAll-sumGrid1-sumGrid2, sumGrid1, sumGrid2]);
+figgy20 = pie([sumWalkedGridAll-sumGrid1-sumGrid2, sumGrid1, sumGrid2]);
 legend(labelsData,'location', 'northeastoutside')
 title('Percentage of possibility to triangulate in walked area');
 saveas(gcf, strcat(savepath, 'piePlot_triangualationPercentage.png'));
 
-% 
-% 
-% %% how much of the experiment time did participants spend in areas where
-% % triangulation is possible?
-% 
-% % load data interpolated - here the analysis does not depend on the eye
-% % tracking data, therefore the data is used before the gaze separation.
-% % Note that the position data used here is not affected by the
-% % interpolation or the pre-preprocessing pipeline until the gaze - noise
-% % separation. Thus, since we are interested in the whole experiment time, 
-% % we want to use the position data before it gets affected by the gaze 
-% % separation. Here we use the interpolated data files, instead we could 
-% % also use data files earlier in the preprocessing pipeline, like 
-% % the condensedCollider files once all sessions have been combined.
-% 
-% % interpol_allParts = load('interpolData_allParticipants.mat');
-% % interpol_allParts = interpol_allParts.interpolData_allParticipants;
-% % 
-% % disp('interpolated data loaded')
-% % 
-% % positionsID = table;
-% % positionsID.X = [interpol_allParts(:).PosX]'*xT+xA;
-% % positionsID.Z = [interpol_allParts(:).PosZ]'*zT+zA;
-% % 
-% % [countMatrixID,colEdgesAll,rowEdgesAll] = histcounts2(positionsID.Z, positionsID.X, edgesCol,edgesRows);
-% 
-% logicSaw2 = sumAll2cut == 2;
-% logicSaw1 = sumAll2cut == 1;
-% logicSaw0 = sumAll2cut == 0;
-% 
-% sumCountM_duration = sum(countMatrix_timeSpend_150min,3);
-% 
-% timeTr2 = sumCountM_duration(logicSaw2);
-% timeTr1 = sumCountM_duration(logicSaw1);
-% timeTr0 = sumCountM_duration(logicSaw0);
-% 
-% % now sum the areas
-% sumTTri2 = sum(timeTr2);
-% sumTTri1 = sum(timeTr1);
-% sumTTri0 = sum(timeTr0);
-% sumAllInterpol = sum(sumCountM_duration, 'all');
-% 
-% percTableTimeTri = table;
-% percTableTimeTri.percentage_Time0Houses = (sumTTri0 /sumAllInterpol)*100;
-% percTableTimeTri.percentage_Time1House = (sumTTri1/sumAllInterpol)*100;
-% percTableTimeTri.percentage_Time2Houses = (sumTTri2/sumAllInterpol)*100;
-% save([savepath,'table_times_triangulation_possible.mat'],'percTableTimeTri');
-% 
-% figure(21)
-% labelsData = {'0 houses','1 house','2 or more houses'};
-% figgy20 = pie([sumTTri0, sumTTri1, sumTTri2]);
-% legend(labelsData,'location', 'northeastoutside')
-% title('Percentage of experiment time spend in areas with more or less landmarks visible');
-% saveas(gcf, strcat(savepath, 'piePlot_TimesTriangualationPossible.png'));
-% 
-% 
-% figure(22)
-% 
-% imshow(map_normal);
-% alpha(0.3)
-% hold on
-% plotty13 = imagesc([1,rows],[columns,1],sumCountM_duration','AlphaData', alphaDAll);
-% colorbar
-% 
-% title('Duration spend within the walking paths - city areas');
-% 
-% saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.png'));
-% saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.fig'));
-% 
-% hold off
-% 
-% 
-% %% save overviews
-% 
-% save([savepath 'sumCountM_duration.mat'],'sumCountM_duration');
-% save([savepath 'countMatrix_timeSpend_150min.mat'],'countMatrix_timeSpend_150min');
-% save([savepath 'countMatrix_allETSess.mat'],'countMatrix_allETSess');
-% 
+
+
+%% how much of the experiment time did participants spend in areas where
+% triangulation is possible?
+
+
+logicSaw2 = sumAll2cut == 2;
+logicSaw1 = sumAll2cut == 1;
+logicSaw0 = sumAll2cut == 0;
+
+sumCountM_duration = sum(countMatrix_timeSpend_150min,3);
+
+timeTr2 = sumCountM_duration(logicSaw2);
+timeTr1 = sumCountM_duration(logicSaw1);
+timeTr0 = sumCountM_duration(logicSaw0);
+
+% now sum the areas
+sumTTri2 = sum(timeTr2);
+sumTTri1 = sum(timeTr1);
+sumTTri0 = sum(timeTr0);
+sumAllInterpol = sum(sumCountM_duration, 'all');
+
+percTableTimeTri = table;
+percTableTimeTri.percentage_Time0Houses = (sumTTri0 /sumAllInterpol)*100;
+percTableTimeTri.percentage_Time1House = (sumTTri1/sumAllInterpol)*100;
+percTableTimeTri.percentage_Time2Houses = (sumTTri2/sumAllInterpol)*100;
+save([savepath,'table_times_triangulation_possible.mat'],'percTableTimeTri');
+
+figure(21)
+labelsData = {'0 houses','1 house','2 or more houses'};
+figgy20 = pie([sumTTri0, sumTTri1, sumTTri2]);
+legend(labelsData,'location', 'northeastoutside')
+title('Percentage of experiment time spend in areas with more or less landmarks visible');
+saveas(gcf, strcat(savepath, 'piePlot_TimesTriangualationPossible.png'));
+
+
+figure(22)
+
+imshow(map_normal);
+alpha(0.3)
+hold on
+plotty13 = imagesc([1,rows],[columns,1],sumCountM_duration','AlphaData', alphaDAll);
+colorbar
+
+title('Duration spend within the walking paths - city areas');
+
+saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.png'));
+saveas(gcf, strcat(savepath, 'Duration spend within the walking paths - city areas.fig'));
+
+hold off
+
+
+%% save overviews
+
+save([savepath 'sumCountM_duration.mat'],'sumCountM_duration');
+save([savepath 'countMatrix_timeSpend_150min.mat'],'countMatrix_timeSpend_150min');
+save([savepath 'countMatrix_allETSess.mat'],'countMatrix_allETSess');
+
 
 
 %% get some statistics on the visibility
@@ -580,7 +531,7 @@ for index4 = 1:length(fullCount)
 
 end
 
-visL.VisibilityPer = visL.VisibilityCount ./ sumGridAll;
+visL.VisibilityPer = visL.VisibilityCount ./ sumWalkedGridAll;
 
 meanVisibilityLandmarks = mean(visL.VisibilityPer);
 stdVisibilityLandmarks = std(visL.VisibilityPer);
@@ -604,8 +555,8 @@ for index5 = 1:height(uhouses)
     houseName = uhouses(index5);
     houseIndex =  strcmp([gazes_allParts.hitObjectColliderName],houseName);
     positions = table;
-    positions.X = [gazes_allParts(houseIndex).playerBodyPosition_x]'*multipFactor + additiveF;
-    positions.Z = [gazes_allParts(houseIndex).playerBodyPosition_z]'*multipFactor + additiveF;
+    positions.X = [gazes_allParts(houseIndex).hmdPosition_x]'*multipFactor + additiveF;
+    positions.Z = [gazes_allParts(houseIndex).hmdPosition_z]'*multipFactor + additiveF;
     
     [countMatrix,colEdges,rowEdges] = histcounts2(positions.X, positions.Z, edgesRows,edgesCol);
     fullCount2(index5).columnEdges = colEdges;
@@ -614,21 +565,12 @@ for index5 = 1:height(uhouses)
  
 end
 
-% apply kernal smoothing / convolution
-kernel  = [1,1,1;1,1,1;1,1,1];
-convCount2 = fullCount2;
 
-
-for index6 = 1:length(fullCount2)
-
-    convCount2(index6).countMatrix = conv2(convCount2(index6).countMatrix,kernel,'same');
-end
-
-logicalCount2 = convCount2;
+logicalCount2 = fullCount2;
 
 for index7 = 1:length(fullCount2)
 
-    logicalCount2(index7).countMatrix = convCount2(index7).countMatrix > 0;
+    logicalCount2(index7).countMatrix = fullCount2(index7).countMatrix > 0;
  
 end
 
@@ -658,9 +600,10 @@ for index9 = 1:length(fullCount2)
 
 end
 
-visL2.VisibilityPer = visL2.VisibilityCount ./ sumGridAll;
+visL2.VisibilityPer = visL2.VisibilityCount ./ sumWalkedGridAll;
 
 isLandmark = ismember(uhouses,landmarks.houseNames);
+visL2.isLandmark = isLandmark;
 
 meanVisibilityBuildings = mean(visL2.VisibilityPer(not(isLandmark)));
 stdVisibilityBuildings = std(visL2.VisibilityPer(not(isLandmark)));
@@ -670,6 +613,11 @@ disp('no landmark buildings were visible in the city on average and std: ')
 disp(meanVisibilityBuildings)
 disp(stdVisibilityBuildings)
 disp('---------------------------')
+
+meanVisibilityLandmarks2 = mean(visL2.VisibilityPer(isLandmark));
+stdVisibilityLandmarks2= std(visL2.VisibilityPer(isLandmark));
+disp(meanVisibilityLandmarks2)
+disp(stdVisibilityLandmarks2)
 
 save([savepath 'visibilityNoLandmarkBuildigns.mat'],'visL2');
 

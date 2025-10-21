@@ -3,25 +3,28 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description:
-% Creates an image scale (pseudo 3D plot) color coding the node degree 
-% centrality values for every house and every participant (Fig. 5c). Also 
-% creates corresponding box plots with error bars: the individual mean node 
-% degrees of all subjects (Fig. 5a) and the individual mean node degree of
-% each house (Fig. 5e)
 
-% Input: 
-% Overview_NodeDegree.mat  =  table consisting of all node degree values
-%                             for all participants
-% Output: 
-% nodeDegree_imageScale.png = pseudo 3D plot color coding the node degree 
-%                             centrality values for every house and every 
-%                             participant (Fig. 5c)
-% nodeDegree_mean_std_allHouses.png = error bar plot of mean and std for 
-%                                     all houses (Fig. 5e)
-% nodeDegree_mean_std_allParticipants.png = error bar plot of mean and std
-%                                           for each participant (Fig. 5b)
-
+% Purpose: Visualizes and summarizes node-degree centrality across participants and buildings.
+%          Produces image-scale-style visualization, error-bar plots, and boxplots; identifies
+%          landmark buildings via a threshold (mean + 2*std of house means) and saves a summary.
+%
+% Usage:
+% - Adjust: savepath and input folder (cd).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Overview_NodeDegree.mat (variable: overviewNodeDegree; table with houseNames and Part_<ID> columns)
+%
+% Outputs (to savepath):
+% - Boxplot_NDofParticipants_averagedOverBuildings.fig and ..._600DPI.png
+% - Boxplot_NDofBuildings_averagedOverParticipants.fig and ..._600dpi.png
+% - MeanND_StdError_AllBuildings.fig and ..._600dpi.png
+% - TaskBuildings_MeanND_StdError_AllBuildings.fig and ..._600dpi.png
+% - landmarks_boxplot.png
+% - landmarkOverview.csv (table of buildings exceeding the landmark threshold)
+% - Console: grand means/stds (over houses and participants) and threshold summary
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 clear all;
 
@@ -349,34 +352,7 @@ disp(['nr of gaze graph defined landmarks ', num2str(height(landmarks))])
 
 
 
-%% --------------------------- combine imagescale and corr. into one panel
-% 
-% % load correlation coefficient
-% 
-% corr_array = load('CorrelationArray.mat');
-% corr_array = corr_array.corr_array;
-% 
-% figure(10)
-% panel1 = tiledlayout(1,2);
-% nexttile
-% 
-% histogram(corr_array,10);
-% xlabel('Correlation Coefficients'); 
-% ylabel('Frequency');
-% ax = gca;
-% ax.XMinorTick = 'on';
-% 
-% nexttile
-% imagescaly = imagesc(transpose2plot);
-% colorbar
-% title({'Image Scale Node Degree Centrality - all Participants','     '});
-% ax = gca;
-% ax.XTick = 0:10:245;
-% ax.TickDir = 'out';
-% ax.XMinorTick = 'on';
-% ax.XAxis.MinorTickValues = 1:1:245;
-% ax.XLabel.String = 'Houses';
-% ax.YLabel.String = 'Participants';
+
 
 
 

@@ -3,24 +3,23 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description: 
-% Creates the node degree overview file used in other analysis scripts. It
-% reads in the graphs from all participants, calculates the node degree
-% centrality values for every house and saves it in the overview
-
-% Input: 
-% Graph_V3.mat = the gaze graph object for every participant
-% CoordinateListNew.txt = csv list of the house names and x,y coordinates 
-%                         corresponding to the map of Seahaven
-
-
-% Output: 
-% Overview_NodeDegree.mat = table consisting of all node degree values for
-%                           all participants
-% Missing_Participant_Files.mat =contains all participant numbers where
-%                                the data file could not be loaded
-
-
+% Purpose: Creates a node-degree overview across participants. Loads each participant's gaze
+%          graph, computes node degree centrality per building, and aggregates into one table.
+%
+% Usage:
+% - Adjust: savepath, clistpath, input folder (cd), and PartList.
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant MAT graph file: <ParticipantID>Graph_WB.mat (variable: graphy)
+% - Building list CSV: additional_Files/building_collider_list.csv (column: target_collider_name)
+%
+% Outputs:
+% - Overview (savepath): Overview_NodeDegree.mat (table: houseNames + Part<ID> columns with degree)
+% - Missing participant CSV: Missing_Participant_Files
+% - Console summary of analyzed vs. missing files
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 clear all;
 

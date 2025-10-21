@@ -3,25 +3,29 @@
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description:
+% Purpose:
 % Fourth step in the preprocessing pipeline.
 % Script divides the interpolated Collider data based on the gaze threshold 
 % into gazes and noisy samples (excluded data), i.e. it identifies the gaze events
 
 
-% Input: 
+% Usage:
+% - Adjust: savepath, input folder (cd), and PartList.
+% - Input files: <ParticipantID>_interpolatedColliders_5Sessions_WB.mat (variable: interpolatedData).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant MAT file with interpolated clusters (from Step 3), 
 % interpolatedColliders_3Sessions_V3.mat = the interpolated data file
+%
+% Outputs:
+% - Per participant (savepath): <ID>_gazes_data_WB.mat; <ID>_noisy_data_WB.mat
+% - Overview (savepath): Overview_Gazes.mat
+% - Missing participant CSV: Missing_Participant_Files
+% - Console summary of analyzed vs. missing files
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
-% Output: 
-% gazes_data_V3.mat = a new data file containing all gazes
-
-% noisy_data_V3.mat = all excluded data
-
-% Overview_Gazes.mat = overview of the amount of gazes and excluded data 
-%                      for each participant
-        
-% Missing_Participant_Files.mat = contains all participant numbers where the
-%                                  data file could not be loaded
 
 clear all;
 
