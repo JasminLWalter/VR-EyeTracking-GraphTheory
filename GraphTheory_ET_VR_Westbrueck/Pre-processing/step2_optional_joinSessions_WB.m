@@ -25,9 +25,9 @@ clear all;
 
 %% --------adjust the following variables savepath, cd, listpath
 
-savepath = 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\150_min_combined\Step2_combinedFiles\';
+savepath = 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\condensedColls_combinedSess\';
 
-cd 'E:\WestbrookProject\SpaRe_Data\control_data\pre-processing_durationBased_2023\Step1_condensedColliders\';
+cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\condensedColliders\';
 
 % load list that contains the participant numbers belonging together sorted
 % into the different sessions (this list here is uploaded with the other
@@ -41,7 +41,6 @@ PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 105
 Number = length(PartList);
 noFilePartList = [Number];
 missingFiles = table;
-
 
 
 % loop code over all participants in participant list

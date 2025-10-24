@@ -1,25 +1,46 @@
-%% ------------------ create_Graphs b - weighted - Version Westbrook-------------------------------------
-% script written by Jasmin Walter
+%% ------------------ step5_create_Graphs_WB----------------------
 
-% 5th and last step of prepreocessing pipeline to create graphs from VR
-% data
-% step unnecessary if analysis does not involve graphs
-% creates graph objects using gazesObject files
-% removes all repetition and self references from graphs
-% removes noData node after creation of graph
-% output: graph objects for every participant
+% --------------------script written by Jasmin L. Walter-------------------
+% -----------------------jawalter@uni-osnabrueck.de------------------------
+
+% Purpose: 
+% 5th and last step of prepreocessing pipeline.
+% The script creates the gaze graphs from the gaze events
+% This step is unnecessary if analysis does not involve graphs
+% The script creates unweighted and binary graph objects the gaze events. 
+% To achieve this it removes all repetition and self references from graphs
+% and removes noData node after creation of graph
+
+% Usage:
+% - Adjust: savepath, input folder (cd), and PartList.
+% - Input files: <ParticipantID>_gazes_data_WB.mat (variable: gazes_data).
+% - Run the script in MATLAB.
+%
+% Inputs:
+% - Per participant MAT file with gaze events (from Step 4), variable: gazes_data.
+%
+% Outputs:
+% - Per participant (savepath): <ID>_Graph_WB.mat (variable: graphy)
+% - Missing participant CSV: Missing_Participant_Files
+% - Console summary of missing files
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
+
 
 clear all;
 
+%% adjust the following variables: savepath, current folder and participant list!-----------
 
-savepath= 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs_weighted\';
+
+savepath= 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\graphs\';
 
 
-cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\gazes_vs_noise\'
+cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\Pre-processsing_pipeline\gazes_vs_noise\';
 
 % 26 participants with 5x30min VR trainging less than 30% data loss
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
 
+%-------------------------------------------------------------------------------
 
 Number = length(PartList);
 noFilePartList = [];
@@ -58,15 +79,13 @@ for ii = 1:Number
         housesTable = gazedTable;
         housesTable(nohouse,:)=[];
         
-        
-         % create nodetable
+        % create nodetable
         uniqueHouses= unique(housesTable.hitObjectColliderName(:));
         NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
         
         % create edge table
         
         fullEdgeT= cell2table(housesTable.hitObjectColliderName,'VariableNames',{'Column1'});
-        
         
         % prepare second column to add to specify edges
         secondColumn = fullEdgeT.Column1;
@@ -154,39 +173,11 @@ for ii = 1:Number
 %% remove node noData and newSession from graph
 
     
-        graphyW = rmnode(graphyNoData, 'noData');
-        graphyW = rmnode(graphyW, 'newSession');
-        
-%% add weights
-        
-        graphEdges = graphyW.Edges.EndNodes;
-        weights = zeros(length(graphEdges),1);
-        helperT = table;
-        
-        for index = 1: length(graphEdges)
-            edge1 = graphEdges(index,1);
-            edge2 = graphEdges(index,2);
-            
-            % find first edge direction
-            helperT.Column1 = edge1;
-            helperT.Column2 = edge2;
-            find1 = ismember(fullEdgeT, helperT);
-            sum1 = sum(find1);
-            
-            % find second edge direction
-            helperT.Column1 = edge2;
-            helperT.Column2 = edge1;
-            find2 = ismember(fullEdgeT, helperT);
-            sum2 = sum(find2);
-            
-            weights(index,1) = sum1+sum2;
-
-        end
-        
-        graphyW.Edges.Weight = weights;
+        graphy = rmnode(graphyNoData, 'noData');
+        graphy = rmnode(graphy, 'newSession');
         
 %% save graph
-        save([savepath num2str(currentPart) '_Graph_weighted_WB.mat'],'graphyW');
+        save([savepath num2str(currentPart) '_Graph_WB.mat'],'graphy');
         
     else
         disp('something went really wrong with participant list');
