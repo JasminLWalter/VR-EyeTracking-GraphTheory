@@ -197,23 +197,6 @@ F          = round( Tv_ms/1000 * fps );   % 1800 frames
 t_ms       = (0:F-1) * 1000 / fps;        % 0, 33.3, 66.7, ...
 tau_ms     = t_ms + A * (t_ms / Tv_ms) .^ p;
 
-% fps        = 30;
-% Tv_ms      = 65*1000;            % total video length 65 s   (changed)
-% T1_ms      = 35*1000;            % 35 s covers first 30 min
-% Tr1_ms     = 30*60*1000;         % 1 800 000 ms
-% TrTot_ms   = 150*60*1000;        % 9 000 000 ms
-% 
-% A          = TrTot_ms - Tv_ms;
-% 
-% f = @(p) T1_ms + A*(T1_ms/Tv_ms).^p - Tr1_ms;
-% p = fzero(f, 2);                 % ≈ 2.96   (gentler curve)
-% 
-% F       = round(Tv_ms/1000 * fps);       % 1950 frames
-% t_ms    = (0:F-1)*1000/fps;
-% tau_ms  = t_ms + A*(t_ms/Tv_ms).^p;
-% tau_ms(end) = TrTot_ms;
-
-
 % % sanity check
 % fprintf('tau(0)      = %8.0f ms\n',tau_ms(1));
 % fprintf('tau(20s)    = %8.0f ms  (target 900 000)\n', ...
@@ -295,10 +278,10 @@ names = {'A','B','C'};
 yRows = [yA, yB, yC];
 colorIdx = [2 1 3]; 
 
-tau_ms = [0, tau_ms];
+
 
 % ---------- main loop ----------------------------------------------
-for frameI = 1:1400
+for frameI = 55:65
     msWanted  = tau_ms(frameI); %frameI*((1000/30)*2);   % elapsed ms
     cla(ax)                         % erase previous foreground
     % mapHandle = imshow(map,'Parent',ax);   %  ← draw background again
@@ -313,13 +296,13 @@ for frameI = 1:1400
     uistack(mapH,'bottom')
     
    
-
-    if(frameI == 1)
-        scatter(ax,data1(1).playerBodyPosition_x(1)*4.2+2050,data1(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(1,:),'filled');
-        scatter(ax,data2(1).playerBodyPosition_x(1)*4.2+2050,data2(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(2,:),'filled');
-        scatter(ax,data3(1).playerBodyPosition_x(1)*4.2+2050,data3(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(3,:),'filled');
-
-    else
+    % 
+    % if(frameI == 1)
+    %     scatter(ax,data1(1).playerBodyPosition_x(1)*4.2+2050,data1(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(1,:),'filled');
+    %     scatter(ax,data2(1).playerBodyPosition_x(1)*4.2+2050,data2(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(2,:),'filled');
+    %     scatter(ax,data3(1).playerBodyPosition_x(1)*4.2+2050,data3(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(3,:),'filled');
+    % 
+    % else
 
         for ii = 1:Number
             % choose dataset ------------------------------------------------
@@ -381,122 +364,123 @@ for frameI = 1:1400
             else
                 name = [data(1:findIndex).hitObjectColliderName]';
             end
-
-
-
+    
+    
+    
+    
             scatter(ax,data(findIndex).playerBodyPosition_x(walkingIndex)*4.2+2050,data(findIndex).playerBodyPosition_z(walkingIndex)*4.2+2050, 15, colors2(ii,:),'filled');
-
-
+    
+            
             %% ------------------- gaze graph next:
-
+    
             % remove all NH and sky elements
             gazes = name(isGaze);
             isHouse= ~strcmp(gazes,{'NH'});
             houses = gazes(isHouse);
-
+    
             % create nodetable
             uniqueHouses= unique(houses);
             if height(uniqueHouses)> 0
                 NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
-
-
+        
+        
                 % create edge table
-
+        
                 fullEdgeT= cell2table(houses,'VariableNames',{'Column1'});
-
+        
                 % prepare second column to add to specify edges
                 secondColumn = fullEdgeT.Column1;
                 % remove first element of 2nd column
                 secondColumn(1,:)=[];  
                 % remove last element of 1st column
                 fullEdgeT(end,:)= [];
-
+        
                 % add second column to table
                 fullEdgeT.Column2 = secondColumn;
-
-
+        
+        
                 % remove all repetitions
                 % 1st round- using unique
-
+        
                 uniqueTable= unique(fullEdgeT);
-
+        
                  % create edgetable in merging column 1 and 2 into one variable EndNodes
                 EdgeTable= mergevars(uniqueTable,{'Column1','Column2'},'NewVariableName','EndNodes');
-
+        
                   %% create graph
-
-
+        
+        
                 graphy = graph(EdgeTable,NodeTable);
-
-
-
+        
+        
+        
                 %% remove node noData and newSession from graph
-
-
+        
+        
                 graphy = rmnode(graphy, 'newSession');
                 graphy = rmnode(graphy, 'noData');
-
-
-
+        
+        
+        
                 %% next step
-
+        
                 nodeTable = graphy.Nodes;
                 edgeTable = graphy.Edges;
                 edgeCell = edgeTable.EndNodes;
-
-
+        
+        
                 % plot houses
                 node = ismember(houseList.target_collider_name,nodeTable.Name);
                 x = houseList.transformed_collidercenter_x(node);
                 y = houseList.transformed_collidercenter_y(node);
-
-
+        
+        
                 if(ii == 1)
                     scatter(ax,x,y, 30, colors(ii,:), 'filled');
-
+        
                 elseif(ii==2)
                     scatter(ax,x,y, 18, colors(ii,:), 'filled');
                 else
                     scatter(ax,x,y, 6, colors(ii,:), 'filled');
                 end
-
-
-
-
+        
+                
+        
+        
                 % add edges into map-------------------------------------------------------
-
-
+        
+               
                 if length(uniqueHouses)> 1
-
+        
                      % add factor for visualization of all 3
-
-
+                    
+            
                     for ee = 1:height(edgeCell)
                         [Xhouse,Xindex] = ismember(edgeCell(ee,1),houseList.target_collider_name);
-
+            
                         [Yhouse,Yindex] = ismember(edgeCell(ee,2),houseList.target_collider_name);
-
+            
                         x1 = houseList.transformed_collidercenter_x(Xindex) + addF;
                         y1 = houseList.transformed_collidercenter_y(Xindex) + addF;
-
+            
                         x2 = houseList.transformed_collidercenter_x(Yindex) + addF;
                         y2 = houseList.transformed_collidercenter_y(Yindex) + addF;
-
+            
                         line(ax,[x1,x2],[y1,y2],'Color',colors(ii,:),'LineWidth', widthL);
-
+            
                     end
                 end
             end
-
+    
             % set(gca,'xdir','normal','ydir','normal')
             % 
             % saveas(gcf, strcat(savepath, num2str(currentPart),'_gazeGraphs_+Walking5min.jpg'));
             % hold off
-
+        
         
         
         end
-    end
+    % end
     set(gca,'xdir','normal','ydir','normal')
 
     % rectangle(ax, 'Position',[x1, y1, x2-x1, y2-y1], ...
@@ -555,10 +539,10 @@ for frameI = 1:1400
              'FontSize',fontSz,'Color', colors(colorIdx(p), :), 'Clipping','off');
     end
 
-    % % saveas(gcf, strcat(savepath, '3Parts_gazeGraphs_+Walking5min.jpg'));
-    % ax = gca;
-    % exportgraphics(ax,strcat(savepath, num2str(frameI),'_3Parts_test.jpg'),'Resolution',200)
-    % 
+    % saveas(gcf, strcat(savepath, '3Parts_gazeGraphs_+Walking5min.jpg'));
+    ax = gca;
+    exportgraphics(ax,strcat(savepath, num2str(frameI),'_3Parts_test.jpg'),'Resolution',200)
+
 
     drawnow limitrate nocallbacks
     writeVideo(v,getframe(fig))
