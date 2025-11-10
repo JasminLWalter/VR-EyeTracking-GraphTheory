@@ -306,10 +306,19 @@ colMarker = 0.43; % marker center
 colAnd    = 0.45; % " and "
 colGG     = 0.54; % "gaze graph"
 
+speedGapAbove = 0.008;      % vertical gap between rect and speed line
+% speedXNorm    = 0.77;       % horizontal position of the ⏩ symbol
+colSpeed = 0.51;
+
+titleXNorm = 0.50;          % 0 = left edge of map, 1 = right edge
+titleYNorm = 0.95;          % 0 = bottom, 1 = top of map
+
+
 % Convert the rectangle from normalized to data units and draw it
 xl = get(ax,'XLim'); yl = get(ax,'YLim'); ydir = get(ax,'YDir');
 x1 = xl(1) + (xl(2)-xl(1)) * rectX;
 x2 = xl(1) + (xl(2)-xl(1)) * (rectX + rectW);
+
 if strcmpi(ydir,'reverse')
     y1 = yl(2) - (yl(2)-yl(1)) * (rectY + rectH);
     y2 = yl(2) - (yl(2)-yl(1)) *  rectY;
@@ -323,6 +332,7 @@ xLabel  = rectX + rectW*colLabel;
 xMarker = rectX + rectW*colMarker;
 xAnd    = rectX + rectW*colAnd;
 xGG     = rectX + rectW*colGG;
+speedXNorm = rectX + rectW*colSpeed;
 
 % Row baselines (normalized). Bottom row = time, then A, B, C
 % yTime = rectY + padBottom;
@@ -335,7 +345,20 @@ yB    = yC + rowStep;
 yA    = yB    + rowStep;
 yTime    = yA    + rowStep*1.5;
 
+% y-position of speed line
+ySpeed = rectY + rectH + speedGapAbove;
 
+
+% % ---------------------------------------------------------------
+% % video speed text info
+% gapAbove    = 0.008;        % vertical gap between rectangle and new row
+% ySpeed      = rectY + rectH + gapAbove;      % normalised y-coord
+% xSpeed      = 0.77;       % align with legend's text column
+% 
+% % ---------------------------------------------------------------
+% title position vars
+titleXNorm  = 0.50;     % 0 = left, 1 = right    (tweak freely)
+titleYNorm  = 0.935;     % 0 = bottom, 1 = top    (tweak freely)
 
 % Participant rows (A, B, C)
 names = {'A','B','C'};
@@ -345,7 +368,7 @@ colorIdx = [2 1 3];
 
 
 % ---------- main loop ----------------------------------------------
-for frameI = 1:20
+for frameI = 1700:1710
     msWanted  = tau_ms(frameI); %frameI*((1000/30)*2);   % elapsed ms
     cla(ax)                         % erase previous foreground
     % mapHandle = imshow(map,'Parent',ax);   %  ← draw background again
@@ -597,35 +620,43 @@ for frameI = 1:20
 
     %% add additional row
     % extra row above the rectangle   (row "0")
-    % ---------------------------------------------------------------
-    % gapAbove    = 0.008;        % vertical gap between rectangle and new row
-    % ySpeed      = rectY + rectH + gapAbove;      % normalised y-coord
-    % xSpeed      = xLabel;       % align with legend's text column
-    % 
-    % % ----- string that shows speed (example uses the LaTeX triangles) ---
-    % 
-    % rowString = sprintf('$\\triangleright\\!\\triangleright\\; %.0fx$', ...
-    %                 speedFactor(frameI));
-    % 
-    % 
-    % text(ax, xSpeed, ySpeed, rowString, ...
-    %      'Units','normalized','Interpreter','latex', ...
-    %      'HorizontalAlignment','left','VerticalAlignment','bottom', ...
-    %      'FontSize', fontSz, 'FontWeight','bold', ...
-    %      'Color','k','Clipping','off');
+
+    % ----- string that shows speed (example uses the LaTeX triangles) ---
+
+    rowString = sprintf('$\\triangleright\\!\\triangleright\\; %.0fx$', ...
+                    speedFactor(frameI));
+
+
+    text(ax, speedXNorm, ySpeed, rowString, ...
+         'Units','normalized','Interpreter','latex', ...
+         'HorizontalAlignment','left','VerticalAlignment','bottom', ...
+         'FontSize', (fontSz+3), 'FontWeight','bold', ...
+         'Color','k','Clipping','off');
+
 
     %% ---------------------------------------------------------------
     % centred title inside the map
-    % ---------------------------------------------------------------
-    titleXNorm  = 0.50;     % 0 = left, 1 = right    (tweak freely)
-    titleYNorm  = 0.9;     % 0 = bottom, 1 = top    (tweak freely)
 
-    text(ax, titleXNorm, titleYNorm, ...
+    % text(ax, titleXNorm, titleYNorm, ...
+    %      'Free exploration of the VR city (2.5 hours)', ...
+    %      'Units','normalized', ...
+    %      'HorizontalAlignment','center','VerticalAlignment','top', ...
+    %      'FontSize', 14, 'FontWeight','bold', ...
+    %      'Interpreter','none', 'Color','k', 'Clipping','off');
+    
+    xTitle = xl(1) + (xl(2)-xl(1))*titleXNorm;
+    
+    if strcmpi(ydir,'reverse')
+        yTitle = yl(2) - (yl(2)-yl(1))*titleYNorm;
+    else
+        yTitle = yl(1) + (yl(2)-yl(1))*titleYNorm;
+    end
+    
+    text(ax, xTitle, yTitle, ...
          'Free exploration of the VR city (2.5 hours)', ...
-         'Units','normalized', ...
          'HorizontalAlignment','center','VerticalAlignment','top', ...
-         'FontSize', 14, 'FontWeight','bold', ...
-         'Interpreter','none', 'Color','k', 'Clipping','off');
+         'FontWeight','bold','FontSize',14,'Color','k', ...
+         'Clipping','off');
 
 
     % saveas(gcf, strcat(savepath, '3Parts_gazeGraphs_+Walking5min.jpg'));
