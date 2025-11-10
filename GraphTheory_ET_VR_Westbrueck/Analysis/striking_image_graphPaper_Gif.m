@@ -21,7 +21,8 @@ cd 'E:\WestbrookProject\Spa_Re\control_group\Pre-processsing_pipeline\interpolat
 % PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
 % PartList = {1004 1005 1008 1017 1018 1021};
 % PartList = {1008 1018 1022 1023};
-PartList = {1008 1022 1023};
+% PartList = {1008 1022 1023};
+PartList = {1010 1022 1023};
 
 %-----------------------------------------------------------------------------
 
@@ -81,7 +82,8 @@ end
 
 %% load data
 
-data1 = load('1008_interpolatedColliders_5Sessions_WB.mat');
+% data1 = load('1008_interpolatedColliders_5Sessions_WB.mat');
+data1 = load('1010_interpolatedColliders_5Sessions_WB.mat');
 data1 = data1.interpolatedData;
 durCum1    = cumsum([data1.clusterDuration]);
 
@@ -175,27 +177,52 @@ axis(ax,'manual')   % lock limits (do NOT flip here)
 % ------------------------------------------------------------------
 % wanted timing  (ALL milliseconds)
 % ------------------------------------------------------------------
-fps        = 30;                    % 30 frames / second
-Tv_ms      = 60 * 1000;             % video = 60 000 ms
-T1_ms      = 20 * 1000;             % first checkpoint = 20 000 ms
-Tr1_ms     = 15 * 60 * 1000;        % 900 000  ms  (15 real min)
-TrTot_ms   = 150* 60 * 1000;        % 9 000 000 ms  (150 real min)
+% fps        = 30;                    % 30 frames / second
+% Tv_ms      = 60 * 1000;             % video = 60 000 ms
+% T1_ms      = 20 * 1000;             % first checkpoint = 20 000 ms
+% Tr1_ms     = 15 * 60 * 1000;        % 900 000  ms  (15 real min)
+% TrTot_ms   = 150* 60 * 1000;        % 9 000 000 ms  (150 real min)
+% 
+% A          = TrTot_ms - Tv_ms;      % linear-base amplitude  (eq. 2)
+% 
+% % ------------------------------------------------------------------
+% % solve for p  in  eq. (3)
+% % ------------------------------------------------------------------
+% f = @(p) T1_ms + A*(T1_ms/Tv_ms).^p - Tr1_ms;
+% p = fzero(f,2);                     % good initial guess ≈ 2
+% % p ≈ 2.53 with the numbers above
+% 
+% % ------------------------------------------------------------------
+% % build the accelerating τ-vector (one value per video frame)
+% % ------------------------------------------------------------------
+% F          = round( Tv_ms/1000 * fps );   % 1800 frames
+% t_ms       = (0:F-1) * 1000 / fps;        % 0, 33.3, 66.7, ...
+% tau_ms     = t_ms + A * (t_ms / Tv_ms) .^ p;
+% 
+% % ------------ slightly new (longer timing, slower beginning)
+% 
+% fps        = 30;
+% Tv_ms      = 65*1000;            % total video length 65 s   (changed)
+% T1_ms      = 35*1000;            % 35 s covers first 30 min
+% Tr1_ms     = 30*60*1000;         % 1 800 000 ms
+% TrTot_ms   = 150*60*1000;        % 9 000 000 ms
+% 
+% A          = TrTot_ms - Tv_ms;
+% % ------------------------------------------------------------------
+% % solve for p  in  eq. (3)
+% % ------------------------------------------------------------------
+% f = @(p) T1_ms + A*(T1_ms/Tv_ms).^p - Tr1_ms;
+% p = fzero(f, 2);                 % ≈ 2.96   (gentler curve)
+% 
+% % ------------------------------------------------------------------
+% % build the accelerating τ-vector (one value per video frame)
+% % ------------------------------------------------------------------
+% 
+% F       = round(Tv_ms/1000 * fps);       % 1950 frames
+% t_ms    = (0:F-1)*1000/fps;
+% tau_ms  = t_ms + A*(t_ms/Tv_ms).^p;
+% tau_ms(end) = TrTot_ms;
 
-A          = TrTot_ms - Tv_ms;      % linear-base amplitude  (eq. 2)
-
-% ------------------------------------------------------------------
-% solve for p  in  eq. (3)
-% ------------------------------------------------------------------
-f = @(p) T1_ms + A*(T1_ms/Tv_ms).^p - Tr1_ms;
-p = fzero(f,2);                     % good initial guess ≈ 2
-% p ≈ 2.53 with the numbers above
-
-% ------------------------------------------------------------------
-% build the accelerating τ-vector (one value per video frame)
-% ------------------------------------------------------------------
-F          = round( Tv_ms/1000 * fps );   % 1800 frames
-t_ms       = (0:F-1) * 1000 / fps;        % 0, 33.3, 66.7, ...
-tau_ms     = t_ms + A * (t_ms / Tv_ms) .^ p;
 
 % % sanity check
 % fprintf('tau(0)      = %8.0f ms\n',tau_ms(1));
@@ -205,10 +232,47 @@ tau_ms     = t_ms + A * (t_ms / Tv_ms) .^ p;
 %         tau_ms(end));
 % fprintf('initial speed dτ/dt  ≈ %.1f × real-time\n', ...
 %         1);        
+%% ---------------------------------------------------------------
+%  Smooth time-mapping  (all units = milliseconds)
+%  – first 30 real minutes at video-time 35 s
+%  – full 150 real minutes at video-time 65 s
+% ---------------------------------------------------------------
+fps        = 30;                       % frames per second
+Tv_ms      = 65 * 1000;               % total clip length 65 000 ms  (← change to 60000 if you must stay at 60 s)
+T1_ms      = 35 * 1000;               % video time where 30 min should be finished
+Tr1_ms     = 30 * 60 * 1000;          % 1 800 000 ms  (30 min)
+TrTot_ms   = 150* 60 * 1000;          % 9 000 000 ms  (150 min)
+
+B          = 10;                       % initial speed multiplier (1 × real-time).
+                                       % Put e.g. 1.5 or 2 if you want
+                                       % the very first frames to run
+                                       % faster than real-time.
+
+A          = TrTot_ms - B*Tv_ms;      % linear-plus-power model  τ = B·t + A·(t/Tv)^p
+
+% Solve for exponent  p  so that τ(T1) = Tr1
+f  = @(p) B*T1_ms + A*(T1_ms/Tv_ms).^p - Tr1_ms;
+p  = fzero(f,2);                      % good initial guess = 2
+% p ≈ 2.96 for the numbers above
+
+% Build τ-vector (one desired experiment-time for every video frame)
+F       = round(Tv_ms/1000 * fps);    % number of movie frames (≈ 1950)
+t_ms    = (0:F-1) * 1000 / fps;       % 0, 33.3, 66.7, …
+tau_ms  = B*t_ms + A * (t_ms/Tv_ms).^p;
+tau_ms(end) = TrTot_ms;               % exact last value (numerical guard)
+
+
+printTimeInfo = [1,(100:100:1800), length(tau_ms)];
+
 
 idx1 = arrayfun(@(t) find(durCum1  >= t, 1, 'first'), tau_ms);
 idx2 = arrayfun(@(t) find(durCum2 >= t, 1, 'first'), tau_ms);
 idx3 = arrayfun(@(t) find(durCum3 >= t, 1, 'first'), tau_ms);
+
+%% 1.  speed vector for video visualization ----------------------------------------------
+dtVideo_ms  = 1000/fps;                 % 33.33 ms at 30 fps
+dTau_ms     = [tau_ms(1)  diff(tau_ms)];
+speedFactor = dTau_ms / dtVideo_ms;     % 1 × … n ×
 
 %%-----------------------------------------------------------------------------------------
 v = VideoWriter(fullfile(savepath,'gazeGraphs.mp4'),'MPEG-4');
@@ -281,7 +345,7 @@ colorIdx = [2 1 3];
 
 
 % ---------- main loop ----------------------------------------------
-for frameI = 55:65
+for frameI = 1:20
     msWanted  = tau_ms(frameI); %frameI*((1000/30)*2);   % elapsed ms
     cla(ax)                         % erase previous foreground
     % mapHandle = imshow(map,'Parent',ax);   %  ← draw background again
@@ -377,114 +441,106 @@ for frameI = 55:65
             gazes = name(isGaze);
             isHouse= ~strcmp(gazes,{'NH'});
             houses = gazes(isHouse);
-    
+
             % create nodetable
             uniqueHouses= unique(houses);
             if height(uniqueHouses)> 0
                 NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
-        
-        
+
+
                 % create edge table
-        
+
                 fullEdgeT= cell2table(houses,'VariableNames',{'Column1'});
-        
+
                 % prepare second column to add to specify edges
                 secondColumn = fullEdgeT.Column1;
                 % remove first element of 2nd column
                 secondColumn(1,:)=[];  
                 % remove last element of 1st column
                 fullEdgeT(end,:)= [];
-        
+
                 % add second column to table
                 fullEdgeT.Column2 = secondColumn;
-        
-        
+
+
                 % remove all repetitions
                 % 1st round- using unique
-        
+
                 uniqueTable= unique(fullEdgeT);
-        
+
                  % create edgetable in merging column 1 and 2 into one variable EndNodes
                 EdgeTable= mergevars(uniqueTable,{'Column1','Column2'},'NewVariableName','EndNodes');
-        
+
                   %% create graph
-        
-        
+
+
                 graphy = graph(EdgeTable,NodeTable);
-        
-        
-        
+
+
+
                 %% remove node noData and newSession from graph
-        
-        
+
+
                 graphy = rmnode(graphy, 'newSession');
                 graphy = rmnode(graphy, 'noData');
-        
-        
-        
+
+
+
                 %% next step
-        
+
                 nodeTable = graphy.Nodes;
                 edgeTable = graphy.Edges;
                 edgeCell = edgeTable.EndNodes;
-        
-        
+
+
                 % plot houses
                 node = ismember(houseList.target_collider_name,nodeTable.Name);
                 x = houseList.transformed_collidercenter_x(node);
                 y = houseList.transformed_collidercenter_y(node);
-        
-        
+
+
                 if(ii == 1)
                     scatter(ax,x,y, 30, colors(ii,:), 'filled');
-        
+
                 elseif(ii==2)
                     scatter(ax,x,y, 18, colors(ii,:), 'filled');
                 else
                     scatter(ax,x,y, 6, colors(ii,:), 'filled');
                 end
-        
-                
-        
-        
+
+
+
+
                 % add edges into map-------------------------------------------------------
-        
-               
+
+
                 if length(uniqueHouses)> 1
-        
+
                      % add factor for visualization of all 3
-                    
-            
+
+
                     for ee = 1:height(edgeCell)
                         [Xhouse,Xindex] = ismember(edgeCell(ee,1),houseList.target_collider_name);
-            
+
                         [Yhouse,Yindex] = ismember(edgeCell(ee,2),houseList.target_collider_name);
-            
+
                         x1 = houseList.transformed_collidercenter_x(Xindex) + addF;
                         y1 = houseList.transformed_collidercenter_y(Xindex) + addF;
-            
+
                         x2 = houseList.transformed_collidercenter_x(Yindex) + addF;
                         y2 = houseList.transformed_collidercenter_y(Yindex) + addF;
-            
+
                         line(ax,[x1,x2],[y1,y2],'Color',colors(ii,:),'LineWidth', widthL);
-            
+
                     end
                 end
-            end
-    
-            % set(gca,'xdir','normal','ydir','normal')
-            % 
-            % saveas(gcf, strcat(savepath, num2str(currentPart),'_gazeGraphs_+Walking5min.jpg'));
-            % hold off
-        
+            end       
         
         
         end
     % end
     set(gca,'xdir','normal','ydir','normal')
 
-    % rectangle(ax, 'Position',[x1, y1, x2-x1, y2-y1], ...
-    %     'FaceColor','w', 'EdgeColor','none', 'Clipping','off');
     xl = get(ax,'XLim');
     yl = get(ax,'YLim');
     ydir = get(ax,'YDir');
@@ -539,21 +595,57 @@ for frameI = 55:65
              'FontSize',fontSz,'Color', colors(colorIdx(p), :), 'Clipping','off');
     end
 
+    %% add additional row
+    % extra row above the rectangle   (row "0")
+    % ---------------------------------------------------------------
+    % gapAbove    = 0.008;        % vertical gap between rectangle and new row
+    % ySpeed      = rectY + rectH + gapAbove;      % normalised y-coord
+    % xSpeed      = xLabel;       % align with legend's text column
+    % 
+    % % ----- string that shows speed (example uses the LaTeX triangles) ---
+    % 
+    % rowString = sprintf('$\\triangleright\\!\\triangleright\\; %.0fx$', ...
+    %                 speedFactor(frameI));
+    % 
+    % 
+    % text(ax, xSpeed, ySpeed, rowString, ...
+    %      'Units','normalized','Interpreter','latex', ...
+    %      'HorizontalAlignment','left','VerticalAlignment','bottom', ...
+    %      'FontSize', fontSz, 'FontWeight','bold', ...
+    %      'Color','k','Clipping','off');
+
+    %% ---------------------------------------------------------------
+    % centred title inside the map
+    % ---------------------------------------------------------------
+    titleXNorm  = 0.50;     % 0 = left, 1 = right    (tweak freely)
+    titleYNorm  = 0.9;     % 0 = bottom, 1 = top    (tweak freely)
+
+    text(ax, titleXNorm, titleYNorm, ...
+         'Free exploration of the VR city (2.5 hours)', ...
+         'Units','normalized', ...
+         'HorizontalAlignment','center','VerticalAlignment','top', ...
+         'FontSize', 14, 'FontWeight','bold', ...
+         'Interpreter','none', 'Color','k', 'Clipping','off');
+
+
     % saveas(gcf, strcat(savepath, '3Parts_gazeGraphs_+Walking5min.jpg'));
-    ax = gca;
-    exportgraphics(ax,strcat(savepath, num2str(frameI),'_3Parts_test.jpg'),'Resolution',200)
+    % ax = gca;
+    % exportgraphics(ax,strcat(savepath, num2str(frameI),'_3Parts_test.jpg'),'Resolution',200)
 
 
     drawnow limitrate nocallbacks
     writeVideo(v,getframe(fig))
 
     % hold off 
+    if ismember(frameI, printTimeInfo)
+
+        fprintf('Frame %4d | elapsed %6.2f min | %s\n', ...
+        frameI, toc/60, string(datetime('now','Format','yyyy-MM-dd HH:mm:ss')));
+    end
 
 end
 
 close(v)
-
-toc
 
 
 
