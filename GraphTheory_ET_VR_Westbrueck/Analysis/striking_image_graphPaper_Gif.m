@@ -175,7 +175,7 @@ axis(ax,'manual')   % lock limits (do NOT flip here)
 
 %% video info----------------------------------------------------------------------------
 % ------------------------------------------------------------------
-% wanted timing  (ALL milliseconds)
+% % wanted timing  (ALL milliseconds)
 % ------------------------------------------------------------------
 % fps        = 30;                    % 30 frames / second
 % Tv_ms      = 60 * 1000;             % video = 60 000 ms
@@ -198,7 +198,7 @@ axis(ax,'manual')   % lock limits (do NOT flip here)
 % F          = round( Tv_ms/1000 * fps );   % 1800 frames
 % t_ms       = (0:F-1) * 1000 / fps;        % 0, 33.3, 66.7, ...
 % tau_ms     = t_ms + A * (t_ms / Tv_ms) .^ p;
-% 
+
 % % ------------ slightly new (longer timing, slower beginning)
 % 
 % fps        = 30;
@@ -237,9 +237,23 @@ axis(ax,'manual')   % lock limits (do NOT flip here)
 %  – first 30 real minutes at video-time 35 s
 %  – full 150 real minutes at video-time 65 s
 % ---------------------------------------------------------------
+% fps        = 30;                       % frames per second
+% Tv_ms      = 65 * 1000;               % total clip length 65 000 ms  (← change to 60000 if you must stay at 60 s)
+% T1_ms      = 35 * 1000;               % video time where 30 min should be finished
+% Tr1_ms     = 30 * 60 * 1000;          % 1 800 000 ms  (30 min)
+% TrTot_ms   = 150* 60 * 1000;          % 9 000 000 ms  (150 min)
+% 
+% B          = 10;                       % initial speed multiplier (1 × real-time).
+%                                        % Put e.g. 1.5 or 2 if you want
+%                                        % the very first frames to run
+%                                        % faster than real-time.
+% 
+% A          = TrTot_ms - B*Tv_ms;      % linear-plus-power model  τ = B·t + A·(t/Tv)^p
+
+
 fps        = 30;                       % frames per second
-Tv_ms      = 65 * 1000;               % total clip length 65 000 ms  (← change to 60000 if you must stay at 60 s)
-T1_ms      = 35 * 1000;               % video time where 30 min should be finished
+Tv_ms      = 45 * 1000;               % total clip length 65 000 ms  (← change to 60000 if you must stay at 60 s)
+T1_ms      = 20 * 1000;               % video time where 30 min should be finished
 Tr1_ms     = 30 * 60 * 1000;          % 1 800 000 ms  (30 min)
 TrTot_ms   = 150* 60 * 1000;          % 9 000 000 ms  (150 min)
 
@@ -260,9 +274,10 @@ F       = round(Tv_ms/1000 * fps);    % number of movie frames (≈ 1950)
 t_ms    = (0:F-1) * 1000 / fps;       % 0, 33.3, 66.7, …
 tau_ms  = B*t_ms + A * (t_ms/Tv_ms).^p;
 tau_ms(end) = TrTot_ms;               % exact last value (numerical guard)
+tau_ms = [0, tau_ms];
 
 
-printTimeInfo = [1,(100:100:1800), length(tau_ms)];
+printTimeInfo = [1,(100:100:length(tau_ms)), length(tau_ms)];
 
 
 idx1 = arrayfun(@(t) find(durCum1  >= t, 1, 'first'), tau_ms);
@@ -273,8 +288,9 @@ idx3 = arrayfun(@(t) find(durCum3 >= t, 1, 'first'), tau_ms);
 dtVideo_ms  = 1000/fps;                 % 33.33 ms at 30 fps
 dTau_ms     = [tau_ms(1)  diff(tau_ms)];
 speedFactor = dTau_ms / dtVideo_ms;     % 1 × … n ×
-
-%%-----------------------------------------------------------------------------------------
+speedFactor = [speedFactor, speedFactor(end)];
+speedFactor(1:2) = speedFactor(3);
+%% -----------------------------------------------------------------------------------------
 v = VideoWriter(fullfile(savepath,'gazeGraphs.mp4'),'MPEG-4');
 v.FrameRate = 30;
 open(v)
@@ -368,7 +384,13 @@ colorIdx = [2 1 3];
 
 
 % ---------- main loop ----------------------------------------------
-for frameI = 1700:1710
+disp('start plotting frames')
+
+
+% for frameI = [1951, 1951, 1951, 1951, 1951, 1951, 1951, 1951, 1951, 1951]
+% for frameI = [1,1,1,1,1,1,1,1,1,1,1]
+for frameI = 1:50
+% for frameI = 1:length(tau_ms)
     msWanted  = tau_ms(frameI); %frameI*((1000/30)*2);   % elapsed ms
     cla(ax)                         % erase previous foreground
     % mapHandle = imshow(map,'Parent',ax);   %  ← draw background again
@@ -381,8 +403,8 @@ for frameI = 1700:1710
     mapH = imshow(map,'Parent',ax,'Border','tight');  % draws edge-to-edge
     set(mapH,'AlphaData',0.3)
     uistack(mapH,'bottom')
-    
-   
+
+    % 
     % 
     % if(frameI == 1)
     %     scatter(ax,data1(1).playerBodyPosition_x(1)*4.2+2050,data1(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(1,:),'filled');
@@ -390,190 +412,203 @@ for frameI = 1700:1710
     %     scatter(ax,data3(1).playerBodyPosition_x(1)*4.2+2050,data3(1).playerBodyPosition_z(1)*4.2+2050, 15, colors2(3,:),'filled');
     % 
     % else
-
-        for ii = 1:Number
-            % choose dataset ------------------------------------------------
-            switch ii
-                case 1
-                    data = data1;
-                    durCum = durCum1;
-                    dataI = idx1;
-                    widthL = 0.5;
-                    addF = -2;
-                    tag = tag1;
-                case 2
-                    data = data2;
-                    durCum = durCum2;
-                    dataI = idx2;
-                    widthL = 1 ;
-                    addF = 0;
-                    tag = tag2;
-                otherwise
-                    data = data3;
-                    durCum = durCum3;
-                    dataI = idx3;
-                    widthL = 0.1;
-                    addF = 2;
-                    tag = tag3;
-            end
-            
-    
-            % -------- determine end index for this frame ------------------
-           
-    
-            % findIndex = find(durCum > msWanted,1,'first');
-            % 
-
-            findIndex = dataI(frameI);
-            if strcmp(data(findIndex).hitObjectColliderName,'newSession')
-                findIndex = findIndex-1;
-            end
-            
-   
-            durations = [data(1:findIndex).clusterDuration]';
-            isGaze = durations > 266.6;
-
-            % findIndex = find(durCum > msWanted,1,'first');
-
-            sampleTSs = [data(findIndex).timeStampDataPointStart];
-            sampleTSs = (sampleTSs - data(tag(findIndex)+1).timeStampDataPointStart(1))*1000;
-
-            walkingIndex = find(sampleTSs >= tau_ms(frameI),1,'first');
-
-            if length(walkingIndex) < 1
-
-                walkingIndex = length(sampleTSs);
-            end
-
-
-            if findIndex == 1
-                name = {data(1:findIndex).hitObjectColliderName}';
-            else
-                name = [data(1:findIndex).hitObjectColliderName]';
-            end
-    
-    
-    
-    
-            scatter(ax,data(findIndex).playerBodyPosition_x(walkingIndex)*4.2+2050,data(findIndex).playerBodyPosition_z(walkingIndex)*4.2+2050, 15, colors2(ii,:),'filled');
-    
-            
-            %% ------------------- gaze graph next:
-    
-            % remove all NH and sky elements
-            gazes = name(isGaze);
-            isHouse= ~strcmp(gazes,{'NH'});
-            houses = gazes(isHouse);
-
-            % create nodetable
-            uniqueHouses= unique(houses);
-            if height(uniqueHouses)> 0
-                NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
-
-
-                % create edge table
-
-                fullEdgeT= cell2table(houses,'VariableNames',{'Column1'});
-
-                % prepare second column to add to specify edges
-                secondColumn = fullEdgeT.Column1;
-                % remove first element of 2nd column
-                secondColumn(1,:)=[];  
-                % remove last element of 1st column
-                fullEdgeT(end,:)= [];
-
-                % add second column to table
-                fullEdgeT.Column2 = secondColumn;
-
-
-                % remove all repetitions
-                % 1st round- using unique
-
-                uniqueTable= unique(fullEdgeT);
-
-                 % create edgetable in merging column 1 and 2 into one variable EndNodes
-                EdgeTable= mergevars(uniqueTable,{'Column1','Column2'},'NewVariableName','EndNodes');
-
-                  %% create graph
-
-
-                graphy = graph(EdgeTable,NodeTable);
-
-
-
-                %% remove node noData and newSession from graph
-
-
-                graphy = rmnode(graphy, 'newSession');
-                graphy = rmnode(graphy, 'noData');
-
-
-
-                %% next step
-
-                nodeTable = graphy.Nodes;
-                edgeTable = graphy.Edges;
-                edgeCell = edgeTable.EndNodes;
-
-
-                % plot houses
-                node = ismember(houseList.target_collider_name,nodeTable.Name);
-                x = houseList.transformed_collidercenter_x(node);
-                y = houseList.transformed_collidercenter_y(node);
-
-
-                if(ii == 1)
-                    scatter(ax,x,y, 30, colors(ii,:), 'filled');
-
-                elseif(ii==2)
-                    scatter(ax,x,y, 18, colors(ii,:), 'filled');
-                else
-                    scatter(ax,x,y, 6, colors(ii,:), 'filled');
-                end
-
-
-
-
-                % add edges into map-------------------------------------------------------
-
-
-                if length(uniqueHouses)> 1
-
-                     % add factor for visualization of all 3
-
-
-                    for ee = 1:height(edgeCell)
-                        [Xhouse,Xindex] = ismember(edgeCell(ee,1),houseList.target_collider_name);
-
-                        [Yhouse,Yindex] = ismember(edgeCell(ee,2),houseList.target_collider_name);
-
-                        x1 = houseList.transformed_collidercenter_x(Xindex) + addF;
-                        y1 = houseList.transformed_collidercenter_y(Xindex) + addF;
-
-                        x2 = houseList.transformed_collidercenter_x(Yindex) + addF;
-                        y2 = houseList.transformed_collidercenter_y(Yindex) + addF;
-
-                        line(ax,[x1,x2],[y1,y2],'Color',colors(ii,:),'LineWidth', widthL);
-
-                    end
-                end
-            end       
-        
-        
-        end
+    % 
+    %     for ii = 1:Number
+    %         % choose dataset ------------------------------------------------
+    %         switch ii
+    %             case 1
+    %                 data = data1;
+    %                 durCum = durCum1;
+    %                 dataI = idx1;
+    %                 widthL = 0.5;
+    %                 addF = -2;
+    %                 tag = tag1;
+    %             case 2
+    %                 data = data2;
+    %                 durCum = durCum2;
+    %                 dataI = idx2;
+    %                 widthL = 1 ;
+    %                 addF = 0;
+    %                 tag = tag2;
+    %             otherwise
+    %                 data = data3;
+    %                 durCum = durCum3;
+    %                 dataI = idx3;
+    %                 widthL = 0.1;
+    %                 addF = 2;
+    %                 tag = tag3;
+    %         end
+    % 
+    % 
+    %         % -------- determine end index for this frame ------------------
+    % 
+    % 
+    %         % findIndex = find(durCum > msWanted,1,'first');
+    %         % 
+    %         if frameI == length(tau_ms)
+    % 
+    %             findIndex = length(data)-1;
+    % 
+    %         else
+    % 
+    %             findIndex = dataI(frameI);
+    %             if strcmp(data(findIndex).hitObjectColliderName,'newSession')
+    %                 findIndex = findIndex-1;
+    %             end
+    %         end
+    % 
+    % 
+    %         durations = [data(1:findIndex).clusterDuration]';
+    %         isGaze = durations > 266.6;
+    % 
+    %         % findIndex = find(durCum > msWanted,1,'first');
+    % 
+    %         if frameI == length(tau_ms)
+    %             walkingIndex = length([data(findIndex).timeStampDataPointStart]);
+    % 
+    %         else
+    %             sampleTSs = [data(findIndex).timeStampDataPointStart];
+    %             sampleTSs = (sampleTSs - data(tag(findIndex)+1).timeStampDataPointStart(1))*1000;
+    % 
+    %             walkingIndex = find(sampleTSs >= tau_ms(frameI),1,'first');
+    % 
+    %             if length(walkingIndex) < 1 
+    % 
+    %                 walkingIndex = length(sampleTSs);
+    %             end
+    %         end
+    % 
+    % 
+    %         if findIndex == 1
+    %             name = {data(1:findIndex).hitObjectColliderName}';
+    %         else
+    %             name = [data(1:findIndex).hitObjectColliderName]';
+    %         end
+    % 
+    % 
+    % 
+    % 
+    %         scatter(ax,data(findIndex).playerBodyPosition_x(walkingIndex)*4.2+2050,data(findIndex).playerBodyPosition_z(walkingIndex)*4.2+2050, 15, colors2(ii,:),'filled');
+    % 
+    % 
+    %         %% ------------------- gaze graph next:
+    % 
+    %         % remove all NH and sky elements
+    %         gazes = name(isGaze);
+    %         isHouse= ~strcmp(gazes,{'NH'});
+    %         houses = gazes(isHouse);
+    % 
+    %         % create nodetable
+    %         uniqueHouses= unique(houses);
+    %         if height(uniqueHouses)> 0 && frameI > 1
+    %             NodeTable= cell2table(uniqueHouses, 'VariableNames',{'Name'});
+    % 
+    % 
+    %             % create edge table
+    % 
+    %             fullEdgeT= cell2table(houses,'VariableNames',{'Column1'});
+    % 
+    %             % prepare second column to add to specify edges
+    %             secondColumn = fullEdgeT.Column1;
+    %             % remove first element of 2nd column
+    %             secondColumn(1,:)=[];  
+    %             % remove last element of 1st column
+    %             fullEdgeT(end,:)= [];
+    % 
+    %             % add second column to table
+    %             fullEdgeT.Column2 = secondColumn;
+    % 
+    % 
+    %             % remove all repetitions
+    %             % 1st round- using unique
+    % 
+    %             uniqueTable= unique(fullEdgeT);
+    % 
+    %              % create edgetable in merging column 1 and 2 into one variable EndNodes
+    %             EdgeTable= mergevars(uniqueTable,{'Column1','Column2'},'NewVariableName','EndNodes');
+    % 
+    %               %% create graph
+    % 
+    % 
+    %             graphy = graph(EdgeTable,NodeTable);
+    % 
+    % 
+    % 
+    %             %% remove node noData and newSession from graph
+    % 
+    % 
+    %             graphy = rmnode(graphy, 'newSession');
+    %             graphy = rmnode(graphy, 'noData');
+    % 
+    % 
+    % 
+    %             %% next step
+    % 
+    %             nodeTable = graphy.Nodes;
+    %             edgeTable = graphy.Edges;
+    %             edgeCell = edgeTable.EndNodes;
+    % 
+    % 
+    %             % plot houses
+    %             node = ismember(houseList.target_collider_name,nodeTable.Name);
+    %             x = houseList.transformed_collidercenter_x(node);
+    %             y = houseList.transformed_collidercenter_y(node);
+    % 
+    % 
+    %             if(ii == 1)
+    %                 scatter(ax,x,y, 30, colors(ii,:), 'filled');
+    % 
+    %             elseif(ii==2)
+    %                 scatter(ax,x,y, 18, colors(ii,:), 'filled');
+    %             else
+    %                 scatter(ax,x,y, 6, colors(ii,:), 'filled');
+    %             end
+    % 
+    % 
+    % 
+    % 
+    %             % add edges into map-------------------------------------------------------
+    % 
+    % 
+    %             if length(uniqueHouses)> 1
+    % 
+    %                  % add factor for visualization of all 3
+    % 
+    % 
+    %                 for ee = 1:height(edgeCell)
+    %                     [Xhouse,Xindex] = ismember(edgeCell(ee,1),houseList.target_collider_name);
+    % 
+    %                     [Yhouse,Yindex] = ismember(edgeCell(ee,2),houseList.target_collider_name);
+    % 
+    %                     x1 = houseList.transformed_collidercenter_x(Xindex) + addF;
+    %                     y1 = houseList.transformed_collidercenter_y(Xindex) + addF;
+    % 
+    %                     x2 = houseList.transformed_collidercenter_x(Yindex) + addF;
+    %                     y2 = houseList.transformed_collidercenter_y(Yindex) + addF;
+    % 
+    %                     line(ax,[x1,x2],[y1,y2],'Color',colors(ii,:),'LineWidth', widthL);
+    % 
+    %                 end
+    %             end
+    %         end       
+    % 
+    % 
+    %     end
+    % 
     % end
+    %% add legend and text descriptions
     set(gca,'xdir','normal','ydir','normal')
 
     xl = get(ax,'XLim');
     yl = get(ax,'YLim');
     ydir = get(ax,'YDir');
-    
+
     x1 = xl(1) + (xl(2)-xl(1)) * rectX;
     x2 = xl(1) + (xl(2)-xl(1)) * (rectX + rectW);
 
     y1 = yl(1) + (yl(2)-yl(1)) *  rectY;
     y2 = yl(1) + (yl(2)-yl(1)) * (rectY + rectH);
-    
+
     rectangle(ax, 'Position',[x1, y1, x2-x1, y2-y1], ...
     'FaceColor','w', 'EdgeColor','none', 'Clipping','off');
 
@@ -599,18 +634,18 @@ for frameI = 1700:1710
         myNorm = yRows(p) + markerYFracInRow*rowStep;
         mxData = xl(1) + (xl(2)-xl(1)) * mxNorm;
         myData = yl(1) + (yl(2)-yl(1)) * myNorm;
-        
+
         plot(ax, mxData, myData, 'o', ...
              'MarkerFaceColor', colors2(colorIdx(p), :), ...
              'MarkerEdgeColor','none', ...
              'MarkerSize',markSz);
-        
+
         % " and " (black)
         text(ax, xAnd, yRows(p), ' and ', ...
              'Units','normalized','Interpreter','none', ...
              'HorizontalAlignment','left','VerticalAlignment','bottom', ...
              'FontSize',fontSz,'Color','k','Clipping','off');
-        
+
         % "gaze graph" (colored)
         text(ax, xGG, yRows(p), 'gaze graph', ...
              'Units','normalized','Interpreter','none', ...
@@ -643,15 +678,15 @@ for frameI = 1700:1710
     %      'HorizontalAlignment','center','VerticalAlignment','top', ...
     %      'FontSize', 14, 'FontWeight','bold', ...
     %      'Interpreter','none', 'Color','k', 'Clipping','off');
-    
+
     xTitle = xl(1) + (xl(2)-xl(1))*titleXNorm;
-    
+
     if strcmpi(ydir,'reverse')
         yTitle = yl(2) - (yl(2)-yl(1))*titleYNorm;
     else
         yTitle = yl(1) + (yl(2)-yl(1))*titleYNorm;
     end
-    
+
     text(ax, xTitle, yTitle, ...
          'Free exploration of the VR city (2.5 hours)', ...
          'HorizontalAlignment','center','VerticalAlignment','top', ...
@@ -676,9 +711,13 @@ for frameI = 1700:1710
 
 end
 
-close(v)
+disp('saving')
 
+close(v) %34.064 current file
 
+disp('done')
+fprintf('Elapsed %6.2f min | %s\n', ...
+         toc/60, string(datetime('now','Format','yyyy-MM-dd HH:mm:ss')));
 
        % ax = gca;
        % exportgraphics(ax,strcat(savepath, num2str(currentPart),'_gazeGraph_5min.png'),'Resolution',140)
@@ -690,3 +729,16 @@ close(v)
 
 
 
+
+%% convert videos
+% convert videos to fixed 30 fps frame rate (while the script is designed
+% like that, other programs might not recognize this and want to do their
+% own less accurace conversion
+
+% inputFile  = fullfile(savepath, 'gazeGraphs1-148_faster.mp4');
+% outputFile = fullfile(savepath, 'gazeGraphs1-148_faster_fixed.mp4');
+% system(sprintf('ffmpeg -y -i "%s" -r 30 -vf fps=30 -c:v libx264 -preset fast -c:a aac -ar 48000 "%s"', ...
+%                inputFile, outputFile));
+% 
+% 
+% 
