@@ -1,25 +1,27 @@
-%% ------------------- drawGraphMap_WB.m------------------------
+%% ------------------- drawGraphMap_WB.m-----------------------------------
 
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
 
-% Description: 
-% Creates a visualization of the graph on top of the map of Westbrook
-
-% Input: 
-% Graph_WB.mat           = the gaze graph object for every participant
-% map_natural_white_flipped.png = flipped image of the map of Westbrook 
-% building_collider_list.csv  = csv list of the building collider information                corresponding to the map of Seahaven
-
-% Output: 
-% Graph_visualizationMap  = image of the graph visualization on top of the 
-%                           map for each participant
-%                                       
-%                                         
-%                                         
-% Missing_Participant_Files.mat    = contains all participant numbers where the
-%                                    data file could not be loaded
-
+% Purpose: Visualizes each participant's gaze graph on top of the Westbrook city map by drawing
+%          edges between buildings and plotting nodes at building coordinates.
+%
+% Usage:
+% - Adjust: savepath, imagepath, clistpath, working directory (cd), and PartList.
+% - Run the script in MATLAB.
+% - Note: The map image is vertically flipped to match MATLAB's axis conventions for these coordinates.
+%
+% Inputs:
+% - Per participant graph: <ParticipantID>_Graph_WB.mat (variable: graphy)
+% - Map image: additional_Files/map_natural_white_flipped.png
+% - Building list CSV: additional_Files/building_collider_list.csv (columns include building names and transformed_collidercenter_x/y)
+%
+% Outputs (to savepath):
+% - <ID>_Graph_visualizationMap.* (graph overlaid on map; saved via saveas)
+% - <ID>_Graph_nodeDegree_600dpi.png (exported 600 dpi figure)
+% - Missing_Participant_Files (CSV of missing graph files)
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 clear all;
 

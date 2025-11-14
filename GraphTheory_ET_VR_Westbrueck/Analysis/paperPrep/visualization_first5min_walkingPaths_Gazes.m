@@ -1,9 +1,31 @@
 %% ------------------visualizations_first 5 min - walking paths_gazes-------------------------------------
-% script written by Jasmin Walter
 
+% --------------------script written by Jasmin L. Walter-------------------
+% -----------------------jawalter@uni-osnabrueck.de------------------------
+
+% Purpose: Visualizes, for each selected participant, the first 5 minutes of VR exploration by
+%          plotting walking paths and gaze hit points over the Westbrook map.
+%
+% Usage:
+% - Adjust: imagepath, clistpath, working directory (cd), and PartList.
+% - Run the script in MATLAB. The first ~300,000 ms of data (clusterDuration) are used per participant.
+%
+% Inputs:
+% - Per participant: <ParticipantID>_interpolatedColliders_5Sessions_WB.mat (variable: interpolatedData)
+% - Map image: additional_Files/map_natural_white_flipped.png
+% - Optional (loaded but not used in this script): additional_Files/building_collider_list.csv
+%
+% Outputs:
+% - Figures displayed in MATLAB:
+%   - Walking paths (first 5 min) colored by participant
+%   - Gaze hit points (first 5 min) colored by participant
+% - Note: No files are saved by default; use saveas/exportgraphics if needed.
+%
+% License: GNU General Public License v3.0 (GPL-3.0) (see LICENSE)
 
 clear all;
 
+%% adjust the following variables: 
 
 savepath = 'F:\Westbrueck Data\SpaRe_Data\1_Exploration\Analysis\visualization_graph_plots\Gif_walkingPaths\';
 imagepath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the map image location
@@ -16,6 +38,7 @@ cd 'E:\WestbrookProject\SpaRe_Data\control_data\Pre-processsing_pipeline\interpo
 % PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
 PartList = {1004 1005 1008 1017 1018 1021};
 
+%-----------------------------------------------------------------------------
 
 Number = length(PartList);
 noFilePartList = [];
