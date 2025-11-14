@@ -1,0 +1,403 @@
+%% ------------------ combine_figures_WB----------------------------
+
+% --------------------script written by Jasmin L. Walter-------------------
+% -----------------------jawalter@uni-osnabrueck.de------------------------
+
+
+
+clear; 
+
+% clc  % keep command history while debugging
+
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\Analysis\figurePanels';
+
+
+cd 'E:\WestbrookProject\Spa_Re\control_group\Analysis\P2B_controls_analysis\';
+
+dataP2B = readtable("overviewTable_P2B_Prep_complete.csv");
+overviewPerformance = readtable('E:\WestbrookProject\Spa_Re\control_group\Analysis\P2B_controls_analysis\performance_graph_properties_analysis\overviewPerformance.csv');
+
+performanceDataIndividual = [];
+%% plot boxplot of performance data
+
+% sort the participants according to their mean performance
+
+sortedOverviewPerformance = sortrows(overviewPerformance,2);
+sortedParticipantIDs = sortedOverviewPerformance.Participants;
+
+% extract the individual performance and put in matrix
+
+for index2 = 1:length(sortedParticipantIDs)
+
+    currentPart = sortedParticipantIDs(index2);
+    selection = dataP2B.SubjectID == currentPart;
+
+    % save performance separately
+    performanceDataIndividual = [performanceDataIndividual,dataP2B.RecalculatedAngle(selection)];
+end    
+
+
+%% extract the data and sort into matrix
+uniqueTrials = unique(dataP2B(:,5:6),'rows');
+
+overviewTrialPerformance = zeros(26,112);
+
+for index3 = 1:length(sortedParticipantIDs)
+
+    currentPart = sortedParticipantIDs(index3);
+    selection = dataP2B(dataP2B.SubjectID == currentPart,:);
+
+    firstTrials = selection.TrialOrder == 1;
+    secondTrials = selection.TrialOrder ==2;
+
+    trialPerformance = zeros(1,112);
+
+    for index4 = 1: height(uniqueTrials)
+
+        start = strcmp(selection.StartBuildingName, uniqueTrials{index4,1});
+        target = strcmp(selection.TargetBuildingName, uniqueTrials{index4,2});
+
+
+        trial1 = selection.RecalculatedAngle(start & target & firstTrials);
+        trial2 = selection.RecalculatedAngle(start & target & secondTrials);
+
+
+        trialPerformance(1,index4*2-1) = trial1;
+        trialPerformance(1,index4*2) = trial2;
+
+
+    end
+
+    overviewTrialPerformance(index3,:) = trialPerformance;
+
+end
+
+% figure 8a
+
+figure(1)
+
+imagescaly = imagesc(overviewTrialPerformance);
+colorbar
+ax = gca;
+ax.XTick = 0:10:244;
+ax.TickDir = 'out';
+ax.XMinorTick = 'on';
+ax.XAxis.MinorTickValues = 1:1:244;
+ax.XLabel.String = 'Trials';
+ax.YLabel.String = 'Participants';
+
+ax = gca;
+
+% figure 8b
+
+figure(2)
+plotty = boxchart(performanceDataIndividual, 'Notch','on');
+xlabel('participants');
+ylabel('performance / angual error');
+% 
+hold on
+plot(mean(performanceDataIndividual), '-o')  % x-axis is the intergers of position
+hold off
+
+% figure 8c and 8d
+
+dataP2B_withoutRep = readtable('overviewTable_P2B_Prep_complete_withoutReps.csv');
+
+dataP2B.TrialTime = dataP2B.TimeStampBegin;
+
+% load trial id table
+
+stCombiIds = load('uniqueTrials_routeID.mat');
+stCombiIds = stCombiIds.uniqueTrials;
+
+% overall mean in pointing error / in duration for each participant
+overviewDiffReps = table;
+
+
+% how error and duration changes over the time of the task
+
+PartList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080];
+
+for index = 1:length(PartList)
+    
+     currentPart = PartList(index);   
+    
+     selectionPart = currentPart == dataP2B.SubjectID;
+     
+     
+     selectionTrial1 = dataP2B.TrialOrder == 1;
+     selectionTrial2 = dataP2B.TrialOrder == 2;
+     
+     overviewDiffReps.Participant(index) = currentPart;
+     
+     % trial 1
+     overviewDiffReps.MeanError_Trial_1(index) = mean(dataP2B.RecalculatedAngle(selectionPart&selectionTrial1));
+     overviewDiffReps.VarianceError_Trial_1(index) = var(dataP2B.RecalculatedAngle(selectionPart&selectionTrial1));
+
+     overviewDiffReps.MeanDuration_Trial_1(index) = mean(dataP2B.TrialDuration(selectionPart&selectionTrial1));
+     overviewDiffReps.VarianceDuration_Trial_1(index) = var(dataP2B.TrialDuration(selectionPart&selectionTrial1));
+
+     % trial 2
+     overviewDiffReps.MeanError_Trial_2(index) = mean(dataP2B.RecalculatedAngle(selectionPart&selectionTrial2));
+     overviewDiffReps.VarianceError_Trial_2(index) = var(dataP2B.RecalculatedAngle(selectionPart&selectionTrial2));
+
+     overviewDiffReps.MeanDuration_Trial_2(index) = mean(dataP2B.TrialDuration(selectionPart&selectionTrial2));
+     overviewDiffReps.VarianceDuration_Trial_2(index) = var(dataP2B.TrialDuration(selectionPart&selectionTrial2));
+   
+     
+     startTS = min(dataP2B.TimeStampBegin(selectionPart));
+     dataP2B.TrialTime(selectionPart) = dataP2B.TrialTime(selectionPart)-startTS; 
+     
+     
+     for indexTrial = 1:112
+         
+         minTrial = min(dataP2B.TrialTime(selectionPart));
+         minIndex = dataP2B.TrialTime == minTrial;
+         
+         dataP2B.TrialSequence(minIndex) = indexTrial;
+         
+         selectionPart = selectionPart & not(minIndex); 
+         
+     end
+
+     
+end
+
+for index2 = 1:height(dataP2B_withoutRep)
+   
+    currentPart = dataP2B_withoutRep.SubjectID(index2);
+    currentSTcombi = dataP2B_withoutRep.RouteID(index2);
+    
+    selectionPart = dataP2B.SubjectID == currentPart;
+    selectionSTC = strcmp(dataP2B.RouteID, currentSTcombi);
+    selectionOrder1 = dataP2B.TrialOrder == 1;
+    selectionOrder2 = dataP2B.TrialOrder == 2;
+    
+    error1 = dataP2B.RecalculatedAngle(selectionPart & selectionSTC & selectionOrder1);
+    error2 = dataP2B.RecalculatedAngle(selectionPart & selectionSTC & selectionOrder2);
+
+    dataP2B_withoutRep.ErrorDiff(index2) = error1-error2;
+
+end
+
+%% distribution differences between first and second task trial reps
+% figure 1
+figure(3)
+
+
+plotty1 = histogram(dataP2B_withoutRep.ErrorDiff);
+
+ylabel('Frequency')
+xlabel('Angular error difference')
+
+
+
+% figure 4
+figure(4)
+edges3 = [0:5:180];
+plotty3 = histogram(dataP2B.RecalculatedAngle(dataP2B.TrialOrder == 1),edges3,'FaceColor','b', 'FaceAlpha',0.5);
+hold on
+
+plotty3b= histogram(dataP2B.RecalculatedAngle(dataP2B.TrialOrder == 2),edges3,'FaceColor','g', 'FaceAlpha',0.5);
+ylabel('frequency')
+xlabel('angular error')
+
+hold off
+
+% 
+% 
+% % Update these paths to your Figure 8 source .figs
+% p8a = 'E:...\Figure8a_heatmap.fig';        % heatmap with colorbar
+% p8b = 'E:...\Figure8b_boxplots.fig';
+% p8c = 'E:...\Figure8c_hist_all.fig';
+% p8d = 'E:...\Figure8d_hist_diff.fig';
+% 
+% % ---------------- open source figures invisibly ----------------
+% f8a = openfig(p8a,'invisible');
+% f8b = openfig(p8b,'invisible');
+% f8c = openfig(p8c,'invisible');
+% f8d = openfig(p8d,'invisible');
+% 
+% ax8a = pickMainAxes(f8a);
+% ax8b = pickMainAxes(f8b);
+% ax8c = pickMainAxes(f8c);
+% ax8d = pickMainAxes(f8d);
+% 
+% disp('Figure 8 sources opened.')
+% 
+% % ---------------- global style (edit once) ----------------
+% cfg.FontName   = 'Arial';
+% cfg.AxesFS     = 11;   % tick label size
+% cfg.LabelFS    = 12;   % axis label size
+% cfg.TitleFS    = 12;   % title size
+% cfg.AxisLW     = 1.0;
+% cfg.LineLW     = 1.4;
+% cfg.MarkerSize = 6;
+% cfg.TickDir    = 'out';
+% cfg.TickLength = [0.010 0.010];
+% cfg.Grid       = 'on';
+% 
+% % Panel label settings (a., b., c., d.)
+% cfg.PanelLabelsOn    = true;
+% cfg.PanelLabelFS     = 13;
+% cfg.PanelLabelColor  = [0 0 0];
+% cfg.PanelLabelText   = @(s) sprintf('%s.', s);
+% cfg.PanelLabelWeight = 'normal';
+% 
+% % ---------------- build the 2x2 panel ----------------
+% fig8 = figure('Color','w','Units','normalized','Position',[0.2 0.15 0.55 0.72]);
+% 
+% % Manual layout so we can reserve a gap wide enough for 8a colorbar
+% L=0.10; R=0.06; T=0.08; B=0.12;  % outer margins
+% GY=0.06;                         % vertical gap between rows
+% cbGap=0.012; cbWidth=0.022;      % colorbar gap/width
+% GX = cbGap + cbWidth + 0.03;     % horizontal gap between columns (room for cb)
+% 
+% Wtot = 1 - L - R - GX;
+% Wcol = Wtot/2;
+% Htot = 1 - T - B;
+% Hrow = (Htot - GY)/2;
+% 
+% % Left column (a top, c bottom)
+% posA = [L,            B + Hrow + GY, Wcol, Hrow];
+% posC = [L,            B,             Wcol, Hrow];
+% % Right column (b top, d bottom)
+% posB = [L + Wcol + GX, B + Hrow + GY, Wcol, Hrow];
+% posD = [L + Wcol + GX, B,             Wcol, Hrow];
+% 
+% % Copy and style
+% a8a = copyAxesInto(fig8, ax8a, posA, cfg, true);   % use outerposition
+% a8b = copyAxesInto(fig8, ax8b, posB, cfg, true);
+% a8c = copyAxesInto(fig8, ax8c, posC, cfg, true);
+% a8d = copyAxesInto(fig8, ax8d, posD, cfg, true);
+% applyStyle([a8a a8b a8c a8d], cfg);
+% 
+% % Clean up titles if you don't want them in the panel
+% set([a8a a8b a8c a8d], 'Title', struct('String',''));
+% 
+% % Optional: match x-axes within rows or y-axes within columns
+% % linkaxes([a8a a8b],'x'); linkaxes([a8c a8d],'x');
+% % linkaxes([a8a a8c],'y'); linkaxes([a8b a8d],'y');
+% 
+% % Hide top-row x tick labels to reduce crowding
+% set([a8a a8b], 'XTickLabel',[]);
+% 
+% % Recreate colorbar for 8a in the inter-column gap without shrinking axes
+% % Only if the source had a colorbar:
+% srcHasCB = ~isempty(findall(ancestor(ax8a,'figure'),'Type','ColorBar'));
+% if srcHasCB
+% addExternalColorbar(fig8, a8a, ax8a, cfg, cbGap, cbWidth);
+% end
+% 
+% % Panel labels
+% if cfg.PanelLabelsOn
+% addPanelLabelOutside(fig8, a8a, 'a', cfg);
+% addPanelLabelOutside(fig8, a8b, 'b', cfg);
+% addPanelLabelOutside(fig8, a8c, 'c', cfg);
+% addPanelLabelOutside(fig8, a8d, 'd', cfg);
+% end
+% 
+% % ---------------- export ----------------
+% % Exact pixel size (set what you need)
+% dpi = 300;
+% % Example size: 1600x1200 px (edit these)
+% setFigurePixels(fig8, 1600, 1200, dpi);
+% exportgraphics(fig8, fullfile(savepath,'Figure8_panel.png'), 'Resolution', dpi);
+% exportgraphics(fig8, fullfile(savepath,'Figure8_panel.pdf'), 'ContentType','vector');
+% 
+% % Close sources
+% close([f8a f8b f8c f8d]);
+% 
+% % ---------------- helpers ----------------
+% function ax = pickMainAxes(fig)
+% axList = [findall(fig,'Type','axes'); findall(fig,'Type','polaraxes')];
+% if isempty(axList), ax = []; return; end
+% areas = zeros(numel(axList),1);
+% for k = 1:numel(axList)
+% p = get(axList(k),'Position');
+% areas(k) = prod(p(3:4));
+% end
+% [~,i] = max(areas);
+% ax = axList(i);
+% end
+% 
+% function a = copyAxesInto(destFig, srcAx, pos, cfg, useOuter)
+% if nargin < 5, useOuter = false; end
+% a = copyobj(srcAx, destFig);
+% set(a, 'Units','normalized');
+% if useOuter
+% set(a, 'ActivePositionProperty','outerposition', 'OuterPosition', pos);
+% else
+% set(a, 'ActivePositionProperty','position', 'Position', pos);
+% end
+% try, grid(a, cfg.Grid); end
+% end
+% 
+% function applyStyle(axs, cfg)
+% set(axs, 'FontName',cfg.FontName, 'FontSize',cfg.AxesFS, ...
+% 'LineWidth',cfg.AxisLW, 'TickDir',cfg.TickDir, ...
+% 'TickLength',cfg.TickLength, 'Box','off', 'Layer','top');
+% for a = axs(:)'
+% a.XLabel.FontSize = cfg.LabelFS;
+% a.YLabel.FontSize = cfg.LabelFS;
+% a.Title.FontSize  = cfg.TitleFS; a.Title.FontWeight = 'normal';
+% set(findobj(a,'Type','line'),      'LineWidth',cfg.LineLW, 'MarkerSize',cfg.MarkerSize);
+% set(findobj(a,'Type','scatter'),   'LineWidth',cfg.LineLW, 'SizeData',(cfg.MarkerSize^2));
+% set(findobj(a,'Type','bar'),       'LineWidth',cfg.LineLW);
+% set(findobj(a,'Type','histogram'), 'LineWidth',cfg.LineLW);
+% end
+% end
+% 
+% function addPanelLabelOutside(fig, ax, letter, cfg)
+% str = cfg.PanelLabelText(letter);
+% oldUnits = ax.Units; ax.Units = 'normalized';
+% op = ax.OuterPosition; ax.Units = oldUnits;
+% dx = 0.010; dy = 0.005;
+% pos = [op(1) - dx, op(2) + op(4) - dy, 0.03, 0.03];
+% annotation(fig, 'textbox', pos, ...
+% 'String', str, 'Units','normalized', ...
+% 'HorizontalAlignment','right', 'VerticalAlignment','top', ...
+% 'LineStyle','none', 'FontName',cfg.FontName, ...
+% 'FontWeight',cfg.PanelLabelWeight, 'FontSize',cfg.PanelLabelFS, ...
+% 'Color',cfg.PanelLabelColor, 'BackgroundColor','none', 'Interpreter','none');
+% end
+% 
+% function cb = addExternalColorbar(destFig, newAx, srcAx, cfg, gap, width)
+% if nargin < 5, gap=0.012; end
+% if nargin < 6, width=0.022; end
+% % Match colormap and limits
+% try
+% colormap(destFig, colormap(ancestor(srcAx,'figure')));
+% catch
+% colormap(destFig, colormap(srcAx));
+% end
+% try caxis(newAx, caxis(srcAx)); end
+% ap = newAx.Position;
+% cb = colorbar(newAx); set(cb,'Units','normalized');
+% newAx.Position = ap;  % restore (avoid shrink)
+% cb.Position = [ap(1) + ap(3) + gap, ap(2), width, ap(4)];
+% set(cb, 'LineWidth', cfg.AxisLW, 'FontSize', cfg.AxesFS);
+% % Copy a few properties from source cb if present
+% srcCBs = findall(ancestor(srcAx,'figure'), 'Type','ColorBar');
+% if ~isempty(srcCBs)
+% for k=1:numel(srcCBs)
+% if any(srcCBs(k).Axes == srcAx)
+% try, cb.Ticks = srcCBs(k).Ticks; end
+% try, cb.TickLabels = srcCBs(k).TickLabels; end
+% try, cb.Label.String = srcCBs(k).Label.String; end
+% try, cb.Label.Interpreter = srcCBs(k).Label.Interpreter; end
+% break
+% end
+% end
+% end
+% end
+% 
+% function setFigurePixels(fig, width_px, height_px, dpi)
+% if nargin < 4, dpi = 300; end
+% w_in = width_px / dpi; h_in = height_px / dpi;
+% set(fig, 'Units','inches', 'Position',[1 1 w_in h_in]);
+% end
+
+
+
+
