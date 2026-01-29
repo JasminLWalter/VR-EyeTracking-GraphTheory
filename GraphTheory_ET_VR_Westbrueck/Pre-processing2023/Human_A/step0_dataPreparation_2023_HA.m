@@ -27,10 +27,17 @@ PartList = {0365 1754 2258 2693 3310 4176 4597 4796 4917 5741 6642 7093 7264 741
 % PartList = {0365};
 
 
-colliderList = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
+colliderList = readtable('D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv', ...
+                      'Delimiter', ',', ...          % force comma delimiter
+                      'ReadVariableNames', true);   % first row = column names
 
-changedColliders = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\list_collider_changes.csv');
+changedColliders = readtable('D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\list_collider_changes.csv', ...
+                      'Delimiter', ',', ...          % force comma delimiter
+                      'ReadVariableNames', true);   % first row = column names
 
+buildingNameChanges =  readtable('D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\differencesBuildingNames_SpaRe_HumanA.csv', ...
+                      'Delimiter', ',', ...          % force comma delimiter
+                      'ReadVariableNames', true);   % first row = column names
 
 %% --------------------------------------------------------------------------
 
@@ -174,6 +181,26 @@ for indexPart = 1:Number
                     data.hitObjectColliderBoundsCenter_y_2(locData2) = changedColliders.ColliderBoundsCenter_y(indexCC);
                     data.hitObjectColliderBoundsCenter_z_2(locData2) = changedColliders.ColliderBoundsCenter_z(indexCC);                    
                     
+                end
+
+                %% now rename the building names that are different in the HumanA version compared to the SpaRe version
+                % will facilitate processing later on. 
+
+                for indexRB = 1: height(buildingNameChanges)
+                    
+                    humanAName = buildingNameChanges.HumanA_BuildingName(indexRB);
+                    spaReName = buildingNameChanges.SpaRe_BuildingName(indexRB);
+                    
+                    locD1 = strcmp(humanAName, data.hitObjectColliderName_1);
+                    locD2 = strcmp(humanAName, data.hitObjectColliderName_2);
+                    
+                    % now rename name all relevant variable at these locations
+                    % orginal hit 1
+                    data.hitObjectColliderName_1(locD1) = spaReName;
+                    
+                    % orginal hit 2
+                    data.hitObjectColliderName_2(locD2) = spaReName;
+                   
                 end
                 
                 %% Rename Graffi hits to the building but keep information in extra var
