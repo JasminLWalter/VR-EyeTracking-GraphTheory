@@ -1,4 +1,4 @@
-%% ------------------ comp_graph_measures_C.m-----------------------
+%% ------------------ calc_graph_measures_C.m-----------------------
 
 % --------------------script written by Jasmin L. Walter-------------------
 % -----------------------jawalter@uni-osnabrueck.de------------------------
@@ -21,8 +21,8 @@ clear all;
 % 
 % cd 'F:\Cyprus_project_overview\data\comparison2VR\40min\graphs_HA\';
 
+datapath = 'E:\Cyprus_project_overview\data\analysis\exploration\eyeTracking\graphs\';
 
-PartList = {365 1754 2258 2693 3310 4176 4597 4796 4917 5741 6642 7093 7264 7412 7842 8007 8469 8673 9472 9502 9586 9601};
 
 saveAll = true;
 
@@ -34,7 +34,7 @@ overviewRW = table;
 
 
 %load graph limassol
-file = "E:\Cyprus_project_overview\data\analysis\exploration\graphs\graph_limassol.mat";
+file = strcat(datapath, 'graph_limassol.mat');
 graphy = load(file);
 graphy= graphy.graphy;
 
@@ -61,6 +61,10 @@ overviewRW.nrEdges(index) = nrEdges;
 overviewRW.density(index) = density;
 overviewRW.diameter(index) = diameter;
 overviewRW.avgShortestPath(index) = avgShortestPath;
+
+save([datapath 'overviewGraphMeasures_Cyprus'],'overviewRW');
+writetable(overviewRW, [datapath, 'overviewGraphMeasures_Cyprus.csv']);
+
 
 %% do the plotting
 
