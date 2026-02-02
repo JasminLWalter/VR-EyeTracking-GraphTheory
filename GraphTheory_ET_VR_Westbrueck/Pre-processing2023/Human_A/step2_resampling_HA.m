@@ -185,6 +185,44 @@ otherColumns = {
     'interpolatedHitPoint'
     };
 
+%% columns that should not be interpolated (too much missing data)
+columnsEyeData = {
+    'eyePositionCombinedWorld_x'	
+    'eyePositionCombinedWorld_y'	
+    'eyePositionCombinedWorld_z'	
+    'eyeDirectionCombinedWorld_x'	
+    'eyeDirectionCombinedWorld_y'	
+    'eyeDirectionCombinedWorld_z'	
+    'eyeDirectionCombinedLocal_x'	
+    'eyeDirectionCombinedLocal_y'	
+    'eyeDirectionCombinedLocal_z'	
+    'eyePositionLeftWorld_x'	
+    'eyePositionLeftWorld_y'	
+    'eyePositionLeftWorld_z'	
+    'eyeDirectionLeftWorld_x'	
+    'eyeDirectionLeftWorld_y'	
+    'eyeDirectionLeftWorld_z'	
+    'eyeDirectionLeftLocal_x'	
+    'eyeDirectionLeftLocal_y'	
+    'eyeDirectionLeftLocal_z'	
+    'eyePositionRightWorld_x'	
+    'eyePositionRightWorld_y'	
+    'eyePositionRightWorld_z'	
+    'eyeDirectionRightWorld_x'	
+    'eyeDirectionRightWorld_y'	
+    'eyeDirectionRightWorld_z'	
+    'eyeDirectionRightLocal_x'	
+    'eyeDirectionRightLocal_y'	
+    'eyeDirectionRightLocal_z'
+    'processedCollider_hitPointOnObject_x'	
+    'processedCollider_hitPointOnObject_y'	
+    'processedCollider_hitPointOnObject_z'	
+    'processedCollider_NH_hitPointOnObject_x'	
+    'processedCollider_NH_hitPointOnObject_y'	
+    'processedCollider_NH_hitPointOnObject_z'	
+    };
+
+
 
 
 
@@ -396,9 +434,10 @@ for indexPart = 1:Number
                 
                 interp2big = strcmp(dataRS.removedData,'True') & strcmp(dataRS.interpolated, 'False');
 
-                for index3 = 1:length(columns2rs)
+                % only remove the eye data columns
+                for index3 = 1:length(columnsEyeData)
 
-                    currentC = columns2rs{index3};
+                    currentC = columnsEyeData{index3};
                     dataRS.(currentC)(interp2big) = NaN;
 
                 end
