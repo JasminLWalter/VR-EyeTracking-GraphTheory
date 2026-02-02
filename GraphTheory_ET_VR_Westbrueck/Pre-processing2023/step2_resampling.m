@@ -20,15 +20,15 @@ clear all;
 % cd 'E:\Westbrueck Data\SpaRe_Data\1_Exploration\pre-processed_csv\'
 
 % datapaths Living Transformation harddrive
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step2_resampling\';
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\testi\';
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step1_dupl_clean_smooth\'
+cd 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step1_dupl_clean_smooth\'
 
 % Participant list of all participants that participated 5 sessions x 30 min 
 % in Westbrook city
 
-PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
-% PartList = {1004};
+% PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
+PartList = {1004};
 
 % to avoid weird edge effects during the resampling at the start and end of
 % the file (the function assums 0s there), we duplicate the start and end
@@ -181,10 +181,6 @@ otherColumns = {
 
 %% columns that should not be interpolated (too much missing data)
 columnsEyeData = {
-    'eyeOpennessLeft'	
-    'eyeOpennessRight'	
-    'pupilDiameterMillimetersLeft'	
-    'pupilDiameterMillimetersRight'	
     'eyePositionCombinedWorld_x'	
     'eyePositionCombinedWorld_y'	
     'eyePositionCombinedWorld_z'	
