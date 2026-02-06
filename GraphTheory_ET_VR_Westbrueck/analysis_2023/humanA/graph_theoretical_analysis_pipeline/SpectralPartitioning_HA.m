@@ -77,12 +77,12 @@ path = what;
 path = path.path;
 
 %savepath
-savepath = 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\spectralPartitioning\';
+savepath = 'E:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\spectralPartitioning\';
 
 
 
 % cd into graph folder location
-cd 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step4_graphs\';
+cd 'E:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step4_graphs\';
 
 plotting_wanted = true; % if you want to plot, set to true
 saving_wanted = true; % if you want to save, set to true
@@ -360,8 +360,10 @@ eigenvalue3L = [];
         end
         
       % Plot the Eigenvalue Histogram and save the Eigenvalue Spectrum
-        save([savepath 'Part_' num2str(currentPart) '_EigenvalueSpectrumL,mat'],...
+        save([savepath 'Part_' num2str(currentPart) '_EigenvalueSpectrumL.mat'],...
             'EigenvalueL');
+        writematrix(EigenvalueL, strcat(savepath, 'Part_', num2str(currentPart), '_EigenvalueSpectrumL.csv'));
+
         figure('Name', ...
             strcat('Part_',num2str(currentPart),'__2nd_Smallest_EigenvectorL'));
         histogram(eigenvector2L);
@@ -370,6 +372,8 @@ eigenvalue3L = [];
             saveas(gcf,strcat(savepath,...
                 'Part_',num2str(currentPart),...
                 '_Histogram_2nd_Smallest_EigenvectorL.png'),'png');
+            writematrix(eigenvector2L, strcat(savepath, 'Part_', num2str(currentPart), '_2nd_smallest_EigenvectorL.csv'))
+
         end
 
     end
@@ -414,6 +418,10 @@ eigenvalue3L = [];
             'eig_pos');
         save([savepath 'Part_' num2str(currentPart) '_eig_neg.mat'],...
             'eig_neg');
+
+         % as csv
+        writetable(eig_pos, fullfile(savepath, sprintf('Part_%s_eig_pos.csv', currentPart)));
+        writetable(eig_neg, fullfile(savepath, sprintf('Part_%s_eig_neg.csv', currentPart)));
         
   % Documentation:
     Doc.meanEigVec(partIndex,:) = mean(eigenvector3L);
@@ -453,7 +461,9 @@ eigenvalue3L = [];
             %Plot the Eigenvalue Histogram and save the Eigenvalue Spectrum
             if saving_wanted == true
                 save([savepath 'Part_' num2str(currentPart)...
-                    '_EigenvalueSpectrumL,mat'],'EigenvalueL');
+                    '_EigenvalueSpectrumL.mat'],'EigenvalueL');
+                writetable(EigenvalueL, fullfile(savepath, sprintf('Part_%s_EigenvalueSpectrumL.csv', currentPart)));
+
             end
             figure('Name', strcat('Part_',...
                 num2str(currentPart),'_2nd_Smallest_Eigenvector'));
@@ -477,12 +487,23 @@ eigenvalue3L = [];
                 'eig_posT');
             save([savepath 'Part_' num2str(currentPart) '_eig_neg.mat'],...
                 'eig_negT');
+
+              % as csv
+            writetable(eig_posT,fullfile(savepath, sprintf('Part_%s_eig_pos.csv', currentPart)));
+    
+            writetable(eig_negT, fullfile(savepath, sprintf('Part_%s_eig_neg.csv', currentPart)));
+
        end
 
 
             if saving_wanted == true
                 save([savepath 'CutEdges.mat'],'Cut_Edges');
                 save([savepath 'SpectralDocumentation.mat'],'Doc');
+
+
+                % as csv
+                writetable(Cut_Edges, fullfile(savepath, 'CutEdges.csv'));
+                writetable(Doc, fullfile(savepath, 'SpectralDocumentation.csv'));
             end
 toc
 end

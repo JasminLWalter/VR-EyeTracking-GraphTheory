@@ -28,11 +28,11 @@ clear all;
 % savepath, clistpath, current folder and participant list!----------------
 
 
-savepath = 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\nodeDegree_analysis\';
+savepath = 'E:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\analysis\graph-theoretical-analysis\nodeDegreeOverviews\';
 clistpath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
              
 
-cd 'F:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step4_graphs\';
+cd 'E:\WestbrookProject\HumanA_Data\Experiment1\Exploration_short\pre-processing\velocity_based\step4_graphs\';
 %--------------------------------------------------------------------------
 
 % 20 participants with 90 min VR trainging less than 30% data loss
@@ -109,6 +109,8 @@ end
 
 % save nodedegree overview
 save([savepath 'Overview_NodeDegree.mat'],'overviewNodeDegree');
+writetable(overviewNodeDegree,strcat(savepath,'Overview_NodeDegree.csv'));
+
 
 
 disp(strcat(num2str(Number), ' Participants analysed'));
