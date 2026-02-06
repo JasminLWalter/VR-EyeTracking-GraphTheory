@@ -19,10 +19,12 @@ clear all;
 % savepath, clistpath, current folder and participant list!----------------
 
 
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\degree_overviews\';
-clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\degree_overviews\';
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
+clistpath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
+             
+
+cd 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
 %--------------------------------------------------------------------------
 
 % 20 participants with 90 min VR trainging less than 30% data loss

@@ -15,18 +15,17 @@ clear all;
 
 %% adjust the following variables: 
 
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\graph_measures\';
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\graph_measures\';
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\data_overviews\';
+cd 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\data_overviews\';
 
-graphPath = 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
+graphPath = 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
 
-graphPath_W =  'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs_WEIGHTED\';
+graphPath_W =  'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs_WEIGHTED\';
 
-clistpath = 'D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
+clistpath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'; % path to the coordinate list location
 
 PartList = [1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080];
-
 
 
 %% load overview of the mean performance of each participant
@@ -35,14 +34,14 @@ overviewPerformance = overviewPerformance.overviewPerformance;
 
 % load hierarchy index
 
-hierarchyIndex = load('F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\hierarchyIndex\HierarchyIndex_Table.mat');
+hierarchyIndex = load('E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\hierarchyIndex\HierarchyIndex_Table.mat');
 
 hierarchyIndex = hierarchyIndex.HierarchyIndex;
 
 
 % load gaze-graph-defined landmark list
 
-commonGGLandmarks = readtable('F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\Seahaven_repl_pipeline\nodeDegreeCentrality\landmarkOverview.csv');
+commonGGLandmarks = readtable('E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\graph-theoretical-analysis\nodeDegreeCentrality\landmarkOverview.csv');
 commonGGLandmarks = commonGGLandmarks.houseNames;
 
 

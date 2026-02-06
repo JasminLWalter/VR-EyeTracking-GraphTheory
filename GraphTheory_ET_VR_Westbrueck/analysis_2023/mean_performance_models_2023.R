@@ -13,10 +13,10 @@ library(performance)
 library(lubridate)
 
 
-savepath <- "F:\\WestbrookProject\\Spa_Re\\control_group\\analysis_velocityBased_2023\\P2B_analysis\\models\\"
+savepath <- "E:\\WestbrookProject\\Spa_Re\\control_group\\analysis_velocityBased_2023\\P2B_analysis\\models\\"
 setwd(savepath)
 
-datapath <- "F:\\WestbrookProject\\Spa_Re\\control_group\\analysis_velocityBased_2023\\P2B_analysis\\data_overviews\\"
+datapath <- "E:\\WestbrookProject\\Spa_Re\\control_group\\analysis_velocityBased_2023\\P2B_analysis\\data_overviews\\"
 ################################################################################
 
 # load the data
@@ -82,6 +82,7 @@ modelGraphM_full <- lm(meanPerformance ~ nrViewedHouses + nrEdges + density + di
                        hierarchyIndex,data = dataGraphMFRS)
 summary(modelGraphM_full)
 
+
 # -----------------
 # residual plots
 
@@ -126,7 +127,6 @@ ggplot(data.frame(y = dataGraphMFRS$meanPerformance, fitted = fitted(modelGraphM
 
 # check for independence
 acf(residuals(modelGraphM_full))
-
 
 
 ###------------------------------------
@@ -227,7 +227,7 @@ summary(modelGGraph_landmarksC)
 modelGGraph_landmarksA <- lm(meanPerformance ~ nrAllLandmarks, data = dataGraphMFRS)
 
 summary(modelGGraph_landmarksA)
-
+ 
 
 
 

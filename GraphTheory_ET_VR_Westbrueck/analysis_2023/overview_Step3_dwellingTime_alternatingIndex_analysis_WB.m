@@ -8,12 +8,12 @@ clear all;
 
 %% adjust the following variables: 
 
-savepath = 'F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\data_overviews\';
+savepath = 'E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\data_overviews\';
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step3_gazeProcessing\';
+cd 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step3_gazeProcessing\';
 
 
-overviewTableP2BPrep2 = readtable('F:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\data_overviews\overviewTable_P2B_Prep_stage1.csv');
+overviewTableP2BPrep2 = readtable('E:\WestbrookProject\Spa_Re\control_group\analysis_velocityBased_2023\P2B_analysis\data_overviews\overviewTable_P2B_Prep_stage1.csv');
 
 
 lastPart = 0;
