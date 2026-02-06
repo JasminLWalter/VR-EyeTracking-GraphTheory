@@ -25,12 +25,12 @@ clear all;
 %% adjust the following variables: savepath, current folder and participant list!-----------
 
 
-savepath= 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs\';
+savepath= 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step4_graphs_WEIGHTED\';
 
 
-cd 'F:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step3_gazeProcessing\';
+cd 'E:\WestbrookProject\Spa_Re\control_group\pre-processing_2023\velocity_based\step3_gazeProcessing\';
 
-colliderList = readtable('D:\Github\NBP-VR-Eyetracking\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
+colliderList = readtable('D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\building_collider_list.csv');
 
 % 26 participants with 5x30min VR trainging less than 30% data loss
 PartList = {1004 1005 1008 1010 1011 1013 1017 1018 1019 1021 1022 1023 1054 1055 1056 1057 1058 1068 1069 1072 1073 1074 1075 1077 1079 1080};
