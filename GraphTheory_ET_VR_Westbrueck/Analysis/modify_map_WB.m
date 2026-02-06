@@ -11,43 +11,74 @@ imagepath = 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\a
 
 cd 'D:\Github\VR-EyeTracking-GraphTheory\GraphTheory_ET_VR_Westbrueck\additional_Files\'
 
+
+%% ==================== 1. USER SETTINGS ==============================
+
+% Distance marker specs (IDENTICAL to working version)
+totalLength_m  = 500;     % total bar length [m]
+patchLength_m  = 100;     % patch length [m]
+rowHeight_m    = 12;       % row height [m]
+marginTop_m    = 115.5;       % distance from top edge [m]
+
+% Map scale (THIS MAP ONLY)
+pix_per_m = 4.15;        % pixels per meter (your original value)
+
+%% ==================== 2. LOAD MAP ================================
 figure(1)
 map = imread (strcat(imagepath,'map_natural_white.png'));
-
-[rows, columns, numberOfColorChannels] = size(map);
-
-imshow(map);
-% alpha(0.3)
+imshow(map); 
 hold on;
 
-m100 = 4.15*100;
-yHeight1 = 505;
-yHeight2 = 555;
+[rows, columns, ~] = size(map);
 
-line([0,m100],[yHeight1,yHeight1],'Color','k','LineWidth',5);   
-line([m100,m100*2],[yHeight1,yHeight1],'Color','w','LineWidth',5);    
-line([m100*2,m100*3],[yHeight1,yHeight1],'Color','k','LineWidth',5);   
-line([m100*3,m100*4],[yHeight1,yHeight1],'Color','w','LineWidth',5);   
-line([m100*4,m100*5],[yHeight1,yHeight1],'Color','k','LineWidth',5);   
-% 
-line([0,m100],[yHeight2,yHeight2],'Color','w','LineWidth',5);   
-line([m100,m100*2],[yHeight2,yHeight2],'Color','k','LineWidth',5);    
-line([m100*2,m100*3],[yHeight2,yHeight2],'Color','w','LineWidth',5);   
-line([m100*3,m100*4],[yHeight2,yHeight2],'Color','k','LineWidth',5);   
-line([m100*4,m100*5],[yHeight2,yHeight2],'Color','w','LineWidth',5); 
+%% ==================== 3. DISTANCE MARKER (RECTANGLES) ==============
 
-% text(m100*5 + 50,yHeight2-25,'500 m','FontSize',8, 'FontName', 'Helvetica');
+nPatches = totalLength_m / patchLength_m;
+
+% Horizontal positions (pixels)
+xEdges_px = (0:patchLength_m:totalLength_m) * pix_per_m;
+
+% Vertical geometry (pixels)
+rowHeight_px    = rowHeight_m * pix_per_m;
+yRowUpper_top   = marginTop_m * pix_per_m;
+yRowLower_top   = yRowUpper_top + rowHeight_px;
+
+%% Draw marker
+for k = 1:nPatches
+    if mod(k,2)==1
+        colUpper = 'k';
+        colLower = 'w';
+    else
+        colUpper = 'w';
+        colLower = 'k';
+    end
+
+    xLeft  = xEdges_px(k);
+    xWidth = xEdges_px(k+1) - xEdges_px(k);
+
+    % Upper row
+    rectangle('Position',[xLeft yRowUpper_top xWidth rowHeight_px], ...
+              'FaceColor',colUpper,'EdgeColor','none');
+
+    % Lower row
+    rectangle('Position',[xLeft yRowLower_top xWidth rowHeight_px], ...
+              'FaceColor',colLower,'EdgeColor','none');
+end
+
+%% ==================== 4. EXPORT ===================================
+ax = gca;
+exportgraphics(ax, ...
+    fullfile(imagepath,'map_natural_500mMarker_600dpi_withoutText_newV.png'), ...
+    'Resolution',600);
+
+exportgraphics(ax, ...
+    fullfile(imagepath,'map_natural_500mMarker_withoutText_newV.png'));
+
+hold off;
 
 
-% find height of the map with markers
-% scatter(columns,476,'r')
-% scatter(columns,476.5,'b')
-% scatter(columns,477,'g')
-% 
-% 
-% scatter(columns,3622,'r')
-% scatter(columns,3622.5,'b')
-% scatter(columns,3623,'g')
+
+
 
 % saveas(gcf,strcat(imagepath,'map_natural_500mMarker.png'));
 width = columns/4.15;
@@ -61,11 +92,3 @@ disp(height)
 % text(700,3770,{strcat(num2str(width),'m'),strcat(num2str(height),'m')},'FontSize',8, 'FontName', 'Helvetica');
 % 
 
-
-
-ax = gca;
-exportgraphics(ax,strcat(imagepath,'map_natural_500mMarker_600dpi_withoutText.png'),'Resolution',600)
-exportgraphics(ax,strcat(imagepath,'map_natural_500mMarker_withoutText.png'))
-
-
-hold off
